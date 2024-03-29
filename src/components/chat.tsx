@@ -26,6 +26,7 @@ interface ChatProps {
   type: ChatType;
   confidential: number | null;
   onClickOpenChatSheet?: boolean;
+  // snapShotData: Message[];
 }
 
 export default function Chat(props: ChatProps) {
@@ -89,7 +90,13 @@ export default function Chat(props: ChatProps) {
     initialData: props.dbChat,
     refetchOnWindowFocus: false,
   });
-
+  // let updatedChatsData: Message[] = [];
+  // if ( chatsData[0]?.content.startsWith('{"store":')) {
+  //   updatedChatsData = chatsData.slice(1);
+  // } else {
+  //   updatedChatsData = chatsData;
+  // }
+  //  console.log("updatedChatsData", updatedChatsData);
   const {
     messages,
     input,
@@ -122,16 +129,33 @@ export default function Chat(props: ChatProps) {
     sendExtraMessageFields: true,
   });
 
+  console.log("messages", messages);
+
   useEffect(() => {
     let mainArray: Message[][] = [];
     let subarray: Message[] = [];
 
+    // let newMessages: Message[] = [];
+
+    // if (messages && messages[0] && messages[0].content) {
+    //   if (messages[0].content.startsWith('{"store":')){
+    //     newMessages=messages.slice(1);
+    //   } else {
+    //     newMessages=messages.slice(1);
+    //   }
+    // }
+
     // console.log("messages effect triggered", messages);
+
     if (messages && messages.length) {
       messages.forEach((message, index) => {
         if (message.role === "user") {
           if (index === 0) {
-            subarray.push(message as Message);
+            if (message.content.startsWith('{"store":')) {
+              subarray = [];
+            } else {
+              subarray.push(message as Message);
+            }
           } else {
             mainArray.push(subarray);
             subarray = [];
@@ -187,11 +211,17 @@ export default function Chat(props: ChatProps) {
       });
     },
   });
-
+  // console.log("snapShotData frontend", props.snapShotData);
   return (
     <div className="flex flex-col gap-1 mx-auto">
       {props.type === "tldraw" && !props.onClickOpenChatSheet ? (
-        <div className=" w-[calc(100dvw-40px)] h-[calc(100dvh-128px)]">
+        <div
+          className={`${
+            !props.onClickOpenChatSheet
+              ? "w-[calc(100dvw-40px)]"
+              : "w-[calc(100dvw-50vw)]"
+          } h-[calc(100dvh-128px)]`}
+        >
           <PersistenceExample
             org_slug={props.org_slug}
             org_id={props.orgId}

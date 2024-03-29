@@ -65,7 +65,7 @@ export default function ChatSheet(props: Props) {
             <MessageCircle className="h-4 w-4" />
           </Button>
         </SheetTrigger>
-        <SheetContent className=" w-[700px] sm:w-[540px]  overflow-x-hidden  overflow-y-scroll">
+        <SheetContent className="w-[800px] sm:w-[540px] overflow-x-hidden overflow-y-scroll">
           <SheetHeader>
             <SheetTitle>
               <Chatusers

@@ -84,7 +84,6 @@ export default function PersistenceExample(props: PersistenceExampleProps) {
     setTimer(0);
     saving(false);
   };
-
   const handleSave = async () => {
     const snapshot = JSON.stringify(store.getSnapshot());
     await save(snapshot, setIsSaving);

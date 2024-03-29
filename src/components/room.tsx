@@ -26,23 +26,17 @@ interface Props {
   imageUrl: string;
   type: ChatType;
   confidential: number | null;
+  // snapShotData: ChatEntry[];
 }
 
 const RoomWrapper = (props: Props) => {
+  const [onClickOpenChatSheet, setOnClickOpenChatSheet] =
+    useState<boolean>(false);
   const [showLoading, setShowLoading] = useState(false);
   const { channel } = useChannel("room_5", (message) => {
     console.log(message);
   });
   console.log("props.Chat", props.chat);
-  if (props.chat && props.chat[0] && props.chat[0].content) {
-    if (props.chat[0].content.startsWith('{"store":')) {
-      console.log("hai", chatToMap);
-      chatToMap = props.chat.slice(1);
-    } else {
-      console.log("nhi hai ", chatToMap);
-      chatToMap = props.chat;
-    }
-  }
 
   const preferences = usePreferences();
   const { presenceData, updateStatus } = usePresence(
@@ -53,12 +47,10 @@ const RoomWrapper = (props: Props) => {
       isTyping: false,
     },
   );
-
   const dbIds = getUserIdList(props.chat);
   const chatCreatorId = dbIds[0];
 
   const liveUserIds = presenceData.map((p) => p.data.id);
-  console.log("liveUserIds", liveUserIds);
 
   const uniqueIds = [...dbIds, ...liveUserIds].filter(
     (v, i, a) => a.indexOf(v) === i,
@@ -103,6 +95,11 @@ const RoomWrapper = (props: Props) => {
           </Button>
           {props.type == "tldraw" ? (
             <div>
+              {/* <Button
+                onClick={() => setOnClickOpenChatSheet(!onClickOpenChatSheet)}
+              >
+                Chat
+              </Button> */}
               <ChatSheet
                 type={props.type}
                 orgId={props.orgId}
@@ -118,18 +115,42 @@ const RoomWrapper = (props: Props) => {
             </div>
           ) : null}
         </div>
-        <Chat
-          type={props.type}
-          orgId={props.orgId}
-          dbChat={props.chat}
-          chatId={props.chatId}
-          uid={props.uid}
-          username={props.username}
-          org_slug={props.org_slug}
-          chatTitle={props.chatTitle}
-          imageUrl={props.imageUrl}
-          confidential={props.confidential}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-[auto,1fr] gap-1">
+          <div>
+            <Chat
+              // snapShotData={props.snapShotData}
+              type={props.type}
+              orgId={props.orgId}
+              dbChat={props.chat}
+              chatId={props.chatId}
+              uid={props.uid}
+              username={props.username}
+              org_slug={props.org_slug}
+              chatTitle={props.chatTitle}
+              imageUrl={props.imageUrl}
+              confidential={props.confidential}
+            />
+          </div>
+          {/* {props.type == "tldraw" && onClickOpenChatSheet ? (
+            <>
+              <div className=" overflow-y-scroll overflow-x-hidden  h-[79vh] border border-zinc-400">
+                <Chat
+                  onClickOpenChatSheet={onClickOpenChatSheet}
+                  type={props.type}
+                  orgId={props.orgId}
+                  dbChat={props.chat}
+                  chatId={props.chatId}
+                  uid={props.uid}
+                  username={props.username}
+                  org_slug={props.org_slug}
+                  chatTitle={props.chatTitle}
+                  imageUrl={props.imageUrl}
+                  confidential={props.confidential}
+                />
+              </div>
+            </>
+          ) : null} */}
+        </div>
       </div>
     </>
   );

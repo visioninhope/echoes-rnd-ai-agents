@@ -13,26 +13,64 @@ export async function POST(
   const name = body.name;
   console.log("name", name);
 
-  const _chat = [
-    {
-      content,
-      createdAt: new Date(),
-      id: nanoid(),
-      role: "user",
-      name,
-    } as Message,
-  ];
+  const _chat = {
+    content,
+    createdAt: new Date(),
+    id: nanoid(),
+    role: "user",
+    name,
+  } as Message;
 
-  console.log("chatId", _chat);
+  console.log("snapShot", _chat);
 
-  await db
-    .update(chats)
-    .set({
-      messages: JSON.stringify({ log: _chat }),
-      updatedAt: new Date(),
-    })
+  const fetchedChat = await db
+    .select()
+    .from(chats)
     .where(eq(chats.id, Number(chatId)))
-    .run();
+    .limit(1)
+    .all();
+
+  const msg: any = fetchedChat[0].messages;
+
+  // console.log("mesg in route",_chat)
+
+  if (fetchedChat.length === 1 && msg) {
+    // console.log("if",fetchedChat)
+    const messages = JSON.parse(msg);
+    // console.log("message.log", messages.log[0])
+    if (messages.log[0].content.startsWith('{"store":')) {
+      messages.log[0] = _chat;
+    } else {
+      messages.log.splice(0, 0, _chat);
+    }
+    await db
+      .update(chats)
+      .set({
+        messages: JSON.stringify(messages),
+        updatedAt: new Date(),
+      })
+      .where(eq(chats.id, Number(chatId)))
+      .run();
+  } else {
+    const _chat = [
+      {
+        content,
+        createdAt: new Date(),
+        id: nanoid(),
+        role: "user",
+        name,
+      } as Message,
+    ];
+    // console.log("else")
+    await db
+      .update(chats)
+      .set({
+        messages: JSON.stringify({ log: _chat }),
+        updatedAt: new Date(),
+      })
+      .where(eq(chats.id, Number(chatId)))
+      .run();
+  }
 
   return new Response(JSON.stringify({ success: true }));
 }

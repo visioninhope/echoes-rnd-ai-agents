@@ -9,7 +9,6 @@ export async function GET(
   params: { params: { chatid: string } },
 ) {
   const chatId = params.params.chatid;
-
   const fetchedChat = await db
     .select()
     .from(chats)
@@ -17,7 +16,8 @@ export async function GET(
     .limit(1)
     .all();
 
-  const msg = fetchedChat[0]?.messages;
+  const msg = fetchedChat[0].messages;
+  // const chatlog = JSON.parse(msg as string) as SnapShot;
   const chatlog = JSON.parse(msg as string) as ChatLog;
 
   return NextResponse.json({ chats: chatlog ? chatlog.log : [] });
