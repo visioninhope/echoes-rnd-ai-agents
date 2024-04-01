@@ -11,6 +11,7 @@ import axios from "axios";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import { Save } from "lucide-react";
+import htmlToImage from 'html-to-image';
 const PERSISTENCE_KEY = "example-3";
 
 interface PersistenceExampleProps {
@@ -21,11 +22,12 @@ interface PersistenceExampleProps {
   chatId: string;
   uid: string;
   dbChat: Message[];
+  // setImage: Dispatch<string>;
 }
-
 export default function PersistenceExample(props: PersistenceExampleProps) {
+  const [imageSrc, setImageSrc] = useState<string>("");
   const [store] = useState(() =>
-    createTLStore({ shapeUtils: defaultShapeUtils }),
+    createTLStore({ shapeUtils: defaultShapeUtils })
   );
 
   const tlDrawFetcher = async () => {
@@ -48,7 +50,7 @@ export default function PersistenceExample(props: PersistenceExampleProps) {
           store.loadSnapshot(JSON.parse(data));
         }
       },
-    },
+    }
   );
   const [timer, setTimer] = useState(0);
   const [isAutoSaving, setIsAutoSaving] = useState(false);
@@ -73,7 +75,7 @@ export default function PersistenceExample(props: PersistenceExampleProps) {
 
   const save = async (
     content: string,
-    saving: Dispatch<SetStateAction<boolean>>,
+    saving: Dispatch<SetStateAction<boolean>>
   ) => {
     setTimer(0);
     saving(true);
@@ -86,11 +88,25 @@ export default function PersistenceExample(props: PersistenceExampleProps) {
   };
   const handleSave = async () => {
     const snapshot = JSON.stringify(store.getSnapshot());
+    console.log("snapshot", snapshot);
+    const formattedSnapshot = JSON.stringify(JSON.parse(snapshot), null, 2);
+
+    // Create a new div element to contain the formatted snapshot
+    const snapshotContainer = document.createElement('pre');
+    snapshotContainer.textContent = formattedSnapshot;
+
+    // Convert the div containing the snapshot to an image
+    const imageUrl = await htmlToImage.toPng(snapshotContainer);
+
+    // Save or display the image URL as needed
+    console.log(imageUrl); // You can display or sa
+    console.log("imgSrc", imageSrc);
     await save(snapshot, setIsSaving);
   };
 
   return (
     <div className=" relative tldraw__editor tl-theme__dark h-full w-full">
+      {/* <img id="snapshotImage" src={imageSrc} alt="Snapshot Image" /> */}
       <Tldraw className="tl-theme__dark z-10" inferDarkMode store={store}>
         <InsideOfEditorContext
           timer={timer}
@@ -130,7 +146,7 @@ const InsideOfEditorContext = ({
   isSaving: boolean;
   save: (
     content: string,
-    saving: Dispatch<SetStateAction<boolean>>,
+    saving: Dispatch<SetStateAction<boolean>>
   ) => Promise<void>;
 }) => {
   useEffect(() => {

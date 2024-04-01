@@ -26,7 +26,6 @@ interface ChatProps {
   type: ChatType;
   confidential: number | null;
   onClickOpenChatSheet?: boolean;
-  // snapShotData: Message[];
 }
 
 export default function Chat(props: ChatProps) {
@@ -135,18 +134,6 @@ export default function Chat(props: ChatProps) {
     let mainArray: Message[][] = [];
     let subarray: Message[] = [];
 
-    // let newMessages: Message[] = [];
-
-    // if (messages && messages[0] && messages[0].content) {
-    //   if (messages[0].content.startsWith('{"store":')){
-    //     newMessages=messages.slice(1);
-    //   } else {
-    //     newMessages=messages.slice(1);
-    //   }
-    // }
-
-    // console.log("messages effect triggered", messages);
-
     if (messages && messages.length) {
       messages.forEach((message, index) => {
         if (message.role === "user") {
@@ -223,6 +210,7 @@ export default function Chat(props: ChatProps) {
           } h-[calc(100dvh-128px)]`}
         >
           <PersistenceExample
+            // setImage={setImage}
             org_slug={props.org_slug}
             org_id={props.orgId}
             dbChat={props.dbChat}

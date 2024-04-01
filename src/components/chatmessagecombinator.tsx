@@ -203,7 +203,7 @@ const ChatMessageCombinator = ({
                 return (
                   <div
                     key={msg.id || index}
-                    className={cn(idx === 0 ? "xl:w-[450px]" : "xl:w-[700px]")}
+                    className={cn(idx === 0 ? "xl:w-[450px]" : `xl:w-[700px]  ${onClickOpenChatSheet ? "min-[1239px]:ml-[-9px] min-[1239px]:mt-[70px]": ""}`)}
                   >
                     <ContextWrapper
                       append={append}
