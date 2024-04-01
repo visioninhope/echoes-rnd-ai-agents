@@ -186,7 +186,9 @@ const ChatMessageCombinator = ({
             <div
               key={index}
               className={cn(
-                "max-w-[700px] grid grid-cols-1 xl:max-w-none xl:grid-flow-col gap-2 mx-auto  ",
+                `max-w-[700px] grid grid-cols-1 xl:max-w-none xl:grid-flow-col  gap-2 mx-auto ${
+                  onClickOpenChatSheet ? "xl:grid-flow-row" : "xl:grid-flow-col"
+                } `,
               )}
             >
               {msgs.map((msg, idx) => {
@@ -203,15 +205,7 @@ const ChatMessageCombinator = ({
                 return (
                   <div
                     key={msg.id || index}
-                    className={cn(
-                      idx === 0
-                        ? "xl:w-[450px]"
-                        : `${
-                            onClickOpenChatSheet
-                              ? "min-[1239px]:ml-[-9px] min-[1239px]:mt-[70px]"
-                              : "xl:w-[700px]"
-                          }`,
-                    )}
+                    className={cn(idx === 0 ? "xl:w-[450px]" : "xl:w-[700px]")}
                   >
                     <ContextWrapper
                       append={append}

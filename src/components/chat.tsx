@@ -223,7 +223,7 @@ export default function Chat(props: ChatProps) {
         // {preferences.showSubRoll && <PersistenceExample />}
         <>
           <section onDrop={(acceptedFiles: any) => onDrop(acceptedFiles)}>
-            <div className="min-h-[400px] max-h-[auto]" {...getRootProps()}>
+            <div className={`min-h-[400px] max-h-[auto]`} {...getRootProps()}>
               <input {...getInputProps()} />
               <ChatMessageCombinator
                 onClickOpenChatSheet={props.onClickOpenChatSheet}
