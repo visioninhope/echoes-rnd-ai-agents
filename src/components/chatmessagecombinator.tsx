@@ -93,9 +93,9 @@ const ChatMessageCombinator = ({
       <div className="grid grid-cols-1 gap-2">
         <div className="max-w-[700px]  grid grid-cols-1 xl:max-w-none xl:grid-flow-col gap-2 mx-auto my-4">
           <div
-            className={`xl:w-[${
-              onClickOpenChatSheet ? "310px" : "450px"
-            }] flex justify-evenly`}
+            className={`xl:${
+              onClickOpenChatSheet ? "w-[310px]" : "w-[450px]"
+            } flex justify-evenly`}
           >
             {imageUrl && imageUrl !== "" ? (
               <Image
@@ -108,9 +108,9 @@ const ChatMessageCombinator = ({
             ) : null}
           </div>
           <div
-            className={`xl:w-[${
-              onClickOpenChatSheet ? "310px" : "700px"
-            }] flex-col mt-auto`}
+            className={`xl:${
+              onClickOpenChatSheet ? "w-[310px]" : "w-[700px]"
+            } flex-col mt-auto`}
           >
             {/* {confidential ? <Button><LockClosedIcon /></Button>: <Button variant="destructive"><LockOpen1Icon /></Button>} */}
             {chat_title !== "" ? (
@@ -203,7 +203,15 @@ const ChatMessageCombinator = ({
                 return (
                   <div
                     key={msg.id || index}
-                    className={cn(idx === 0 ? "xl:w-[450px]" : `xl:w-[700px]  ${onClickOpenChatSheet ? "min-[1239px]:ml-[-9px] min-[1239px]:mt-[70px]": ""}`)}
+                    className={cn(
+                      idx === 0
+                        ? "xl:w-[450px]"
+                        : `${
+                            onClickOpenChatSheet
+                              ? "min-[1239px]:ml-[-9px] min-[1239px]:mt-[70px]"
+                              : "xl:w-[700px]"
+                          }`,
+                    )}
                   >
                     <ContextWrapper
                       append={append}

@@ -11,7 +11,7 @@ import axios from "axios";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import { Save } from "lucide-react";
-import htmlToImage from 'html-to-image';
+import htmlToImage from "html-to-image";
 const PERSISTENCE_KEY = "example-3";
 
 interface PersistenceExampleProps {
@@ -27,7 +27,7 @@ interface PersistenceExampleProps {
 export default function PersistenceExample(props: PersistenceExampleProps) {
   const [imageSrc, setImageSrc] = useState<string>("");
   const [store] = useState(() =>
-    createTLStore({ shapeUtils: defaultShapeUtils })
+    createTLStore({ shapeUtils: defaultShapeUtils }),
   );
 
   const tlDrawFetcher = async () => {
@@ -50,7 +50,7 @@ export default function PersistenceExample(props: PersistenceExampleProps) {
           store.loadSnapshot(JSON.parse(data));
         }
       },
-    }
+    },
   );
   const [timer, setTimer] = useState(0);
   const [isAutoSaving, setIsAutoSaving] = useState(false);
@@ -75,7 +75,7 @@ export default function PersistenceExample(props: PersistenceExampleProps) {
 
   const save = async (
     content: string,
-    saving: Dispatch<SetStateAction<boolean>>
+    saving: Dispatch<SetStateAction<boolean>>,
   ) => {
     setTimer(0);
     saving(true);
@@ -92,7 +92,7 @@ export default function PersistenceExample(props: PersistenceExampleProps) {
     const formattedSnapshot = JSON.stringify(JSON.parse(snapshot), null, 2);
 
     // Create a new div element to contain the formatted snapshot
-    const snapshotContainer = document.createElement('pre');
+    const snapshotContainer = document.createElement("pre");
     snapshotContainer.textContent = formattedSnapshot;
 
     // Convert the div containing the snapshot to an image
@@ -146,7 +146,7 @@ const InsideOfEditorContext = ({
   isSaving: boolean;
   save: (
     content: string,
-    saving: Dispatch<SetStateAction<boolean>>
+    saving: Dispatch<SetStateAction<boolean>>,
   ) => Promise<void>;
 }) => {
   useEffect(() => {

@@ -115,23 +115,19 @@ const RoomWrapper = (props: Props) => {
             </div>
           ) : null}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-[auto,1fr] gap-1">
-          <div>
-            <Chat
-              // snapShotData={props.snapShotData}
-              type={props.type}
-              orgId={props.orgId}
-              dbChat={props.chat}
-              chatId={props.chatId}
-              uid={props.uid}
-              username={props.username}
-              org_slug={props.org_slug}
-              chatTitle={props.chatTitle}
-              imageUrl={props.imageUrl}
-              confidential={props.confidential}
-            />
-          </div>
-          {/* {props.type == "tldraw" && onClickOpenChatSheet ? (
+        <Chat
+          type={props.type}
+          orgId={props.orgId}
+          dbChat={props.chat}
+          chatId={props.chatId}
+          uid={props.uid}
+          username={props.username}
+          org_slug={props.org_slug}
+          chatTitle={props.chatTitle}
+          imageUrl={props.imageUrl}
+          confidential={props.confidential}
+        />
+        {/* {props.type == "tldraw" && onClickOpenChatSheet ? (
             <>
               <div className=" overflow-y-scroll overflow-x-hidden  h-[79vh] border border-zinc-400">
                 <Chat
@@ -150,7 +146,6 @@ const RoomWrapper = (props: Props) => {
               </div>
             </>
           ) : null} */}
-        </div>
       </div>
     </>
   );
