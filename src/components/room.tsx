@@ -26,7 +26,6 @@ interface Props {
   imageUrl: string;
   type: ChatType;
   confidential: number | null;
-  // snapShotData: ChatEntry[];
 }
 
 const RoomWrapper = (props: Props) => {

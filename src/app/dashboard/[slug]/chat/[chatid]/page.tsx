@@ -27,7 +27,6 @@ export default async function Page({
   }
 
   let chatlog: ChatLog = { log: [] };
-  // let snapShotData: SnapShot = { snapshot: [] };
   let fetchedChat: ChatSchema[] = [];
 
   if (sessionClaims.org_id) {
@@ -47,17 +46,14 @@ export default async function Page({
   console.log("msg", msg);
   if (fetchedChat.length === 1 && msg) {
     chatlog = JSON.parse(msg as string) as ChatLog;
-    // snapShotData = JSON.parse(msg as string) as SnapShot;
   }
-  console.log("chatlogData", chatlog.log);
-  // console.log("snapShotData page", snapShotData.snapshot);
+  // console.log("chatlogData", chatlog.log);
 
   return (
     <AblyChannelProvider clientId={`room_${params.chatid}`}>
       <RoomWrapper
         orgId={sessionClaims.org_id ? sessionClaims.org_id : ""}
         chat={chatlog.log}
-        // snapShotData={snapShotData.snapshot}
         chatId={params.chatid}
         uid={userId as string}
         username={fullname}

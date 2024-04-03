@@ -76,6 +76,7 @@
     "algoliasearch": "^4.20.0",
     "axios": "^1.6.1",
     "canvas": "^2.11.2",
+    "canvas-size": "^2.0.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "cmdk": "^0.2.0",
@@ -120,6 +121,7 @@
     "zustand": "^4.4.6"
   },
   "devDependencies": {
+    "@types/canvas-size": "^1.2.2",
     "@types/react-mic": "12.4.3",
     "@types/react-syntax-highlighter": "15.5.7",
     "autoprefixer": "10.4.14",

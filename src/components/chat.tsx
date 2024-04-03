@@ -41,6 +41,7 @@ export default function Chat(props: ChatProps) {
   const [imageName, setImageName] = useState<string>("");
   const queryClient = useQueryClient();
 
+  //  console.log("ImageIn front", image);
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles && acceptedFiles[0]?.type.startsWith("image/")) {
       setImage(acceptedFiles);
@@ -202,13 +203,7 @@ export default function Chat(props: ChatProps) {
   return (
     <div className="flex flex-col gap-1 mx-auto">
       {props.type === "tldraw" && !props.onClickOpenChatSheet ? (
-        <div
-          className={`${
-            !props.onClickOpenChatSheet
-              ? "w-[calc(100dvw-40px)]"
-              : "w-[calc(100dvw-50vw)]"
-          } h-[calc(100dvh-128px)]`}
-        >
+        <div className=" w-[calc(100dvw-40px)] h-[calc(100dvh-128px)]">
           <PersistenceExample
             // setImage={setImage}
             org_slug={props.org_slug}
