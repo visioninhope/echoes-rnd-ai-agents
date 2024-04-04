@@ -24,6 +24,8 @@ interface PersistenceExampleProps {
   // setImage: Dispatch<string>;
 }
 export default function PersistenceExample(props: PersistenceExampleProps) {
+  const editor = useEditor();
+  console.log("editor", editor);
   const [imageSrc, setImageSrc] = useState<string>("");
   const [store] = useState(() =>
     createTLStore({ shapeUtils: defaultShapeUtils }),
@@ -88,41 +90,24 @@ export default function PersistenceExample(props: PersistenceExampleProps) {
 
   const parsedSnapshot = JSON.parse(JSON.stringify(store.getSnapshot()));
   const ids: any = [];
+  console.log("ids", ids);
   for (const key in parsedSnapshot.store) {
     if (key.startsWith("shape:")) {
       ids.push(parsedSnapshot.store[key].id);
     }
   }
-  const format = "png";
+  const format = "svg";
   const name = "tldrawImage";
 
   const handleSave = async () => {
     const snapshot = JSON.stringify(store.getSnapshot());
-    const canvas: any = document.createElement("canvas");
-    const ctx: any = canvas.getContext("2d");
-
-    // Set canvas size
-    canvas.width = 800; // Width of the canvas/image
-    canvas.height = 600; // Height of the canvas/image
-
-    // Optional: Set styles
-    ctx.fillStyle = "#FFF"; // Background color
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.font = "16px Arial"; // Text font
-    ctx.fillStyle = "#000"; // Text color
-    // Insert the JSON string onto the canvas
-    ctx.drawImage(snapshot, 10, 30); // Position the text on the canvas
-
-    // Convert the canvas to an image
-    const image = canvas.toDataURL("image/png");
-    console.log("Image:", image);
-    // console.log("snapshot", snapshot);
+    console.log("snapshot", parsedSnapshot);
+    // const exportImage = await exportAs(editor, ids, format, name );
     await save(snapshot, setIsSaving);
   };
 
   return (
     <div className=" relative tldraw__editor tl-theme__dark h-full w-full">
-      <canvas id="canvas" width="400" height="300"></canvas>
       <Tldraw className="tl-theme__dark z-10" inferDarkMode store={store}>
         <InsideOfEditorContext
           timer={timer}
