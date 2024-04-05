@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Dispatch } from "react";
 import { AIType, ChatType } from "@/lib/types";
 import InputBar from "@/components/inputBar";
 import { Message, useChat } from "ai/react";
@@ -26,6 +26,8 @@ interface ChatProps {
   type: ChatType;
   confidential: number | null;
   onClickOpenChatSheet?: boolean;
+  setTldrawImage: Dispatch<any>;
+  tldrawImage: any;
 }
 
 export default function Chat(props: ChatProps) {
@@ -39,9 +41,11 @@ export default function Chat(props: ChatProps) {
   const [image, setImage] = useState<File[]>([]); // Initialize state
   const [imageUrl, setImageUrl] = useState<string>("");
   const [imageName, setImageName] = useState<string>("");
+  const [tldrawImageUrl, setTlDrawImageUrl] = useState<any>("");
   const queryClient = useQueryClient();
 
-  //  console.log("ImageIn front", image);
+  // console.log("ImageIn front", image);
+
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles && acceptedFiles[0]?.type.startsWith("image/")) {
       setImage(acceptedFiles);
@@ -90,6 +94,16 @@ export default function Chat(props: ChatProps) {
     initialData: props.dbChat,
     refetchOnWindowFocus: false,
   });
+  console.log("tldrawimageUrl", tldrawImageUrl);
+  useEffect(() => {
+    if (typeof props.setTldrawImage === "function") {
+      props.setTldrawImage(tldrawImageUrl);
+    } else if (props.tldrawImage) {
+      setDropzoneActive(true);
+      setImageUrl(props.tldrawImage);
+    }
+  }, [tldrawImageUrl !== ""]);
+
   // let updatedChatsData: Message[] = [];
   // if ( chatsData[0]?.content.startsWith('{"store":')) {
   //   updatedChatsData = chatsData.slice(1);
@@ -129,7 +143,7 @@ export default function Chat(props: ChatProps) {
     sendExtraMessageFields: true,
   });
 
-  console.log("messages", messages);
+  // console.log("messages", messages);
 
   useEffect(() => {
     let mainArray: Message[][] = [];
@@ -205,7 +219,8 @@ export default function Chat(props: ChatProps) {
       {props.type === "tldraw" && !props.onClickOpenChatSheet ? (
         <div className=" w-[calc(100dvw-40px)] h-[calc(100dvh-128px)]">
           <PersistenceExample
-            // setImage={setImage}
+            setTldrawImageUrl={setTlDrawImageUrl}
+            settldrawImage={setImage}
             org_slug={props.org_slug}
             org_id={props.orgId}
             dbChat={props.dbChat}
@@ -254,12 +269,12 @@ export default function Chat(props: ChatProps) {
                   setDropzoneActive(false);
                 }}
               >
+                hello{imageUrl}
                 <img
                   src={imageUrl}
                   alt="Preview"
                   className="w-full h-auto rounded-md relative inset-0 hover:opacity-40 cursor-pointer"
                 />
-
                 <X className="absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] pointer-events-none" />
               </div>
             </>

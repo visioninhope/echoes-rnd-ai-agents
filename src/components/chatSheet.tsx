@@ -31,7 +31,8 @@ interface Props {
 export default function ChatSheet(props: Props) {
   const [onClickOpenChatSheet, setOnClickOpenChatSheet] =
     useState<boolean>(false);
-
+  const [tldrawImage, setTldrawImage] = useState<string>(""); // Assuming tldrawImage is a string
+  console.log("tldrawimage", tldrawImage);
   const { channel } = useChannel("room_5", (message) => {
     console.log(message);
   });
@@ -77,6 +78,8 @@ export default function ChatSheet(props: Props) {
             </SheetTitle>
             <SheetFooter>
               <Chat
+                // tldrawImage={tldrawImage}
+                // setTldrawImage={setTldrawImage}
                 onClickOpenChatSheet={onClickOpenChatSheet}
                 type={props.type}
                 orgId={props.orgId}

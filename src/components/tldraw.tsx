@@ -4,6 +4,9 @@ import {
   createTLStore,
   defaultShapeUtils,
   useEditor,
+  exportToBlob,
+  Editor,
+  TLShapeId,
 } from "@tldraw/tldraw";
 import "@tldraw/tldraw/tldraw.css";
 import { Message } from "ai";
@@ -21,12 +24,13 @@ interface PersistenceExampleProps {
   chatId: string;
   uid: string;
   dbChat: Message[];
-  // setImage: Dispatch<string>;
+  settldrawImage: Dispatch<any>;
+  setTldrawImageUrl: Dispatch<any>;
 }
+
 export default function PersistenceExample(props: PersistenceExampleProps) {
-  const editor = useEditor();
-  console.log("editor", editor);
-  const [imageSrc, setImageSrc] = useState<string>("");
+  const [editor, setEditor] = useState<any>();
+  const [url, setUrl] = useState("");
   const [store] = useState(() =>
     createTLStore({ shapeUtils: defaultShapeUtils }),
   );
@@ -88,28 +92,58 @@ export default function PersistenceExample(props: PersistenceExampleProps) {
     saving(false);
   };
 
-  const parsedSnapshot = JSON.parse(JSON.stringify(store.getSnapshot()));
-  const ids: any = [];
-  console.log("ids", ids);
-  for (const key in parsedSnapshot.store) {
-    if (key.startsWith("shape:")) {
-      ids.push(parsedSnapshot.store[key].id);
-    }
-  }
-  const format = "svg";
-  const name = "tldrawImage";
-
   const handleSave = async () => {
     const snapshot = JSON.stringify(store.getSnapshot());
-    console.log("snapshot", parsedSnapshot);
-    // const exportImage = await exportAs(editor, ids, format, name );
     await save(snapshot, setIsSaving);
+  };
+  const handleExport = async () => {
+    const parsedSnapshot = JSON.parse(JSON.stringify(store.getSnapshot()));
+    const ids: TLShapeId[] = [];
+    console.log("ids", ids);
+    for (const key in parsedSnapshot.store) {
+      if (key.startsWith("shape:")) {
+        ids.push(parsedSnapshot.store[key].id);
+      }
+    }
+    const format: any = "png";
+    // const name: any = "TldrawImage";
+    const exportToBlo = exportToBlob({ editor, format, ids });
+    console.log(
+      "exportToBlo",
+      exportToBlo.then((res) => {
+        console.log("res", res);
+        const path = `tldraw-${Date.now()}.png`; // Your desired path
+        const fileType = "image/png"; // Example file type, adjust as needed
+        const filename = `tldraw-${Date.now()}.png`;
+        const file = new File([res], filename, { type: fileType });
+        setUrl(URL.createObjectURL(file));
+        console.log("file", file);
+        const fileArray = [file]; // Array containing the File object
+        props.settldrawImage(fileArray);
+        props.setTldrawImageUrl(URL.createObjectURL(file));
+      }),
+    );
   };
 
   return (
     <div className=" relative tldraw__editor tl-theme__dark h-full w-full">
+      {url ? (
+        <>
+          <div>
+            <p>Image preview For testing</p>
+            <img
+              onClick={() => setUrl("")}
+              className="cursor-pointer"
+              src={url}
+              height={100}
+              width={100}
+            ></img>
+          </div>
+        </>
+      ) : null}
       <Tldraw className="tl-theme__dark z-10" inferDarkMode store={store}>
         <InsideOfEditorContext
+          setEditor={setEditor}
           timer={timer}
           setTimer={setTimer}
           isAutoSaving={isAutoSaving}
@@ -128,6 +162,13 @@ export default function PersistenceExample(props: PersistenceExampleProps) {
           {isAutoSaving ? "auto saving" : isSaving ? "saving" : "save"}
         </span>
       </Button>
+      <Button
+        onClick={() => handleExport()}
+        variant="outline"
+        className="absolute top-0 right-0  sm:right-[43%] z-50 sm:translate-x-[50%]"
+      >
+        <span className="hidden sm:inline">Export</span>
+      </Button>
     </div>
   );
 }
@@ -139,6 +180,7 @@ const InsideOfEditorContext = ({
   setIsAutoSaving,
   isSaving,
   save,
+  setEditor,
 }: {
   timer: number;
   setTimer: Dispatch<SetStateAction<number>>;
@@ -149,6 +191,7 @@ const InsideOfEditorContext = ({
     content: string,
     saving: Dispatch<SetStateAction<boolean>>,
   ) => Promise<void>;
+  setEditor: Dispatch<SetStateAction<Editor>>;
 }) => {
   useEffect(() => {
     if (timer >= 15) {
@@ -164,8 +207,12 @@ const InsideOfEditorContext = ({
   }, [timer]);
 
   const editor = useEditor();
+  // console.log("editor", editor);
+  // const exportImage = exportAs(editor, ids, format, name);
+  // console.log("exportImage", exportImage)
 
   useEffect(() => {
+    setEditor(editor);
     const listener = editor.store.listen((snapshot) => {
       // after every 15 secs, save the snapshot
       if (timer === 15 && !isAutoSaving && !isSaving) {
