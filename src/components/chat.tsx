@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback, Dispatch } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { AIType, ChatType } from "@/lib/types";
 import InputBar from "@/components/inputBar";
 import { Message, useChat } from "ai/react";
@@ -26,8 +26,8 @@ interface ChatProps {
   type: ChatType;
   confidential: number | null;
   onClickOpenChatSheet?: boolean;
-  setTldrawImage: Dispatch<any>;
-  tldrawImage: any;
+  // setTldrawImage: Dispatch<any>;
+  // tldrawImage: any;
 }
 
 export default function Chat(props: ChatProps) {
@@ -95,14 +95,14 @@ export default function Chat(props: ChatProps) {
     refetchOnWindowFocus: false,
   });
   console.log("tldrawimageUrl", tldrawImageUrl);
-  useEffect(() => {
-    if (typeof props.setTldrawImage === "function") {
-      props.setTldrawImage(tldrawImageUrl);
-    } else if (props.tldrawImage) {
-      setDropzoneActive(true);
-      setImageUrl(props.tldrawImage);
-    }
-  }, [tldrawImageUrl !== ""]);
+  // useEffect(() => {
+  //   if (typeof props.setTldrawImage === "function") {
+  //     props.setTldrawImage(tldrawImageUrl);
+  //   } else if (props.tldrawImage) {
+  //     setDropzoneActive(true);
+  //     setImageUrl(props.tldrawImage);
+  //   }
+  // }, [tldrawImageUrl !== ""]);
 
   // let updatedChatsData: Message[] = [];
   // if ( chatsData[0]?.content.startsWith('{"store":')) {
