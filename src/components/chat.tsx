@@ -13,6 +13,7 @@ import { toast } from "./ui/use-toast";
 import { getUserIdList } from "./chatusersavatars";
 import { useDropzone } from "react-dropzone";
 import { X } from "lucide-react";
+import { useImageState } from "@/store/tlDrawImage";
 
 interface ChatProps {
   orgId: string;
@@ -26,13 +27,17 @@ interface ChatProps {
   type: ChatType;
   confidential: number | null;
   onClickOpenChatSheet?: boolean;
-  // setTldrawImage: Dispatch<any>;
-  // tldrawImage: any;
 }
 
 export default function Chat(props: ChatProps) {
   // const { toast} = useToast()
-
+  const {
+    tldrawImageUrl,
+    tlDrawImage,
+    setTlDrawImage,
+    settldrawImageUrl,
+    onClickOpenChatSheet,
+  } = useImageState();
   const [choosenAI, setChoosenAI] = useState<AIType>("universal");
   const [isChatCompleted, setIsChatCompleted] = useState<boolean>(false);
   const [calculatedMessages, setCalculatedMessages] = useState<Message[][]>([]);
@@ -41,10 +46,7 @@ export default function Chat(props: ChatProps) {
   const [image, setImage] = useState<File[]>([]); // Initialize state
   const [imageUrl, setImageUrl] = useState<string>("");
   const [imageName, setImageName] = useState<string>("");
-  const [tldrawImageUrl, setTlDrawImageUrl] = useState<any>("");
   const queryClient = useQueryClient();
-
-  // console.log("ImageIn front", image);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles && acceptedFiles[0]?.type.startsWith("image/")) {
@@ -95,14 +97,13 @@ export default function Chat(props: ChatProps) {
     refetchOnWindowFocus: false,
   });
   console.log("tldrawimageUrl", tldrawImageUrl);
-  // useEffect(() => {
-  //   if (typeof props.setTldrawImage === "function") {
-  //     props.setTldrawImage(tldrawImageUrl);
-  //   } else if (props.tldrawImage) {
-  //     setDropzoneActive(true);
-  //     setImageUrl(props.tldrawImage);
-  //   }
-  // }, [tldrawImageUrl !== ""]);
+  useEffect(() => {
+    if (tldrawImageUrl) {
+      setDropzoneActive(true);
+      setImageUrl(tldrawImageUrl);
+      setImage(tlDrawImage);
+    }
+  }, [tlDrawImage]);
 
   // let updatedChatsData: Message[] = [];
   // if ( chatsData[0]?.content.startsWith('{"store":')) {
@@ -142,8 +143,6 @@ export default function Chat(props: ChatProps) {
     },
     sendExtraMessageFields: true,
   });
-
-  // console.log("messages", messages);
 
   useEffect(() => {
     let mainArray: Message[][] = [];
@@ -187,7 +186,6 @@ export default function Chat(props: ChatProps) {
   });
 
   const userIds = getUserIdList(props.dbChat);
-  // console.log("props.dbChat:", props.dbChat);
 
   const {
     mutate: toogleConfidentiality,
@@ -213,14 +211,11 @@ export default function Chat(props: ChatProps) {
       });
     },
   });
-  // console.log("snapShotData frontend", props.snapShotData);
   return (
     <div className="flex flex-col gap-1 mx-auto">
       {props.type === "tldraw" && !props.onClickOpenChatSheet ? (
         <div className=" w-[calc(100dvw-40px)] h-[calc(100dvh-128px)]">
           <PersistenceExample
-            setTldrawImageUrl={setTlDrawImageUrl}
-            settldrawImage={setImage}
             org_slug={props.org_slug}
             org_id={props.orgId}
             dbChat={props.dbChat}
@@ -267,9 +262,10 @@ export default function Chat(props: ChatProps) {
                 onClick={() => {
                   setInput("");
                   setDropzoneActive(false);
+                  settldrawImageUrl("");
+                  setTlDrawImage("");
                 }}
               >
-                hello{imageUrl}
                 <img
                   src={imageUrl}
                   alt="Preview"

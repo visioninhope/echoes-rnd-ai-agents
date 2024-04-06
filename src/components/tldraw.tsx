@@ -14,6 +14,7 @@ import axios from "axios";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import { Save } from "lucide-react";
+import { useImageState } from "@/store/tlDrawImage";
 const PERSISTENCE_KEY = "example-3";
 
 interface PersistenceExampleProps {
@@ -24,13 +25,16 @@ interface PersistenceExampleProps {
   chatId: string;
   uid: string;
   dbChat: Message[];
-  settldrawImage: Dispatch<any>;
-  setTldrawImageUrl: Dispatch<any>;
 }
 
 export default function PersistenceExample(props: PersistenceExampleProps) {
   const [editor, setEditor] = useState<any>();
-  const [url, setUrl] = useState("");
+  const {
+    settldrawImageUrl,
+    setTlDrawImage,
+    setOnClickOpenChatSheet,
+    tlDrawImage,
+  } = useImageState();
   const [store] = useState(() =>
     createTLStore({ shapeUtils: defaultShapeUtils }),
   );
@@ -97,6 +101,7 @@ export default function PersistenceExample(props: PersistenceExampleProps) {
     await save(snapshot, setIsSaving);
   };
   const handleExport = async () => {
+    setOnClickOpenChatSheet(true);
     const parsedSnapshot = JSON.parse(JSON.stringify(store.getSnapshot()));
     const ids: TLShapeId[] = [];
     console.log("ids", ids);
@@ -106,41 +111,20 @@ export default function PersistenceExample(props: PersistenceExampleProps) {
       }
     }
     const format: any = "png";
-    // const name: any = "TldrawImage";
     const exportToBlo = exportToBlob({ editor, format, ids });
-    console.log(
-      "exportToBlo",
-      exportToBlo.then((res) => {
-        console.log("res", res);
-        const path = `tldraw-${Date.now()}.png`; // Your desired path
-        const fileType = "image/png"; // Example file type, adjust as needed
-        const filename = `tldraw-${Date.now()}.png`;
-        const file = new File([res], filename, { type: fileType });
-        setUrl(URL.createObjectURL(file));
-        console.log("file", file);
-        const fileArray = [file]; // Array containing the File object
-        props.settldrawImage(fileArray);
-        props.setTldrawImageUrl(URL.createObjectURL(file));
-      }),
-    );
+    exportToBlo.then((res) => {
+      const fileType = "image/png"; // Example file type, adjust as needed
+      const filename = `tldraw-${Date.now()}.png`;
+      const file = new File([res], filename, { type: fileType });
+      const fileArray = [file];
+      setTlDrawImage(fileArray);
+      // Array containing the File object
+      settldrawImageUrl(URL.createObjectURL(file));
+    });
   };
 
   return (
     <div className=" relative tldraw__editor tl-theme__dark h-full w-full">
-      {url ? (
-        <>
-          <div>
-            <p>Image preview For testing</p>
-            <img
-              onClick={() => setUrl("")}
-              className="cursor-pointer"
-              src={url}
-              height={100}
-              width={100}
-            ></img>
-          </div>
-        </>
-      ) : null}
       <Tldraw className="tl-theme__dark z-10" inferDarkMode store={store}>
         <InsideOfEditorContext
           setEditor={setEditor}
@@ -165,9 +149,13 @@ export default function PersistenceExample(props: PersistenceExampleProps) {
       <Button
         onClick={() => handleExport()}
         variant="outline"
-        className="absolute top-0 right-0  sm:right-[43%] z-50 sm:translate-x-[50%]"
+        className={`absolute top-0 right-0  ${
+          isAutoSaving ? "sm:right-[43%]" : "sm:right-[44%]"
+        } z-50 sm:translate-x-[50%]`}
       >
-        <span className="hidden sm:inline">Export</span>
+        <span className="hidden sm:inline">
+          {tlDrawImage ? "Exported" : "Export"}
+        </span>
       </Button>
     </div>
   );
@@ -207,9 +195,6 @@ const InsideOfEditorContext = ({
   }, [timer]);
 
   const editor = useEditor();
-  // console.log("editor", editor);
-  // const exportImage = exportAs(editor, ids, format, name);
-  // console.log("exportImage", exportImage)
 
   useEffect(() => {
     setEditor(editor);
