@@ -1,16 +1,15 @@
+import React, { useRef } from "react";
 import {
   Sheet,
   SheetContent,
   SheetFooter,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "./button";
-import { MessageCircle } from "lucide-react";
+import { ArrowDown } from "lucide-react";
 import { ChatEntry, ChatType } from "@/lib/types";
 import Chat from "./chat";
-// import usePreferences from "@/store/userPreferences";
 import { useChannel, usePresence } from "ably/react";
 import Chatusers, { getUserIdList } from "@/components/chatusersavatars";
 import { useImageState } from "@/store/tlDrawImage";
@@ -28,8 +27,10 @@ interface Props {
   confidential: number | null;
 }
 
-export default function ChatSheet(props: Props) {
-  const { setOnClickOpenChatSheet, onClickOpenChatSheet } = useImageState();
+const ChatSheet: React.FC<Props> = (props) => {
+  const messageEndRef = useRef<any>(null);
+  const { setOnClickOpenChatSheet, onClickOpenChatSheet, tlDrawImage } =
+    useImageState();
   const { channel } = useChannel("room_5", (message) => {
     console.log(message);
   });
@@ -52,19 +53,43 @@ export default function ChatSheet(props: Props) {
     (v, i, a) => a.indexOf(v) === i,
   );
 
+  // useEffect(() => {
+  //   console.log("scroll")
+  //   messageEndRef.current?.scrollIntoView();
+  //   window.scrollTo(0, document.body.scrollHeight);
+  // }, [tlDrawImage]);
+
+  // const onClickOpenChatSheetRef = useRef(onClickOpenChatSheet);
+
+  // useEffect(() => {
+  //   // Check if onClickOpenChatSheet has changed
+  //   if (onClickOpenChatSheet) {
+  //     // If onClickOpenChatSheet is true, trigger the button click
+  //     const button = document.getElementById('scrollButton');
+  //     if (button) {
+  //       button.click();
+  //     }
+  //   }
+  // }, [onClickOpenChatSheet]);
+
   return (
     <div>
-      <Sheet>
-        <SheetTrigger>
+      <Sheet open={onClickOpenChatSheet} onOpenChange={setOnClickOpenChatSheet}>
+        {/* <SheetTrigger>
           <Button
             onClick={() => setOnClickOpenChatSheet(true)}
             variant="outline"
           >
             <MessageCircle className="h-4 w-4" />
           </Button>
-        </SheetTrigger>
-        <SheetContent className=" min-w-[300px] overflow-x-hidden overflow-y-scroll">
+        </SheetTrigger> */}
+        <SheetContent className="scroll-smooth min-w-[300px] overflow-x-hidden ">
           <SheetHeader>
+            <a href="#scroll" className="ml-[50%]">
+              <Button id="scrollButton" variant="outline">
+                <ArrowDown className="h-4 w-4" />
+              </Button>
+            </a>
             <SheetTitle>
               <Chatusers
                 allPresenceIds={uniqueIds}
@@ -88,9 +113,12 @@ export default function ChatSheet(props: Props) {
                 confidential={props.confidential}
               />
             </SheetFooter>
+            <div id="scroll" ref={messageEndRef} />
           </SheetHeader>
         </SheetContent>
       </Sheet>
     </div>
   );
-}
+};
+
+export default ChatSheet;

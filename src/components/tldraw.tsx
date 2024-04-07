@@ -7,7 +7,7 @@ import {
   exportToBlob,
   Editor,
   TLShapeId,
-} from "@tldraw/tldraw";
+} from "tldraw";
 import "@tldraw/tldraw/tldraw.css";
 import { Message } from "ai";
 import axios from "axios";
@@ -150,11 +150,11 @@ export default function PersistenceExample(props: PersistenceExampleProps) {
         onClick={() => handleExport()}
         variant="outline"
         className={`absolute top-0 right-0  ${
-          isAutoSaving ? "sm:right-[43%]" : "sm:right-[44%]"
+          isAutoSaving ? "sm:right-[42%]" : "sm:right-[43%]"
         } z-50 sm:translate-x-[50%]`}
       >
         <span className="hidden sm:inline">
-          {tlDrawImage ? "Exported" : "Export"}
+          {tlDrawImage ? "added to chat" : "add to chat"}
         </span>
       </Button>
     </div>

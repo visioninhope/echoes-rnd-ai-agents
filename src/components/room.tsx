@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { ChatEntry, ChatType } from "@/lib/types";
 import { Chat as ChatSchema } from "@/lib/db/schema";
-
+import { MessageCircle } from "lucide-react";
 import { Button } from "@/components/button";
 import Link from "next/link";
 import Chatusers, { getUserIdList } from "@/components/chatusersavatars";
@@ -12,6 +12,8 @@ import { Eye, EyeOff } from "lucide-react";
 import usePreferences from "@/store/userPreferences";
 import { useChannel, usePresence } from "ably/react";
 import ChatSheet from "./chatSheet";
+import { useImageState } from "@/store/tlDrawImage";
+
 let chatToMap: any = "";
 
 interface Props {
@@ -29,8 +31,9 @@ interface Props {
 }
 
 const RoomWrapper = (props: Props) => {
-  const [onClickOpenChatSheet, setOnClickOpenChatSheet] =
-    useState<boolean>(false);
+  const { setOnClickOpenChatSheet, onClickOpenChatSheet, tlDrawImage } =
+    useImageState();
+
   const [showLoading, setShowLoading] = useState(false);
   const { channel } = useChannel("room_5", (message) => {
     console.log(message);
@@ -94,11 +97,12 @@ const RoomWrapper = (props: Props) => {
           </Button>
           {props.type == "tldraw" ? (
             <div>
-              {/* <Button
-                onClick={() => setOnClickOpenChatSheet(!onClickOpenChatSheet)}
+              <Button
+                onClick={() => setOnClickOpenChatSheet(true)}
+                variant="outline"
               >
-                Chat
-              </Button> */}
+                <MessageCircle className="h-4 w-4" />
+              </Button>
               <ChatSheet
                 type={props.type}
                 orgId={props.orgId}

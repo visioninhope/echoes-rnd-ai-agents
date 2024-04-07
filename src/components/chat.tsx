@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { AIType, ChatType } from "@/lib/types";
 import InputBar from "@/components/inputBar";
 import { Message, useChat } from "ai/react";
@@ -30,6 +30,8 @@ interface ChatProps {
 }
 
 export default function Chat(props: ChatProps) {
+  const ref = useRef<HTMLDivElement>(null);
+
   // const { toast} = useToast()
   const {
     tldrawImageUrl,
@@ -104,6 +106,21 @@ export default function Chat(props: ChatProps) {
       setImage(tlDrawImage);
     }
   }, [tlDrawImage]);
+
+  useEffect(() => {
+    if (!onClickOpenChatSheet) {
+      settldrawImageUrl("");
+      setTlDrawImage("");
+    }
+  }, [onClickOpenChatSheet]);
+  // components/MessageList.tsx
+
+  useEffect(() => {
+    ref.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    });
+  }, [onClickOpenChatSheet]);
 
   // let updatedChatsData: Message[] = [];
   // if ( chatsData[0]?.content.startsWith('{"store":')) {
@@ -306,6 +323,7 @@ export default function Chat(props: ChatProps) {
             isLoading={isLoading}
             chattype={props.type}
           />
+          <div ref={ref} />
         </>
       )}
     </div>
