@@ -8,7 +8,7 @@ import {
   Editor,
   TLShapeId,
 } from "tldraw";
-import "@tldraw/tldraw/tldraw.css";
+import "tldraw/tldraw.css";
 import { Message } from "ai";
 import axios from "axios";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
