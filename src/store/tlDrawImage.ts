@@ -22,7 +22,7 @@ export const useImageState = create<ImageState>()(
       setTlDrawImage: (image: any) => {
         set({ tlDrawImage: image });
       },
-      setOnClickOpenChatSheet: (value: boolean) => {
+      setOnClickOpenChatSheet: (value: boolean = false) => {
         set({ onClickOpenChatSheet: value });
       },
     }),

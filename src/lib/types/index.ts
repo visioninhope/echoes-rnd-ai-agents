@@ -15,6 +15,9 @@ export type ChatEntry = {
 export type ChatLog = {
   log: Array<ChatEntry>;
 };
+export type SnapShot = {
+  tldraw_snapshot: Array<ChatEntry>;
+};
 
 export const chattype = z.enum(["chat", "tldraw", "rag", "ella"]);
 export type ChatType = z.infer<typeof chattype>;
