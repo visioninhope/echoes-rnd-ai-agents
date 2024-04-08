@@ -39,7 +39,7 @@ export default async function Page({
           eq(chats.user_id, sessionClaims.org_id),
         ),
       )
-      .limit(1)
+      .limit(2)
       .all();
   }
   const msg = fetchedChat[0]?.messages;
