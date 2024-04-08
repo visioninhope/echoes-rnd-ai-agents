@@ -12,10 +12,11 @@ import "tldraw/tldraw.css";
 import { Message } from "ai";
 import axios from "axios";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Button } from "@/components/button";
-import { Save } from "lucide-react";
+import { Save, UploadCloud } from "lucide-react";
 import { useImageState } from "@/store/tlDrawImage";
 const PERSISTENCE_KEY = "example-3";
+import { fromTheme } from "tailwind-merge";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface PersistenceExampleProps {
   initialData?: any;
@@ -38,7 +39,7 @@ export default function PersistenceExample(props: PersistenceExampleProps) {
   const [store] = useState(() =>
     createTLStore({ shapeUtils: defaultShapeUtils }),
   );
-
+  console.log("theme", fromTheme);
   const tlDrawFetcher = async () => {
     const res = await axios.get(`/api/chats/${props.chatId}`);
     const chats = res.data.chats as Message[];
@@ -136,27 +137,31 @@ export default function PersistenceExample(props: PersistenceExampleProps) {
           save={save}
         />
       </Tldraw>
-      <Button
-        onClick={() => handleSave()}
-        variant="outline"
-        className="absolute top-0 right-0 sm:right-[50%] z-50 sm:translate-x-[50%]"
-      >
-        <Save className="sm:hidden h-4 w-4" />
-        <span className="hidden sm:inline">
-          {isAutoSaving ? "auto saving" : isSaving ? "saving" : "save"}
-        </span>
-      </Button>
-      <Button
-        onClick={() => handleExport()}
-        variant="outline"
-        className={`absolute top-0 right-0  ${
-          isAutoSaving ? "sm:right-[42%]" : "sm:right-[43%]"
-        } z-50 sm:translate-x-[50%]`}
-      >
-        <span className="hidden sm:inline">
-          {tlDrawImage ? "added to chat" : "add to chat"}
-        </span>
-      </Button>
+
+      <Tabs className="absolute top-0 right-0 sm:right-[45%] z-50 sm:translate-x-[50%] sm:top-0">
+        <TabsList>
+          <TabsTrigger
+            onClick={() => handleSave()}
+            value="org"
+            className="flex gap-2 items-center"
+          >
+            <Save className="sm:hidden h-4 w-4" />
+            <span className="hidden sm:inline">
+              {isAutoSaving ? "auto saving" : isSaving ? "saving" : "save"}
+            </span>
+          </TabsTrigger>
+          <TabsTrigger
+            onClick={() => handleExport()}
+            value="me"
+            className="flex gap-2 items-center"
+          >
+            <UploadCloud className="sm:hidden h-4 w-4" />
+            <span className="hidden sm:inline">
+              {tlDrawImage ? "added to chat" : "add to chat"}
+            </span>
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
     </div>
   );
 }

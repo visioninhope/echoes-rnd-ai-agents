@@ -85,38 +85,40 @@ const RoomWrapper = (props: Props) => {
           </div>
 
           <div className="grow" />
-          <Button
-            onClick={() => preferences.toggleShowSubRoll()}
-            variant="outline"
-          >
-            {preferences.showSubRoll ? (
-              <Eye className="h-4 w-4" />
-            ) : (
-              <EyeOff className="h-4 w-4" />
-            )}
-          </Button>
-          {props.type == "tldraw" ? (
-            <div>
-              <Button
-                onClick={() => setOnClickOpenChatSheet(true)}
-                variant="outline"
-              >
-                <MessageCircle className="h-4 w-4" />
-              </Button>
-              <ChatSheet
-                type={props.type}
-                orgId={props.orgId}
-                dbChat={props.chat}
-                chatId={props.chatId}
-                uid={props.uid}
-                username={props.username}
-                org_slug={props.org_slug}
-                chatTitle={props.chatTitle}
-                imageUrl={props.imageUrl}
-                confidential={props.confidential}
-              />
-            </div>
-          ) : null}
+          <div className="flex gap-2">
+            <Button
+              onClick={() => preferences.toggleShowSubRoll()}
+              variant="outline"
+            >
+              {preferences.showSubRoll ? (
+                <Eye className="h-4 w-4" />
+              ) : (
+                <EyeOff className="h-4 w-4" />
+              )}
+            </Button>
+            {props.type == "tldraw" ? (
+              <div>
+                <Button
+                  onClick={() => setOnClickOpenChatSheet(true)}
+                  variant="outline"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                </Button>
+                <ChatSheet
+                  type={props.type}
+                  orgId={props.orgId}
+                  dbChat={props.chat}
+                  chatId={props.chatId}
+                  uid={props.uid}
+                  username={props.username}
+                  org_slug={props.org_slug}
+                  chatTitle={props.chatTitle}
+                  imageUrl={props.imageUrl}
+                  confidential={props.confidential}
+                />
+              </div>
+            ) : null}
+          </div>
         </div>
         <Chat
           type={props.type}
