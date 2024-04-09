@@ -1,4 +1,3 @@
-import React, { useRef } from "react";
 import {
   Sheet,
   SheetContent,
@@ -49,7 +48,6 @@ const ChatSheet: React.FC<Props> = (props) => {
   const uniqueIds = [...dbIds, ...liveUserIds].filter(
     (v, i, a) => a.indexOf(v) === i,
   );
-
 
   return (
     <div>
