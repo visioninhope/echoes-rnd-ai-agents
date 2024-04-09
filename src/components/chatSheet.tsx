@@ -26,7 +26,6 @@ interface Props {
 }
 
 const ChatSheet: React.FC<Props> = (props) => {
-  const messageEndRef = useRef<any>(null);
   const { setOnClickOpenChatSheet, onClickOpenChatSheet, tlDrawImage } =
     useImageState();
   const { channel } = useChannel("room_5", (message) => {
@@ -51,13 +50,6 @@ const ChatSheet: React.FC<Props> = (props) => {
     (v, i, a) => a.indexOf(v) === i,
   );
 
-  const sheetContentRef = useRef<HTMLDivElement>(null);
-  const scrollToBottom = () => {
-    if (sheetContentRef.current) {
-      sheetContentRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-    return null;
-  };
 
   return (
     <div>
@@ -88,8 +80,6 @@ const ChatSheet: React.FC<Props> = (props) => {
               />
             </SheetFooter>
           </SheetHeader>
-          <div className="h-0" ref={sheetContentRef} />
-          {scrollToBottom()}
         </SheetContent>
       </Sheet>
     </div>

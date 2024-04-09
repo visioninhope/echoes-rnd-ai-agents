@@ -30,7 +30,7 @@ interface ChatProps {
 }
 
 export default function Chat(props: ChatProps) {
-  const ref = useRef<HTMLDivElement>(null);
+  const sheetContentRef = useRef<HTMLDivElement>(null);
 
   // const { toast} = useToast()
   const {
@@ -114,13 +114,11 @@ export default function Chat(props: ChatProps) {
     }
   }, [onClickOpenChatSheet]);
   // components/MessageList.tsx
-
   useEffect(() => {
-    ref.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "end",
-    });
-  }, [onClickOpenChatSheet]);
+    if (sheetContentRef.current) {
+      scrollToBottom();
+    }
+  }, [chatsData]);
 
   // let updatedChatsData: Message[] = [];
   // if ( chatsData[0]?.content.startsWith('{"store":')) {
@@ -228,6 +226,12 @@ export default function Chat(props: ChatProps) {
       });
     },
   });
+  const scrollToBottom = () => {
+    if (sheetContentRef.current) {
+      sheetContentRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+    return null;
+  };
   return (
     <div className="flex flex-col gap-1 mx-auto">
       {props.type === "tldraw" && !props.onClickOpenChatSheet ? (
@@ -323,9 +327,10 @@ export default function Chat(props: ChatProps) {
             isLoading={isLoading}
             chattype={props.type}
           />
-          <div ref={ref} />
         </>
       )}
+      <div className="h-0" ref={sheetContentRef} />
+      {scrollToBottom()}
     </div>
   );
 }
