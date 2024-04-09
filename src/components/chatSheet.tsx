@@ -6,8 +6,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Button } from "./button";
-import { ArrowDown } from "lucide-react";
 import { ChatEntry, ChatType } from "@/lib/types";
 import Chat from "./chat";
 import { useChannel, usePresence } from "ably/react";
@@ -53,43 +51,19 @@ const ChatSheet: React.FC<Props> = (props) => {
     (v, i, a) => a.indexOf(v) === i,
   );
 
-  // useEffect(() => {
-  //   console.log("scroll")
-  //   messageEndRef.current?.scrollIntoView();
-  //   window.scrollTo(0, document.body.scrollHeight);
-  // }, [tlDrawImage]);
-
-  // const onClickOpenChatSheetRef = useRef(onClickOpenChatSheet);
-
-  // useEffect(() => {
-  //   // Check if onClickOpenChatSheet has changed
-  //   if (onClickOpenChatSheet) {
-  //     // If onClickOpenChatSheet is true, trigger the button click
-  //     const button = document.getElementById('scrollButton');
-  //     if (button) {
-  //       button.click();
-  //     }
-  //   }
-  // }, [onClickOpenChatSheet]);
+  const sheetContentRef = useRef<HTMLDivElement>(null);
+  const scrollToBottom = () => {
+    if (sheetContentRef.current) {
+      sheetContentRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+    return null;
+  };
 
   return (
     <div>
       <Sheet open={onClickOpenChatSheet} onOpenChange={setOnClickOpenChatSheet}>
-        {/* <SheetTrigger>
-          <Button
-            onClick={() => setOnClickOpenChatSheet(true)}
-            variant="outline"
-          >
-            <MessageCircle className="h-4 w-4" />
-          </Button>
-        </SheetTrigger> */}
-        <SheetContent className="scroll-smooth min-w-[300px] overflow-x-hidden ">
+        <SheetContent className="scroll-smooth min-w-[280px] overflow-x-hidden ">
           <SheetHeader>
-            <a href="#scroll" className="ml-[50%]">
-              <Button id="scrollButton" variant="outline">
-                <ArrowDown className="h-4 w-4" />
-              </Button>
-            </a>
             <SheetTitle>
               <Chatusers
                 allPresenceIds={uniqueIds}
@@ -113,8 +87,9 @@ const ChatSheet: React.FC<Props> = (props) => {
                 confidential={props.confidential}
               />
             </SheetFooter>
-            <div id="scroll" ref={messageEndRef} />
           </SheetHeader>
+          <div className="h-0" ref={sheetContentRef} />
+          {scrollToBottom()}
         </SheetContent>
       </Sheet>
     </div>

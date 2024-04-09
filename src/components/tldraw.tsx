@@ -15,7 +15,6 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Save, UploadCloud } from "lucide-react";
 import { useImageState } from "@/store/tlDrawImage";
 const PERSISTENCE_KEY = "example-3";
-import { fromTheme } from "tailwind-merge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface PersistenceExampleProps {
@@ -39,7 +38,6 @@ export default function PersistenceExample(props: PersistenceExampleProps) {
   const [store] = useState(() =>
     createTLStore({ shapeUtils: defaultShapeUtils }),
   );
-  console.log("theme", fromTheme);
   const tlDrawFetcher = async () => {
     const res = await axios.get(`/api/chats/${props.chatId}`);
     const chats = res.data.chats as Message[];
