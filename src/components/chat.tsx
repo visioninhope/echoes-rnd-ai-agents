@@ -114,11 +114,6 @@ export default function Chat(props: ChatProps) {
     }
   }, [onClickOpenChatSheet]);
   // components/MessageList.tsx
-  useEffect(() => {
-    if (sheetContentRef.current) {
-      scrollToBottom();
-    }
-  }, [chatsData]);
 
   // let updatedChatsData: Message[] = [];
   // if ( chatsData[0]?.content.startsWith('{"store":')) {
@@ -226,6 +221,11 @@ export default function Chat(props: ChatProps) {
       });
     },
   });
+  useEffect(() => {
+    if (sheetContentRef.current) {
+      scrollToBottom();
+    }
+  }, [messages]);
   const scrollToBottom = () => {
     if (sheetContentRef.current) {
       sheetContentRef.current.scrollIntoView({ behavior: "smooth" });
