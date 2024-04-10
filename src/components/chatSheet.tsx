@@ -52,7 +52,7 @@ const ChatSheet: React.FC<Props> = (props) => {
   return (
     <div>
       <Sheet open={onClickOpenChatSheet} onOpenChange={setOnClickOpenChatSheet}>
-        <SheetContent className="scroll-smooth min-w-[280px] overflow-x-hidden ">
+        <SheetContent className="scroll-smooth min-w-[300px] overflow-x-hidden ">
           <SheetHeader>
             <SheetTitle>
               <Chatusers

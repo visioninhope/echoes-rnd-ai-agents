@@ -17,8 +17,13 @@ export async function GET(
     .all();
 
   const msg = fetchedChat[0].messages;
-  // const chatlog = JSON.parse(msg as string) as SnapShot;
+  // const tldrawSnapshot = JSON.parse(msg as string) as SnapShot;
   const chatlog = JSON.parse(msg as string) as ChatLog;
-
+  // console.log("tldraw_snapshot", chatlog);
+  // if (fetchedChat[0]?.type as ChatType === "tldraw") {
+  //   return NextResponse.json({ chats: chatlog ? tldrawSnapshot.tldraw_snapshot : [] });
+  // }
+  // else {
   return NextResponse.json({ chats: chatlog ? chatlog.log : [] });
+  // }
 }

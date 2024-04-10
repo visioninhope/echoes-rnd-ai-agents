@@ -31,7 +31,6 @@ interface ChatProps {
 
 export default function Chat(props: ChatProps) {
   const sheetContentRef = useRef<HTMLDivElement>(null);
-
   // const { toast} = useToast()
   const {
     tldrawImageUrl,
@@ -83,9 +82,22 @@ export default function Chat(props: ChatProps) {
     noKeyboard: true,
   });
 
+  // let tldrawchat: Message[] = [];
+  // let chat: Message[] = [];
+  // useEffect(() => {
+  //   if (props.type === "tldraw") {
+  //     tldrawchat.push(...(props.dbChat as Message[]));
+  //     console.log("tldrawchat if", tldrawchat);
+  //   } else {
+  //     chat.push(...(props.dbChat as Message[]));
+  //     console.log("chat else", chat);
+  //   }
+  // }, [props.dbChat, props.type]);
+
   const chatFetcher = async () => {
     const res = await axios.get(`/api/chats/${props.chatId}`);
     const chats = res.data.chats;
+    console.log("chatsfetch", chats);
     return chats as Message[];
   };
   const {
@@ -113,6 +125,7 @@ export default function Chat(props: ChatProps) {
       setTlDrawImage("");
     }
   }, [onClickOpenChatSheet]);
+
   // components/MessageList.tsx
 
   // let updatedChatsData: Message[] = [];
@@ -223,12 +236,20 @@ export default function Chat(props: ChatProps) {
   });
   useEffect(() => {
     if (sheetContentRef.current) {
-      scrollToBottom();
+      sheetContentRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
   const scrollToBottom = () => {
-    if (sheetContentRef.current) {
-      sheetContentRef.current.scrollIntoView({ behavior: "smooth" });
+    const isMobile = window.innerWidth <= 500;
+    const scrollFunction = () => {
+      if (sheetContentRef.current) {
+        sheetContentRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    };
+    if (isMobile) {
+      setTimeout(scrollFunction, 1000);
+    } else {
+      scrollFunction();
     }
     return null;
   };

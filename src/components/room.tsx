@@ -58,6 +58,7 @@ const RoomWrapper = (props: Props) => {
     (v, i, a) => a.indexOf(v) === i,
   );
 
+  console.log("props.type", props.type);
   return (
     <>
       <div className="flex flex-col flex-grow min-h-[calc(100dvh-100px)] justify-between h-full mt-[80px]">
@@ -132,25 +133,6 @@ const RoomWrapper = (props: Props) => {
           imageUrl={props.imageUrl}
           confidential={props.confidential}
         />
-        {/* {props.type == "tldraw" && onClickOpenChatSheet ? (
-            <>
-              <div className=" overflow-y-scroll overflow-x-hidden  h-[79vh] border border-zinc-400">
-                <Chat
-                  onClickOpenChatSheet={onClickOpenChatSheet}
-                  type={props.type}
-                  orgId={props.orgId}
-                  dbChat={props.chat}
-                  chatId={props.chatId}
-                  uid={props.uid}
-                  username={props.username}
-                  org_slug={props.org_slug}
-                  chatTitle={props.chatTitle}
-                  imageUrl={props.imageUrl}
-                  confidential={props.confidential}
-                />
-              </div>
-            </>
-          ) : null} */}
       </div>
     </>
   );

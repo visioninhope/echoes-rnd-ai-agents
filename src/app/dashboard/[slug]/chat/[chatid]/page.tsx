@@ -27,6 +27,7 @@ export default async function Page({
   }
 
   let chatlog: ChatLog = { log: [] };
+  // let tldrawSnapshot: SnapShot = { tldraw_snapshot: [] }
   let fetchedChat: ChatSchema[] = [];
 
   if (sessionClaims.org_id) {
@@ -45,7 +46,14 @@ export default async function Page({
   const msg = fetchedChat[0]?.messages;
   console.log("msg", msg);
   if (fetchedChat.length === 1 && msg) {
+    // if (fetchedChat[0]?.type as ChatType === "tldraw") {
+    //   tldrawSnapshot = JSON.parse(msg as string) as SnapShot
+    //   console.log("tldrawlog", tldrawSnapshot);
+    // }
+    // else {
     chatlog = JSON.parse(msg as string) as ChatLog;
+    // console.log("chatlog", chatlog);
+    // }
   }
   // console.log("chatlogData", chatlog.log);
 
