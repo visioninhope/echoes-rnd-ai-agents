@@ -29,7 +29,7 @@ export const OPEN_AI_MODELS = {
   gpt4: "gpt-4" as const,
   gptTurbo: "gpt-3.5-turbo" as const,
   gptTurbo16k: "gpt-3.5-turbo-16k" as const,
-  gpt4Turbo: "gpt-4-1106-preview" as const,
+  gpt4Turbo: "gpt-4-turbo" as const,
 };
 
 const TOKEN_SIZE = {
