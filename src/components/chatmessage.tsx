@@ -36,6 +36,7 @@ interface ChatMessageProps {
   isLoading: boolean;
   imgUrl: string;
   imgId: string;
+  onClickOpenChatSheet: boolean;
 }
 
 const ChatMessage = (props: ChatMessageProps) => {
@@ -151,9 +152,11 @@ const ChatMessage = (props: ChatMessageProps) => {
 
   return (
     <div
-      className={
-        "flex-col flex-grow overflow-hidden p-4 pt-3 pb-3 rounded-sm gap-1 text-sm group dark:hover:bg-zinc-900 hover:bg-zinc-100 bg-background"
-      }
+      className={`flex-col ${
+        props.onClickOpenChatSheet
+          ? "min-[1239px]:w-[320px] text-start"
+          : "w-auto"
+      } flex-grow overflow-hidden p-4 pt-3 pb-3 rounded-sm gap-1 text-sm group dark:hover:bg-zinc-900 hover:bg-zinc-100 bg-background`}
     >
       <div className="grow flex justify-between ">
         <div className="flex items-center gap-2">

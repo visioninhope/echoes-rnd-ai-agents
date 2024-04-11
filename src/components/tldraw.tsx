@@ -4,14 +4,18 @@ import {
   createTLStore,
   defaultShapeUtils,
   useEditor,
-} from "@tldraw/tldraw";
-import "@tldraw/tldraw/tldraw.css";
+  exportToBlob,
+  Editor,
+  TLShapeId,
+} from "tldraw";
+import "tldraw/tldraw.css";
 import { Message } from "ai";
 import axios from "axios";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Button } from "@/components/button";
-import { Save } from "lucide-react";
+import { Save, UploadCloud } from "lucide-react";
+import { useImageState } from "@/store/tlDrawImage";
 const PERSISTENCE_KEY = "example-3";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface PersistenceExampleProps {
   initialData?: any;
@@ -24,15 +28,21 @@ interface PersistenceExampleProps {
 }
 
 export default function PersistenceExample(props: PersistenceExampleProps) {
+  const [editor, setEditor] = useState<any>();
+  const {
+    settldrawImageUrl,
+    setTlDrawImage,
+    setOnClickOpenChatSheet,
+    tlDrawImage,
+  } = useImageState();
   const [store] = useState(() =>
     createTLStore({ shapeUtils: defaultShapeUtils }),
   );
-
   const tlDrawFetcher = async () => {
     const res = await axios.get(`/api/chats/${props.chatId}`);
-    const chats = res.data.chats as Message[];
+    const chats = res.data.chats.tldraw_snapshot as Message[];
     // return chats as Message[];
-    return chats.length ? chats[0].content : null;
+    return chats ? chats[0].content : null;
   };
 
   const { data, isLoading, isError, error } = useQuery(
@@ -89,11 +99,34 @@ export default function PersistenceExample(props: PersistenceExampleProps) {
     const snapshot = JSON.stringify(store.getSnapshot());
     await save(snapshot, setIsSaving);
   };
+  const handleExport = async () => {
+    setOnClickOpenChatSheet(true);
+    const parsedSnapshot = JSON.parse(JSON.stringify(store.getSnapshot()));
+    const ids: TLShapeId[] = [];
+    console.log("ids", ids);
+    for (const key in parsedSnapshot.store) {
+      if (key.startsWith("shape:")) {
+        ids.push(parsedSnapshot.store[key].id);
+      }
+    }
+    const format: any = "png";
+    const exportToBlo = exportToBlob({ editor, format, ids });
+    exportToBlo.then((res) => {
+      const fileType = "image/png"; // Example file type, adjust as needed
+      const filename = `tldraw-${Date.now()}.png`;
+      const file = new File([res], filename, { type: fileType });
+      const fileArray = [file];
+      setTlDrawImage(fileArray);
+      // Array containing the File object
+      settldrawImageUrl(URL.createObjectURL(file));
+    });
+  };
 
   return (
     <div className=" relative tldraw__editor tl-theme__dark h-full w-full">
       <Tldraw className="tl-theme__dark z-10" inferDarkMode store={store}>
         <InsideOfEditorContext
+          setEditor={setEditor}
           timer={timer}
           setTimer={setTimer}
           isAutoSaving={isAutoSaving}
@@ -102,16 +135,31 @@ export default function PersistenceExample(props: PersistenceExampleProps) {
           save={save}
         />
       </Tldraw>
-      <Button
-        onClick={() => handleSave()}
-        variant="outline"
-        className="absolute top-0 right-0 sm:right-[50%] z-50 sm:translate-x-[50%]"
-      >
-        <Save className="sm:hidden h-4 w-4" />
-        <span className="hidden sm:inline">
-          {isAutoSaving ? "auto saving" : isSaving ? "saving" : "save"}
-        </span>
-      </Button>
+
+      <Tabs className="absolute top-0 right-0 sm:right-[45%] z-50 sm:translate-x-[50%] sm:top-0">
+        <TabsList>
+          <TabsTrigger
+            onClick={() => handleSave()}
+            value="org"
+            className="flex gap-2 items-center"
+          >
+            <Save className="sm:hidden h-4 w-4" />
+            <span className="hidden sm:inline">
+              {isAutoSaving ? "auto saving" : isSaving ? "saving" : "save"}
+            </span>
+          </TabsTrigger>
+          <TabsTrigger
+            onClick={() => handleExport()}
+            value="me"
+            className="flex gap-2 items-center"
+          >
+            <UploadCloud className="sm:hidden h-4 w-4" />
+            <span className="hidden sm:inline">
+              {tlDrawImage ? "added to chat" : "add to chat"}
+            </span>
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
     </div>
   );
 }
@@ -123,6 +171,7 @@ const InsideOfEditorContext = ({
   setIsAutoSaving,
   isSaving,
   save,
+  setEditor,
 }: {
   timer: number;
   setTimer: Dispatch<SetStateAction<number>>;
@@ -133,6 +182,7 @@ const InsideOfEditorContext = ({
     content: string,
     saving: Dispatch<SetStateAction<boolean>>,
   ) => Promise<void>;
+  setEditor: Dispatch<SetStateAction<Editor>>;
 }) => {
   useEffect(() => {
     if (timer >= 15) {
@@ -150,6 +200,7 @@ const InsideOfEditorContext = ({
   const editor = useEditor();
 
   useEffect(() => {
+    setEditor(editor);
     const listener = editor.store.listen((snapshot) => {
       // after every 15 secs, save the snapshot
       if (timer === 15 && !isAutoSaving && !isSaving) {

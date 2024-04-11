@@ -88,7 +88,7 @@ export async function POST(request: Request, response: NextApiResponse) {
   );
   const chat = new ChatOpenAI({
     modelName: "gpt-4-vision-preview",
-    maxTokens: 2024,
+    maxTokens: 1024,
     streaming: true,
     openAIApiKey: env.OPEN_AI_API_KEY,
   });

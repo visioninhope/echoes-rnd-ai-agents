@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { AIType, ChatType } from "@/lib/types";
 import InputBar from "@/components/inputBar";
 import { Message, useChat } from "ai/react";
@@ -13,6 +13,7 @@ import { toast } from "./ui/use-toast";
 import { getUserIdList } from "./chatusersavatars";
 import { useDropzone } from "react-dropzone";
 import { X } from "lucide-react";
+import { useImageState } from "@/store/tlDrawImage";
 
 interface ChatProps {
   orgId: string;
@@ -25,11 +26,20 @@ interface ChatProps {
   imageUrl: string;
   type: ChatType;
   confidential: number | null;
+  onClickOpenChatSheet?: boolean;
+  snapShot: Message[];
 }
 
 export default function Chat(props: ChatProps) {
+  const sheetContentRef = useRef<HTMLDivElement>(null);
   // const { toast} = useToast()
-
+  const {
+    tldrawImageUrl,
+    tlDrawImage,
+    setTlDrawImage,
+    settldrawImageUrl,
+    onClickOpenChatSheet,
+  } = useImageState();
   const [choosenAI, setChoosenAI] = useState<AIType>("universal");
   const [isChatCompleted, setIsChatCompleted] = useState<boolean>(false);
   const [calculatedMessages, setCalculatedMessages] = useState<Message[][]>([]);
@@ -76,7 +86,8 @@ export default function Chat(props: ChatProps) {
   const chatFetcher = async () => {
     const res = await axios.get(`/api/chats/${props.chatId}`);
     const chats = res.data.chats;
-    return chats as Message[];
+    console.log("chatsfetch front", chats);
+    return chats.log as Message[];
   };
   const {
     data: chatsData,
@@ -88,7 +99,30 @@ export default function Chat(props: ChatProps) {
     initialData: props.dbChat,
     refetchOnWindowFocus: false,
   });
+  useEffect(() => {
+    if (tldrawImageUrl) {
+      setDropzoneActive(true);
+      setImageUrl(tldrawImageUrl);
+      setImage(tlDrawImage);
+    }
+  }, [tlDrawImage]);
 
+  useEffect(() => {
+    if (!onClickOpenChatSheet) {
+      settldrawImageUrl("");
+      setTlDrawImage("");
+    }
+  }, [onClickOpenChatSheet]);
+
+  // components/MessageList.tsx
+
+  // let updatedChatsData: Message[] = [];
+  // if ( chatsData[0]?.content.startsWith('{"store":')) {
+  //   updatedChatsData = chatsData.slice(1);
+  // } else {
+  //   updatedChatsData = chatsData;
+  // }
+  //  console.log("updatedChatsData", updatedChatsData);
   const {
     messages,
     input,
@@ -120,12 +154,12 @@ export default function Chat(props: ChatProps) {
     },
     sendExtraMessageFields: true,
   });
+  console.log("messages", messages);
 
   useEffect(() => {
     let mainArray: Message[][] = [];
     let subarray: Message[] = [];
 
-    // console.log("messages effect triggered", messages);
     if (messages && messages.length) {
       messages.forEach((message, index) => {
         if (message.role === "user") {
@@ -159,7 +193,9 @@ export default function Chat(props: ChatProps) {
     refetchOnWindowFocus: false,
   });
 
-  const userIds = getUserIdList(props.dbChat);
+  const userIds = getUserIdList(
+    props.type === "tldraw" ? props.snapShot : props.dbChat,
+  );
 
   const {
     mutate: toogleConfidentiality,
@@ -185,15 +221,33 @@ export default function Chat(props: ChatProps) {
       });
     },
   });
-
+  useEffect(() => {
+    if (sheetContentRef.current) {
+      sheetContentRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+  const scrollToBottom = () => {
+    const isMobile = window.innerWidth <= 500;
+    const scrollFunction = () => {
+      if (sheetContentRef.current) {
+        sheetContentRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    };
+    if (isMobile) {
+      setTimeout(scrollFunction, 1000);
+    } else {
+      scrollFunction();
+    }
+    return null;
+  };
   return (
     <div className="flex flex-col gap-1 mx-auto">
-      {props.type === "tldraw" ? (
+      {props.type === "tldraw" && !props.onClickOpenChatSheet ? (
         <div className=" w-[calc(100dvw-40px)] h-[calc(100dvh-128px)]">
           <PersistenceExample
             org_slug={props.org_slug}
             org_id={props.orgId}
-            dbChat={props.dbChat}
+            dbChat={props.snapShot}
             username={props.username}
             chatId={props.chatId}
             uid={props.uid}
@@ -203,9 +257,10 @@ export default function Chat(props: ChatProps) {
         // {preferences.showSubRoll && <PersistenceExample />}
         <>
           <section onDrop={(acceptedFiles: any) => onDrop(acceptedFiles)}>
-            <div className="min-h-[400px] max-h-[auto]" {...getRootProps()}>
+            <div className={`min-h-[400px] max-h-[auto]`} {...getRootProps()}>
               <input {...getInputProps()} />
               <ChatMessageCombinator
+                onClickOpenChatSheet={props.onClickOpenChatSheet}
                 calculatedMessages={calculatedMessages}
                 messages={messages}
                 chatId={props.chatId}
@@ -236,6 +291,8 @@ export default function Chat(props: ChatProps) {
                 onClick={() => {
                   setInput("");
                   setDropzoneActive(false);
+                  settldrawImageUrl("");
+                  setTlDrawImage("");
                 }}
               >
                 <img
@@ -243,7 +300,6 @@ export default function Chat(props: ChatProps) {
                   alt="Preview"
                   className="w-full h-auto rounded-md relative inset-0 hover:opacity-40 cursor-pointer"
                 />
-
                 <X className="absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] pointer-events-none" />
               </div>
             </>
@@ -258,6 +314,7 @@ export default function Chat(props: ChatProps) {
             </div>
           )}
           <InputBar
+            onClickOpenChatSheet={props.onClickOpenChatSheet}
             onClickOpen={open}
             dropZoneImage={image}
             dropZoneActive={dropZoneActive}
@@ -280,6 +337,8 @@ export default function Chat(props: ChatProps) {
           />
         </>
       )}
+      <div className="h-0" ref={sheetContentRef} />
+      {scrollToBottom()}
     </div>
   );
 }

@@ -26,7 +26,8 @@ export default async function Page({
     redirect("/");
   }
 
-  let chatlog: ChatLog = { log: [] };
+  let chatlog: ChatLog = { log: [], tldraw_snapshot: [] };
+  // let tldrawSnapshot: SnapShot = { tldraw_snapshot: [] }
   let fetchedChat: ChatSchema[] = [];
 
   if (sessionClaims.org_id) {
@@ -43,8 +44,12 @@ export default async function Page({
       .all();
   }
   const msg = fetchedChat[0]?.messages;
+  console.log("msg", msg);
   if (fetchedChat.length === 1 && msg) {
     chatlog = JSON.parse(msg as string) as ChatLog;
+    console.log("chatlog", chatlog);
+    console.log("chatlogData", chatlog.log);
+    // console.log("chatlogSnapshot", chatlog.tldraw_snapshot);
   }
 
   return (
@@ -52,6 +57,7 @@ export default async function Page({
       <RoomWrapper
         orgId={sessionClaims.org_id ? sessionClaims.org_id : ""}
         chat={chatlog.log}
+        snapShot={chatlog.tldraw_snapshot}
         chatId={params.chatid}
         uid={userId as string}
         username={fullname}

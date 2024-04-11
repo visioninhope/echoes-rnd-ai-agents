@@ -1,4 +1,4 @@
-import React, { SetStateAction } from "react";
+import React, { SetStateAction, useEffect, useRef } from "react";
 import Image from "next/image";
 import { ContextWrapper } from "@/components/contextwrapper";
 import { ChatRequestOptions, CreateMessage, Message } from "ai";
@@ -35,6 +35,7 @@ type Props = {
   confidential: number | null;
   toogleConfidentiality: (confidential: { confidential: boolean }) => void;
   isTooglingConfidentiality: boolean;
+  onClickOpenChatSheet: any;
 };
 
 const ChatMessageCombinator = ({
@@ -55,12 +56,14 @@ const ChatMessageCombinator = ({
   confidential,
   toogleConfidentiality,
   isTooglingConfidentiality,
+  onClickOpenChatSheet,
 }: Props) => {
   let url = "";
   let id = "";
 
   const preferences = usePreferences();
   const queryClient = useQueryClient();
+  const sheetContentRef = useRef<HTMLDivElement>(null); // Specify the type as HTMLDivElement
 
   const mutation = useMutation(
     async (data: { id: string; msgs: Message[]; lastMessageIndex: number }) => {
@@ -84,13 +87,25 @@ const ChatMessageCombinator = ({
   const titleSplit = chatTitle.replaceAll('"', "").split(":");
   const chat_title = titleSplit[0];
   const chat_sub_title = titleSplit.length > 1 ? titleSplit[1] : "";
+  const scrollToBottom = () => {
+    if (sheetContentRef.current) {
+      sheetContentRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+  useEffect(() => {
+    scrollToBottom(); // Scroll to bottom when component mounts
+  }, [onClickOpenChatSheet]); // Empty dependency array ensures it only runs once when component mounts
 
   let messageIndex = 0;
   return (
     <div>
       <div className="grid grid-cols-1 gap-2">
-        <div className="max-w-[700px] grid grid-cols-1 xl:max-w-none xl:grid-flow-col gap-2 mx-auto my-4">
-          <div className="xl:w-[450px] flex justify-evenly">
+        <div className="max-w-[700px]  grid grid-cols-1 xl:max-w-none xl:grid-flow-col gap-2 mx-auto my-4">
+          <div
+            className={`xl:${
+              onClickOpenChatSheet ? "w-[310px]" : "w-[450px]"
+            } flex justify-evenly`}
+          >
             {imageUrl && imageUrl !== "" ? (
               <Image
                 src={imageUrl}
@@ -101,7 +116,11 @@ const ChatMessageCombinator = ({
               />
             ) : null}
           </div>
-          <div className="xl:w-[700px] flex-col mt-auto">
+          <div
+            className={`xl:${
+              onClickOpenChatSheet ? "w-[310px]" : "w-[700px]"
+            } flex-col mt-auto`}
+          >
             {/* {confidential ? <Button><LockClosedIcon /></Button>: <Button variant="destructive"><LockOpen1Icon /></Button>} */}
             {chat_title !== "" ? (
               <>
@@ -176,7 +195,9 @@ const ChatMessageCombinator = ({
             <div
               key={index}
               className={cn(
-                "max-w-[700px] grid grid-cols-1 xl:max-w-none xl:grid-flow-col gap-2 mx-auto ",
+                `max-w-[700px] grid grid-cols-1 xl:max-w-none xl:grid-flow-col  gap-2 mx-auto ${
+                  onClickOpenChatSheet ? "xl:grid-flow-row" : "xl:grid-flow-col"
+                } `,
               )}
             >
               {msgs.map((msg, idx) => {
@@ -203,6 +224,7 @@ const ChatMessageCombinator = ({
                     >
                       <ChatMessage
                         // calculate the index to be same as if calculatedMessages were
+                        onClickOpenChatSheet={onClickOpenChatSheet}
                         messageIndex={msgIdx} // needs to be updated
                         chatId={chatId}
                         orgId={orgId}
@@ -258,6 +280,7 @@ const ChatMessageCombinator = ({
             </div>
           );
         })}
+        {/* <div id="scroll" ref={sheetContentRef} /> */}
       </div>
     </div>
   );
