@@ -40,9 +40,9 @@ export default function PersistenceExample(props: PersistenceExampleProps) {
   );
   const tlDrawFetcher = async () => {
     const res = await axios.get(`/api/chats/${props.chatId}`);
-    const chats = res.data.chats as Message[];
+    const chats = res.data.chats.tldraw_snapshot as Message[];
     // return chats as Message[];
-    return chats.length ? chats[0].content : null;
+    return chats ? chats[0].content : null;
   };
 
   const { data, isLoading, isError, error } = useQuery(

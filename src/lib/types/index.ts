@@ -14,6 +14,7 @@ export type ChatEntry = {
 
 export type ChatLog = {
   log: Array<ChatEntry>;
+  tldraw_snapshot?: Array<ChatEntry>;
 };
 export type SnapShot = {
   tldraw_snapshot: Array<ChatEntry>;

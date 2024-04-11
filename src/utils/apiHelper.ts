@@ -6,7 +6,7 @@ import {
   HumanMessage,
   SystemMessage,
 } from "langchain/schema";
-import { ChatEntry, ChatLog, Model } from "@/lib/types";
+import { ChatEntry, ChatLog, Model, ChatType } from "@/lib/types";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { env } from "@/app/env.mjs";
 import { db } from "@/lib/db";
@@ -582,6 +582,17 @@ export const saveToDB = async ({
   userId: string;
   urlArray: string[];
 }) => {
+  const fetchedChat = await db
+    .select()
+    .from(chats)
+    .where(eq(chats.id, Number(chatId)))
+    .limit(1)
+    .all();
+
+  const msg: any = fetchedChat[0].messages;
+  const chatlog = JSON.parse(msg as string) as ChatLog;
+  console.log("apihelper", fetchedChat[0]?.type as ChatType);
+
   try {
     if (_chat.length === 1) {
       console.log("got in 1 length case");
@@ -607,32 +618,142 @@ export const saveToDB = async ({
           },
         },
       ]);
-      await db
-        .update(chats)
-        .set({
-          messages: JSON.stringify({ log: _chat } as ChatLog),
-          creator: userId,
-        })
-        .where(eq(chats.id, chatId))
-        .run();
+      if ((fetchedChat[0]?.type as ChatType) === "tldraw") {
+        await db
+          .update(chats)
+          .set({
+            messages: JSON.stringify({
+              log: _chat,
+              tldraw_snapshot: chatlog.tldraw_snapshot
+                ? chatlog.tldraw_snapshot
+                : [],
+            } as ChatLog),
+            creator: userId,
+          })
+          .where(eq(chats.id, chatId))
+          .run();
+      } else {
+        await db
+          .update(chats)
+          .set({
+            messages: JSON.stringify({ log: _chat } as ChatLog),
+            creator: userId,
+          })
+          .where(eq(chats.id, chatId))
+          .run();
+      }
     } else {
       _chat.push(latestResponse);
-      postToAlgolia({
-        chats: [_chat[_chat.length - 2], latestResponse],
-        chatId: chatId,
-        orgSlug: orgSlug as string,
-        urlArray: urlArray,
-      }); // add to search index
-      await db
-        .update(chats)
-        .set({
-          messages: JSON.stringify({ log: _chat }),
-          updatedAt: new Date(),
-        })
-        .where(eq(chats.id, chatId))
-        .run();
+      if ((fetchedChat[0]?.type as ChatType) === "tldraw") {
+        postToAlgolia({
+          chats: [_chat[_chat.length - 2], latestResponse],
+          chatId: chatId,
+          orgSlug: orgSlug as string,
+          urlArray: urlArray,
+        }); // add to search index
+        await db
+          .update(chats)
+          .set({
+            messages: JSON.stringify({
+              log: _chat,
+              tldraw_snapshot: chatlog.tldraw_snapshot
+                ? chatlog.tldraw_snapshot
+                : [],
+            }),
+            updatedAt: new Date(),
+          })
+          .where(eq(chats.id, chatId))
+          .run();
+      } else {
+        postToAlgolia({
+          chats: [_chat[_chat.length - 2], latestResponse],
+          chatId: chatId,
+          orgSlug: orgSlug as string,
+          urlArray: urlArray,
+        }); // add to search index
+        await db
+          .update(chats)
+          .set({
+            messages: JSON.stringify({ log: _chat }),
+            updatedAt: new Date(),
+          })
+          .where(eq(chats.id, chatId))
+          .run();
+      }
     }
   } catch (error) {
     console.log("error in saving to db", error);
   }
 };
+
+// export const saveToDBForImage = async ({
+//   _chat,
+//   chatId,
+//   orgSlug,
+//   latestResponse,
+//   userId,
+//   urlArray,
+//   orgId,
+// }: {
+//   latestResponse: ChatEntry;
+//   _chat: ChatEntry[];
+//   chatId: number;
+//   orgSlug: string;
+//   orgId: string;
+//   userId: string;
+//   urlArray: string[];
+// }) => {
+//   try {
+//     if (_chat.length === 1) {
+//       console.log("got in 1 length case");
+//       _chat.push(latestResponse);
+//       // step for generating title and adding to search index
+//       axios.post(`https://zeplo.to/step?_token=${env.ZEPLO_TOKEN}`, [
+//         {
+//           url: `https://${urlArray[2]}/api/generateTitle/${chatId}/${orgId}?_step=A`,
+//           body: JSON.stringify({ chat: _chat }),
+//           headers: {
+//             "x-zeplo-secret": env.ZEPLO_SECRET,
+//           },
+//         },
+//         {
+//           url: `https://${urlArray[2]}/api/addToSearch?_step=B&_requires=A`,
+//           body: JSON.stringify({
+//             chats: _chat,
+//             chatId: chatId,
+//             orgSlug: orgSlug as string,
+//           }),
+//           headers: {
+//             "x-zeplo-secret": env.ZEPLO_SECRET,
+//           },
+//         },
+//       ]);
+//       await db
+//         .update(chats)
+//         .set({
+//           messages: JSON.stringify({ log: _chat } as ChatLog),
+//           creator: userId,
+//         })
+//         .where(eq(chats.id, chatId))
+//         .run();
+//     } else {
+//       _chat.push(latestResponse);
+//       postToAlgolia({
+//         chats: [_chat[_chat.length - 2], latestResponse],
+//         chatId: chatId,
+//         orgSlug: orgSlug as string,
+//         urlArray: urlArray,
+//       }); // add to search index
+//       await db
+//         .update(chats)
+//         .set({
+//           messages: JSON.stringify({ log: _chat }),
+//           updatedAt: new Date(),
+//         })
+//         .where(eq(chats.id, chatId))
+//         .run();
+//     }
+//   } catch (error) {
+//     console.log("error in saving to db", error);
+//   }
+// };

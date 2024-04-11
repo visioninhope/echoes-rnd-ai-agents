@@ -27,6 +27,7 @@ interface ChatProps {
   type: ChatType;
   confidential: number | null;
   onClickOpenChatSheet?: boolean;
+  snapShot: Message[];
 }
 
 export default function Chat(props: ChatProps) {
@@ -82,23 +83,11 @@ export default function Chat(props: ChatProps) {
     noKeyboard: true,
   });
 
-  // let tldrawchat: Message[] = [];
-  // let chat: Message[] = [];
-  // useEffect(() => {
-  //   if (props.type === "tldraw") {
-  //     tldrawchat.push(...(props.dbChat as Message[]));
-  //     console.log("tldrawchat if", tldrawchat);
-  //   } else {
-  //     chat.push(...(props.dbChat as Message[]));
-  //     console.log("chat else", chat);
-  //   }
-  // }, [props.dbChat, props.type]);
-
   const chatFetcher = async () => {
     const res = await axios.get(`/api/chats/${props.chatId}`);
     const chats = res.data.chats;
-    console.log("chatsfetch", chats);
-    return chats as Message[];
+    console.log("chatsfetch front", chats);
+    return chats.log as Message[];
   };
   const {
     data: chatsData,
@@ -110,7 +99,6 @@ export default function Chat(props: ChatProps) {
     initialData: props.dbChat,
     refetchOnWindowFocus: false,
   });
-  console.log("tldrawimageUrl", tldrawImageUrl);
   useEffect(() => {
     if (tldrawImageUrl) {
       setDropzoneActive(true);
@@ -166,6 +154,7 @@ export default function Chat(props: ChatProps) {
     },
     sendExtraMessageFields: true,
   });
+  console.log("messages", messages);
 
   useEffect(() => {
     let mainArray: Message[][] = [];
@@ -175,11 +164,7 @@ export default function Chat(props: ChatProps) {
       messages.forEach((message, index) => {
         if (message.role === "user") {
           if (index === 0) {
-            if (message.content.startsWith('{"store":')) {
-              subarray = [];
-            } else {
-              subarray.push(message as Message);
-            }
+            subarray.push(message as Message);
           } else {
             mainArray.push(subarray);
             subarray = [];
@@ -208,7 +193,9 @@ export default function Chat(props: ChatProps) {
     refetchOnWindowFocus: false,
   });
 
-  const userIds = getUserIdList(props.dbChat);
+  const userIds = getUserIdList(
+    props.type === "tldraw" ? props.snapShot : props.dbChat,
+  );
 
   const {
     mutate: toogleConfidentiality,
@@ -260,7 +247,7 @@ export default function Chat(props: ChatProps) {
           <PersistenceExample
             org_slug={props.org_slug}
             org_id={props.orgId}
-            dbChat={props.dbChat}
+            dbChat={props.snapShot}
             username={props.username}
             chatId={props.chatId}
             uid={props.uid}

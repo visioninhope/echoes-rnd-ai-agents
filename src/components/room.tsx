@@ -28,6 +28,7 @@ interface Props {
   imageUrl: string;
   type: ChatType;
   confidential: number | null;
+  snapShot: any;
 }
 
 const RoomWrapper = (props: Props) => {
@@ -40,6 +41,8 @@ const RoomWrapper = (props: Props) => {
   });
   console.log("props.Chat", props.chat);
 
+  console.log("props.Chat.tldraw_snapshot", props.snapShot);
+
   const preferences = usePreferences();
   const { presenceData, updateStatus } = usePresence(
     `channel_${props.chatId}`,
@@ -49,7 +52,9 @@ const RoomWrapper = (props: Props) => {
       isTyping: false,
     },
   );
-  const dbIds = getUserIdList(props.chat);
+  const dbIds = getUserIdList(
+    props.type === "tldraw" ? props.snapShot : props.chat,
+  );
   const chatCreatorId = dbIds[0];
 
   const liveUserIds = presenceData.map((p) => p.data.id);
@@ -58,7 +63,6 @@ const RoomWrapper = (props: Props) => {
     (v, i, a) => a.indexOf(v) === i,
   );
 
-  console.log("props.type", props.type);
   return (
     <>
       <div className="flex flex-col flex-grow min-h-[calc(100dvh-100px)] justify-between h-full mt-[80px]">
@@ -106,6 +110,7 @@ const RoomWrapper = (props: Props) => {
                   <MessageCircle className="h-4 w-4" />
                 </Button>
                 <ChatSheet
+                  snapShot={props.snapShot}
                   type={props.type}
                   orgId={props.orgId}
                   dbChat={props.chat}
@@ -123,6 +128,7 @@ const RoomWrapper = (props: Props) => {
         </div>
         <Chat
           type={props.type}
+          snapShot={props.snapShot}
           orgId={props.orgId}
           dbChat={props.chat}
           chatId={props.chatId}

@@ -22,6 +22,7 @@ interface Props {
   imageUrl: string;
   type: ChatType;
   confidential: number | null;
+  snapShot: ChatEntry[];
 }
 
 const ChatSheet: React.FC<Props> = (props) => {
@@ -40,7 +41,9 @@ const ChatSheet: React.FC<Props> = (props) => {
     },
   );
 
-  const dbIds = getUserIdList(props.dbChat);
+  const dbIds = getUserIdList(
+    props.type === "tldraw" ? props.snapShot : props.dbChat,
+  );
   const chatCreatorId = dbIds[0];
 
   const liveUserIds = presenceData.map((p) => p.data.id);
@@ -64,6 +67,7 @@ const ChatSheet: React.FC<Props> = (props) => {
             </SheetTitle>
             <SheetFooter>
               <Chat
+                snapShot={props.snapShot}
                 onClickOpenChatSheet={onClickOpenChatSheet}
                 type={props.type}
                 orgId={props.orgId}

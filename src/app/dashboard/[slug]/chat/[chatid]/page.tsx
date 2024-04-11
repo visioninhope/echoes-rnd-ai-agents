@@ -26,7 +26,7 @@ export default async function Page({
     redirect("/");
   }
 
-  let chatlog: ChatLog = { log: [] };
+  let chatlog: ChatLog = { log: [], tldraw_snapshot: [] };
   // let tldrawSnapshot: SnapShot = { tldraw_snapshot: [] }
   let fetchedChat: ChatSchema[] = [];
 
@@ -46,22 +46,18 @@ export default async function Page({
   const msg = fetchedChat[0]?.messages;
   console.log("msg", msg);
   if (fetchedChat.length === 1 && msg) {
-    // if (fetchedChat[0]?.type as ChatType === "tldraw") {
-    //   tldrawSnapshot = JSON.parse(msg as string) as SnapShot
-    //   console.log("tldrawlog", tldrawSnapshot);
-    // }
-    // else {
     chatlog = JSON.parse(msg as string) as ChatLog;
-    // console.log("chatlog", chatlog);
-    // }
+    console.log("chatlog", chatlog);
+    console.log("chatlogData", chatlog.log);
+    // console.log("chatlogSnapshot", chatlog.tldraw_snapshot);
   }
-  // console.log("chatlogData", chatlog.log);
 
   return (
     <AblyChannelProvider clientId={`room_${params.chatid}`}>
       <RoomWrapper
         orgId={sessionClaims.org_id ? sessionClaims.org_id : ""}
         chat={chatlog.log}
+        snapShot={chatlog.tldraw_snapshot}
         chatId={params.chatid}
         uid={userId as string}
         username={fullname}
