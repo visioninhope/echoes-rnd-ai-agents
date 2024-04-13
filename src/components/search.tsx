@@ -56,13 +56,14 @@ const Search = (props: Props) => {
   }, []); // open command bar with / key
 
   useEffect(() => {
+    // console.log("throttledValue", throttledValue);
     index
       .search(throttledValue, {
         hitsPerPage: 8,
         filters: `orgSlug: "${props.orgSlug}"`,
       })
       .then((response) => {
-        console.log(response);
+        console.log(" search responce", response);
         return setResults(response.hits);
       });
   }, [throttledValue]);
@@ -71,7 +72,7 @@ const Search = (props: Props) => {
     <CommandDialog open={showSearchDialog} onOpenChange={toggleSearchDialog}>
       <CommandInput
         onValueChange={(val) => {
-          console.log("got the input value");
+          console.log("got the input value", val);
           setValue(val);
         }}
         value={value}
@@ -100,35 +101,35 @@ const Search = (props: Props) => {
         <CommandGroup heading="Chat History">
           {results.length
             ? results.map((result: any, index: number) => (
-                <CommandItem key={index}>
-                  <Link
-                    href={
-                      result.id
-                        ? `/dashboard/${props.orgSlug}/chat/${result.chatId}/#${result.id}`
-                        : `/dashboard/${props.orgSlug}/chat/${result.chatId}`
-                    } // needs to be updated
-                    onClick={toggleSearchDialog}
-                    key={result.objectID}
-                    className="flex gap-2 grow justify-between"
-                  >
-                    <div>
-                      <p className="text-md text-muted-foreground">
-                        {result.chatTitle
-                          .replace('"', "")
-                          .replace('"', "")
-                          .split(" ")
-                          .slice(0, 5)
-                          .join(" ")}
-                        {" (" + timestampToDate(result.updatedAt)})
-                      </p>
-                      <p className="line-clamp-1 text-sm">
-                        {result.content ? result.content : null}
-                      </p>
-                    </div>
-                    <UserAvatar role={result.role} userData={result.name} />
-                  </Link>
-                </CommandItem>
-              ))
+              <CommandItem key={index}>
+                <Link
+                  href={
+                    result.id
+                      ? `/dashboard/${props.orgSlug}/chat/${result.chatId}/#${result.id}`
+                      : `/dashboard/${props.orgSlug}/chat/${result.chatId}`
+                  } // needs to be updated
+                  onClick={toggleSearchDialog}
+                  key={result.objectID}
+                  className="flex gap-2 grow justify-between"
+                >
+                  <div>
+                    <p className="text-md text-muted-foreground">
+                      {result.chatTitle
+                        .replace('"', "")
+                        .replace('"', "")
+                        .split(" ")
+                        .slice(0, 5)
+                        .join(" ")}
+                      {" (" + timestampToDate(result.updatedAt)})
+                    </p>
+                    <p className="line-clamp-1 text-sm">
+                      {result.content ? result.content : null}
+                    </p>
+                  </div>
+                  <UserAvatar role={result.role} userData={result.name} />
+                </Link>
+              </CommandItem>
+            ))
             : null}
         </CommandGroup>
         {/*

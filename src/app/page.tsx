@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect } from "react";
 import { Header } from "@/components/header";
 import { Button, buttonVariants } from "@/components/button";
@@ -10,6 +9,11 @@ import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Key, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@clerk/nextjs";
+
+
+
+
+
 const handleSmoothScroll = (): void => {
   if (typeof window !== "undefined") {
     const hashId = window.location.hash;

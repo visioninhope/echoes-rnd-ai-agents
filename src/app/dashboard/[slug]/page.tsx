@@ -1,6 +1,7 @@
 import { Button } from "@/components/button";
 import Link from "next/link";
 import { db } from "@/lib/db";
+import { Metadata } from "next";
 import { chats, Chat as ChatSchema } from "@/lib/db/schema";
 import { eq, desc, ne, and } from "drizzle-orm";
 import { auth } from "@clerk/nextjs";
@@ -10,6 +11,17 @@ import ChatCardWrapper from "@/components/chatcardwrapper";
 export const dynamic = "force-dynamic",
   revalidate = 0;
 
+
+  export const metadata: Metadata = {
+    openGraph: {
+      images: [{
+        url: "http://localhost:3000/api/og?title=HelloWorld",
+        width: 1200,
+        height: 630,
+        alt: "Hello"
+      }]
+    }
+  }
 export default async function Page({
   params,
   searchParams,

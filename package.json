@@ -70,6 +70,7 @@
     "@uidotdev/usehooks": "^2.4.1",
     "@uploadthing/react": "5.2.0",
     "@upstash/redis": "^1.24.3",
+    "@vercel/og": "^0.6.2",
     "ably": "^1.2.48",
     "ai": "2.2.20",
     "algoliasearch": "^4.20.0",
