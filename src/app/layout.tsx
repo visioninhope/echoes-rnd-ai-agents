@@ -243,8 +243,14 @@ export default function RootLayout({
             content="Collaborative Platform for Researchers. Designed for Humans and AIs."
           />
           <meta property="og:site_name" content="Echoes" />
-          <meta property="og:url" content="https://echoes.team/api/og" />
-          <meta property="og:image" content="https://echoes.team/api/og" />
+          <meta
+            property="og:url"
+            content="https://echoes-git-og-image-tcr.vercel.app/api/og"
+          />
+          <meta
+            property="og:image"
+            content="https://echoes-git-og-image-tcr.vercel.app/api/og"
+          />
 
           <title>Echoes</title>
         </head>
