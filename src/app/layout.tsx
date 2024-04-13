@@ -243,8 +243,8 @@ export default function RootLayout({
             content="Collaborative Platform for Researchers. Designed for Humans and AIs."
           />
           <meta property="og:site_name" content="Echoes" />
-          <meta property="og:url" content="https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w600/2023/10/free-images.jpg" />
-          <meta property="og:image" content="https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w600/2023/10/free-images.jpg" />
+          <meta property="og:url" content="https://www.echoes.team/api/og" />
+          <meta property="og:image" content="https://www.echoes.team/api/og" />
 
           <title>Echoes</title>
         </head>
