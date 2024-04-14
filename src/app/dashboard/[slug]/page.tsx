@@ -13,14 +13,20 @@ export const dynamic = "force-dynamic",
 
 export const metadata: Metadata = {
   openGraph: {
+    title: "Next.js",
+    description: "The React Framework for the Web",
+    url: "https://nextjs.org",
+    siteName: "Next.js",
     images: [
       {
-        url: "https://www.echoes.team/api/og?title=chat kro veere slug",
-        width: 1200,
-        height: 630,
-        alt: "echoes image",
+        url: "https://buffer.com/library/content/images/size/w1200/2023/10/free-images.jpg", // Must be an absolute URL
+        width: 1800,
+        height: 1600,
+        alt: "My custom alt",
       },
     ],
+    locale: "en_US",
+    type: "website",
   },
 };
 

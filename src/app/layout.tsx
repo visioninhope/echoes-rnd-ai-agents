@@ -10,11 +10,28 @@ import { Providers } from "@/app/providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Echoe",
+  title: "Echoes",
   description: "Seek using Research Agents",
   manifest: "/manifest.json",
   viewport:
     "minimum-scale=1.0, initial-scale=1.0, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover",
+  openGraph: {
+    title: "Next.js",
+    description: "The React Framework for the Web",
+    url: "https://nextjs.org",
+    siteName: "Next.js",
+    images: [
+      {
+        // url:'https//echoes.team/api/og?title=Hello brother',
+        url: "https://buffer.com/library/content/images/size/w1200/2023/10/free-images.jpg", // Must be an absolute URL
+        width: 1800,
+        height: 1600,
+        alt: "My custom alt",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -236,7 +253,7 @@ export default function RootLayout({
             content="https://echoes.team/android-chrome-192x192.png"
           />
           <meta name="twitter:creator" content="@satiyum" />
-          <meta property="og:type" content="website" />
+          {/* <meta property="og:type" content="website" />
           <meta property="og:title" content="Echoes" />
           <meta
             property="og:description"
@@ -244,7 +261,7 @@ export default function RootLayout({
           />
           <meta property="og:site_name" content="Echoes" />
           <meta property="og:url" content="https://www.echoes.team/api/og" />
-          <meta property="og:image" content="https://echoes.team/3000/api/og" />
+          <meta property="og:image" content="https://echoes.team/api/og" /> */}
 
           {/* <title>Echoes</title> */}
         </head>
