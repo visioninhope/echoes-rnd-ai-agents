@@ -1,7 +1,7 @@
 import { Button } from "@/components/button";
 import Link from "next/link";
 import { db } from "@/lib/db";
-import { Metadata } from "next";
+import { Metadata, ResolvingMetadata } from "next";
 import { chats, Chat as ChatSchema } from "@/lib/db/schema";
 import { eq, desc, ne, and } from "drizzle-orm";
 import { auth } from "@clerk/nextjs";
@@ -11,24 +11,42 @@ import ChatCardWrapper from "@/components/chatcardwrapper";
 export const dynamic = "force-dynamic",
   revalidate = 0;
 
-export const metadata: Metadata = {
-  openGraph: {
-    title: "Next.js",
-    description: "The React Framework for the Web",
-    url: "https://nextjs.org",
-    siteName: "Next.js",
-    images: [
-      {
-        url: "https://buffer.com/library/content/images/size/w1200/2023/10/free-images.jpg", // Must be an absolute URL
-        width: 1800,
-        height: 1600,
-        alt: "My custom alt",
-      },
-    ],
-    locale: "en_US",
-    type: "website",
-  },
+type Props = {
+  params: { id: string };
+  searchParams: { [key: string]: string | string[] | undefined };
 };
+
+export async function generateMetadata(
+  { params, searchParams }: Props,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
+  // read route params
+  const id = params.id;
+  console.log("params", params);
+  console.log("searchParams", searchParams);
+
+  // fetch data
+
+  return {
+    openGraph: {
+      title: "Echoes",
+      description: "The React Framework for the Web",
+      url: "https://echoes.team",
+      siteName: "Echoes",
+      images: [
+        {
+          url: "https//www.echoes.team/api/og?title=Hello brother",
+          // url: "https://buffer.com/library/content/images/size/w1200/2023/10/free-images.jpg", // Must be an absolute URL
+          width: 1800,
+          height: 1600,
+          alt: "My custom alt",
+        },
+      ],
+      locale: "en_US",
+      type: "website",
+    },
+  };
+}
 
 export default async function Page({
   params,

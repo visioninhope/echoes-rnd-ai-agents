@@ -16,14 +16,15 @@ export const metadata = {
   viewport:
     "minimum-scale=1.0, initial-scale=1.0, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover",
   openGraph: {
-    title: "Next.js",
-    description: "The React Framework for the Web",
-    url: "https://nextjs.org",
-    siteName: "Next.js",
+    title: "Echoes",
+    description:
+      "Collaborative Platform for Researchers. Designed for Humans and AIs.",
+    url: "https://echoes.team",
+    siteName: "Echoes",
     images: [
       {
-        // url:'https//echoes.team/api/og?title=Hello brother',
-        url: "https://buffer.com/library/content/images/size/w1200/2023/10/free-images.jpg", // Must be an absolute URL
+        // url:'https//api/og?title=Hello brother',
+        url: "https://private-user-images.githubusercontent.com/33483920/265264171-292d4969-ecda-4799-b032-cc256dcd872c.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MTMwOTY3MzUsIm5iZiI6MTcxMzA5NjQzNSwicGF0aCI6Ii8zMzQ4MzkyMC8yNjUyNjQxNzEtMjkyZDQ5NjktZWNkYS00Nzk5LWIwMzItY2MyNTZkY2Q4NzJjLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDA0MTQlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwNDE0VDEyMDcxNVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTNhYTU4MGJlZGQwYTI1OTMzM2UwZDNiZmEyNGY2OGU5MGY5MTg4YTc1NDU5NTkxNGI1MzlhZDZiYmY4MDg5MjEmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.AiAHiYIJjan6mdQmnhW5_OVTXvwdCGd5z0xXl6S8nHk", // Must be an absolute URL
         width: 1800,
         height: 1600,
         alt: "My custom alt",
