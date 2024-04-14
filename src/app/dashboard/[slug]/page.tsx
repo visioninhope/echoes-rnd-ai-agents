@@ -28,15 +28,14 @@ export async function generateMetadata(
   // fetch data
 
   return {
+    title: "Echoes",
+    description:
+      "Collaborative Platform for Researchers. Designed for Humans and AIs.",
     openGraph: {
-      title: "Echoes",
-      description: "The React Framework for the Web",
-      url: "https://echoes.team",
-      siteName: "Echoes",
       images: [
         {
-          url: "https//www.echoes.team/api/og?title=Hello brother",
-          // url: "https://buffer.com/library/content/images/size/w1200/2023/10/free-images.jpg", // Must be an absolute URL
+          // url: "https//www.echoes.team/api/og?title=Hello brother",
+          url: "https://0901.static.prezi.com/preview/v2/hxsohg2f6zal6vcgzqdlh4lsfx6jc3sachvcdoaizecfr3dnitcq_3_0.png", // Must be an absolute URL
           width: 1800,
           height: 1600,
           alt: "My custom alt",

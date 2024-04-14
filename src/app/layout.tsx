@@ -24,7 +24,7 @@ export const metadata = {
     images: [
       {
         // url:'https//api/og?title=Hello brother',
-        url: "https://private-user-images.githubusercontent.com/33483920/265264171-292d4969-ecda-4799-b032-cc256dcd872c.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MTMwOTY3MzUsIm5iZiI6MTcxMzA5NjQzNSwicGF0aCI6Ii8zMzQ4MzkyMC8yNjUyNjQxNzEtMjkyZDQ5NjktZWNkYS00Nzk5LWIwMzItY2MyNTZkY2Q4NzJjLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDA0MTQlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwNDE0VDEyMDcxNVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTNhYTU4MGJlZGQwYTI1OTMzM2UwZDNiZmEyNGY2OGU5MGY5MTg4YTc1NDU5NTkxNGI1MzlhZDZiYmY4MDg5MjEmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.AiAHiYIJjan6mdQmnhW5_OVTXvwdCGd5z0xXl6S8nHk", // Must be an absolute URL
+        url: "https://media.licdn.com/dms/image/C560BAQG1AcH3R1tVQA/company-logo_200_200/0/1630661181669?e=2147483647&v=beta&t=UcvY6346uivc84MbUXi7IaPcPNJz9Wd5isemdDWMydI", // Must be an absolute URL
         width: 1800,
         height: 1600,
         alt: "My custom alt",
