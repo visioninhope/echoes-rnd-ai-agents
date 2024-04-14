@@ -1,5 +1,6 @@
 import { ChatLog, ChatType } from "@/lib/types";
 import { db } from "@/lib/db";
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Chat as ChatSchema, chats } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
@@ -8,6 +9,19 @@ import RoomWrapper from "@/components/room";
 import { AblyChannelProvider } from "@/components/ablyprovider";
 export const dynamic = "force-dynamic",
   revalidate = 0;
+
+export const metadata: Metadata = {
+  openGraph: {
+    images: [
+      {
+        url: "https://echoes.team/api/og?title=chat kro veere chat id ",
+        width: 1200,
+        height: 630,
+        alt: "echoes image",
+      },
+    ],
+  },
+};
 
 export default async function Page({
   params,

@@ -10,7 +10,7 @@ import { Providers } from "@/app/providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Echoes",
+  title: "Echoe",
   description: "Seek using Research Agents",
   manifest: "/manifest.json",
   viewport:
@@ -244,9 +244,9 @@ export default function RootLayout({
           />
           <meta property="og:site_name" content="Echoes" />
           <meta property="og:url" content="https://www.echoes.team/api/og" />
-          <meta property="og:image" content="https://www.echoes.team/api/og" />
+          <meta property="og:image" content="https://echoes.team/3000/api/og" />
 
-          <title>Echoes</title>
+          {/* <title>Echoes</title> */}
         </head>
         <body className="bg-background overscroll-none">
           <Providers>

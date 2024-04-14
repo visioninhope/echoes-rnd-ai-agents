@@ -15,14 +15,15 @@ export const metadata: Metadata = {
   openGraph: {
     images: [
       {
-        url: "http://localhost:3000/api/og?title=HelloWorld",
+        url: "https://www.echoes.team/api/og?title=chat kro veere slug",
         width: 1200,
         height: 630,
-        alt: "Hello",
+        alt: "echoes image",
       },
     ],
   },
 };
+
 export default async function Page({
   params,
   searchParams,
