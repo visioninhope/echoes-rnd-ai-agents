@@ -1,6 +1,6 @@
 import { ChatLog, ChatType } from "@/lib/types";
 import { db } from "@/lib/db";
-import { Metadata } from "next";
+import { Metadata, ResolvingMetadata } from "next";
 import { redirect } from "next/navigation";
 import { Chat as ChatSchema, chats } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
@@ -11,26 +11,38 @@ import { AblyChannelProvider } from "@/components/ablyprovider";
 export const dynamic = "force-dynamic",
   revalidate = 0;
 
-export const metadata: Metadata = {
-  openGraph: {
-    title: "Echoes",
+type Props = {
+  params: { id: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+};
+let chattitle: any = "";
+export async function generateMetadata(
+  { params, searchParams }: Props,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
+  // read route params
+  console.log("params", params);
+  console.log("searchParams", searchParams);
+
+  return {
+    title: chattitle,
     description:
       "Collaborative Platform for Researchers. Designed for Humans and AIs.",
-    url: "https://echoes.team",
-    siteName: "Echoes",
-    images: [
-      {
-        // url:'https//echoes.team/api/og?title=Hello brother',
-        url: "https://0901.static.prezi.com/preview/v2/hxsohg2f6zal6vcgzqdlh4lsfx6jc3sachvcdoaizecfr3dnitcq_3_0.png", // Must be an absolute URL
-        width: 1800,
-        height: 1600,
-        alt: "My custom alt",
-      },
-    ],
-    locale: "en_US",
-    type: "website",
-  },
-};
+    openGraph: {
+      images: [
+        {
+          // url: "https//www.echoes.team/api/og?title=Hello brother",
+          url: "https://0901.static.prezi.com/preview/v2/hxsohg2f6zal6vcgzqdlh4lsfx6jc3sachvcdoaizecfr3dnitcq_3_0.png", // Must be an absolute URL
+          width: 1800,
+          height: 1600,
+          alt: "My custom alt",
+        },
+      ],
+      locale: "en_US",
+      type: "website",
+    },
+  };
+}
 
 export default async function Page({
   params,
@@ -72,6 +84,7 @@ export default async function Page({
     chatlog = JSON.parse(msg as string) as ChatLog;
     console.log("chatlog", chatlog);
     console.log("chatlogData", chatlog.log);
+    chattitle = fetchedChat[0]?.title as string;
     // console.log("chatlogSnapshot", chatlog.tldraw_snapshot);
   }
 

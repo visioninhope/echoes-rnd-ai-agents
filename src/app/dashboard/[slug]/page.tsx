@@ -1,11 +1,12 @@
 import { Button } from "@/components/button";
 import Link from "next/link";
 import { db } from "@/lib/db";
-import { Metadata, ResolvingMetadata } from "next";
 import { chats, Chat as ChatSchema } from "@/lib/db/schema";
 import { eq, desc, ne, and } from "drizzle-orm";
 import { auth } from "@clerk/nextjs";
 import ChatCardWrapper from "@/components/chatcardwrapper";
+import { Metadata, ResolvingMetadata } from "next";
+
 // import Uploadzone from "@/components/uploadzone";
 
 export const dynamic = "force-dynamic",
@@ -15,13 +16,11 @@ type Props = {
   params: { id: string };
   searchParams: { [key: string]: string | string[] | undefined };
 };
-
 export async function generateMetadata(
   { params, searchParams }: Props,
   parent: ResolvingMetadata,
 ): Promise<Metadata> {
   // read route params
-  const id = params.id;
   console.log("params", params);
   console.log("searchParams", searchParams);
 
@@ -46,7 +45,6 @@ export async function generateMetadata(
     },
   };
 }
-
 export default async function Page({
   params,
   searchParams,
