@@ -15,24 +15,23 @@ export const metadata = {
   manifest: "/manifest.json",
   viewport:
     "minimum-scale=1.0, initial-scale=1.0, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover",
-  openGraph: {
-    title: "Echoes",
-    description:
-      "Collaborative Platform for Researchers. Designed for Humans and AIs.",
-    url: "https://echoes.team",
-    siteName: "Echoes",
-    images: [
-      {
-        // url:'https//api/og?title=Hello brother',
-        url: "/api/og", // Must be an absolute URL
-        width: 1800,
-        height: 1600,
-        alt: "My custom alt",
-      },
-    ],
-    locale: "en_US",
-    type: "website",
-  },
+  // openGraph: {
+  //   title: "Echoes",
+  //   description:
+  //     "Collaborative Platform for Researchers. Designed for Humans and AIs.",
+  //   url: "https://echoes.team",
+  //   siteName: "Echoes",
+  //   images: [
+  //     {
+  //       url: `/api/og?title=Hello layout`, // Must be an absolute URL
+  //       width: 1800,
+  //       height: 1600,
+  //       alt: "Echoes",
+  //     },
+  //   ],
+  //   locale: "en_US",
+  //   type: "website",
+  // },
 };
 
 export default function RootLayout({

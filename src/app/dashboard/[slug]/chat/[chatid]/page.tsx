@@ -6,6 +6,7 @@ import { eq, and } from "drizzle-orm";
 import { auth, currentUser } from "@clerk/nextjs";
 import RoomWrapper from "@/components/room";
 import { AblyChannelProvider } from "@/components/ablyprovider";
+import { ResolvingMetadata, Metadata } from "next";
 
 export const dynamic = "force-dynamic",
   revalidate = 0;
@@ -14,25 +15,28 @@ type Props = {
   params: { id: string };
   searchParams: { [key: string]: string | string[] | undefined };
 };
+
 let chattitle: any = "";
-console.log("chattitle  in id  page", chattitle);
-export const metadata = {
-  openGraph: {
+export async function generateMetadata(
+  { params, searchParams }: Props,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
+  // read route params
+  const id = params.id;
+
+  return {
     title: "Echoes",
-    description: "The React Framework for the Web",
-    url: "https://www.echoes.team",
-    siteName: "Echoes",
-    images: [
-      {
-        url: `/api/og?title=${chattitle}`, // Must be an absolute URL
-        width: 800,
-        height: 600,
-      },
-    ],
-    locale: "en_US",
-    type: "website",
-  },
-};
+    openGraph: {
+      images: [
+        {
+          url: "api/og", // Must be an absolute URL
+          width: 1200,
+          height: 680,
+        },
+      ],
+    },
+  };
+}
 
 export default async function Page({
   params,
