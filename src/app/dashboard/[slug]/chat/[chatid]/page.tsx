@@ -25,14 +25,14 @@ export async function generateMetadata(
   console.log("searchParams", searchParams);
 
   return {
-    title: chattitle,
+    title: "echoes id",
     description:
       "Collaborative Platform for Researchers. Designed for Humans and AIs.",
     openGraph: {
       images: [
         {
-          // url: "https//www.echoes.team/api/og?title=Hello brother",
-          url: "https://0901.static.prezi.com/preview/v2/hxsohg2f6zal6vcgzqdlh4lsfx6jc3sachvcdoaizecfr3dnitcq_3_0.png", // Must be an absolute URL
+          url: "https//www.echoes.team/api/og",
+          // url: "https://0901.static.prezi.com/preview/v2/hxsohg2f6zal6vcgzqdlh4lsfx6jc3sachvcdoaizecfr3dnitcq_3_0.png", // Must be an absolute URL
           width: 1800,
           height: 1600,
           alt: "My custom alt",
