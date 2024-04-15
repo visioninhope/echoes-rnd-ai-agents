@@ -23,7 +23,7 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   // read route params
   const id = params.id;
-  const ogurl = new URL("api/og");
+  const ogurl = new URL("http://localhost:3000/api/og?title=Hello");
   ogurl.searchParams.set("title", chattitle);
 
   console.log("chattitle in chat id page ", chattitle);
@@ -34,7 +34,9 @@ export async function generateMetadata(
       title: "Echoes",
       description: "Echoes Slug",
       type: "website",
-      images: ["api/og?title=hello id"],
+      images: ["api/og?title=Hello id"],
+      siteName: "Echoes",
+      url: `https://www.echoes.team`,
     },
   };
 }

@@ -9,30 +9,30 @@ import { Toaster } from "@/components/ui/toaster";
 import { Providers } from "@/app/providers";
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata = {
-  title: "Echoes",
-  description: "Seek using Research Agents",
-  manifest: "/manifest.json",
-  viewport:
-    "minimum-scale=1.0, initial-scale=1.0, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover",
-  openGraph: {
-    title: "Echoes",
-    description:
-      "Collaborative Platform for Researchers. Designed for Humans and AIs.",
-    url: "https://echoes.team",
-    siteName: "Echoes",
-    images: [
-      {
-        url: `/api/og`, // Must be an absolute URL
-        width: 1800,
-        height: 1600,
-        alt: "Echoes",
-      },
-    ],
-    locale: "en_US",
-    type: "website",
-  },
-};
+// export const metadata = {
+//   title: "Echoes",
+//   description: "Seek using Research Agents",
+//   manifest: "/manifest.json",
+//   viewport:
+//     "minimum-scale=1.0, initial-scale=1.0, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover",
+//   openGraph: {
+//     title: "Echoes",
+//     description:
+//       "Collaborative Platform for Researchers. Designed for Humans and AIs.",
+//     url: "https://echoes.team",
+//     siteName: "Echoes",
+//     images: [
+//       {
+//         url: `/api/og`, // Must be an absolute URL
+//         width: 1800,
+//         height: 1600,
+//         alt: "Echoes",
+//       },
+//     ],
+//     locale: "en_US",
+//     type: "website",
+//   },
+// };
 
 export default function RootLayout({
   children,
@@ -263,7 +263,7 @@ export default function RootLayout({
           <meta property="og:url" content="https://www.echoes.team/api/og" />
           <meta property="og:image" content="https://echoes.team/api/og" /> */}
 
-          {/* <title>Echoes</title> */}
+          <title>Echoes</title>
         </head>
         <body className="bg-background overscroll-none">
           <Providers>

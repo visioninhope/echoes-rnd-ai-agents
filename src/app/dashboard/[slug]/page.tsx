@@ -32,7 +32,9 @@ export async function generateMetadata({
       title: "Echoes",
       description: "Echoes Slug",
       type: "website",
-      images: ["api/og?title=hello slug"],
+      images: ["api/og?title=Hello slug"],
+      siteName: "Echoes",
+      url: `https://www.echoes.team`,
     },
   };
 }
