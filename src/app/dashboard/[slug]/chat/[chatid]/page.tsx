@@ -1,6 +1,5 @@
 import { ChatLog, ChatType } from "@/lib/types";
 import { db } from "@/lib/db";
-import { Metadata, ResolvingMetadata } from "next";
 import { redirect } from "next/navigation";
 import { Chat as ChatSchema, chats } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
@@ -16,33 +15,24 @@ type Props = {
   searchParams: { [key: string]: string | string[] | undefined };
 };
 let chattitle: any = "";
-export async function generateMetadata(
-  { params, searchParams }: Props,
-  parent: ResolvingMetadata,
-): Promise<Metadata> {
-  // read route params
-  console.log("params", params);
-  console.log("searchParams", searchParams);
-
-  return {
-    title: "echoes id",
-    description:
-      "Collaborative Platform for Researchers. Designed for Humans and AIs.",
-    openGraph: {
-      images: [
-        {
-          url: "/api/og",
-          // url: "https://0901.static.prezi.com/preview/v2/hxsohg2f6zal6vcgzqdlh4lsfx6jc3sachvcdoaizecfr3dnitcq_3_0.png", // Must be an absolute URL
-          width: 1800,
-          height: 1600,
-          alt: "My custom alt",
-        },
-      ],
-      locale: "en_US",
-      type: "website",
-    },
-  };
-}
+console.log("chattitle  in id  page", chattitle);
+export const metadata = {
+  openGraph: {
+    title: "Echoes",
+    description: "The React Framework for the Web",
+    url: "https://www.echoes.team",
+    siteName: "Echoes",
+    images: [
+      {
+        url: `/api/og?title=${chattitle}`, // Must be an absolute URL
+        width: 800,
+        height: 600,
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+};
 
 export default async function Page({
   params,

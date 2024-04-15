@@ -74,7 +74,7 @@ export async function GET(request: Request) {
               fontWeight: "900",
             }}
           >
-            The Dual Role of Tween 80 in Biofilm Formation
+            {title ? title : " The Dual Role of Tween 80 in Biofilm Formation"}
           </h1>
           <h2
             style={{

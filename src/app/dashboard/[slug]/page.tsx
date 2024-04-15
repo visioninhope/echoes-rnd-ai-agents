@@ -5,7 +5,6 @@ import { chats, Chat as ChatSchema } from "@/lib/db/schema";
 import { eq, desc, ne, and } from "drizzle-orm";
 import { auth } from "@clerk/nextjs";
 import ChatCardWrapper from "@/components/chatcardwrapper";
-import { Metadata, ResolvingMetadata } from "next";
 
 // import Uploadzone from "@/components/uploadzone";
 
@@ -16,67 +15,23 @@ type Props = {
   params: { id: string };
   searchParams: { [key: string]: string | string[] | undefined };
 };
-export async function generateMetadata(
-  { params, searchParams }: Props,
-  parent: ResolvingMetadata,
-): Promise<Metadata> {
-  // read route params
-  console.log("params", params);
-  console.log("searchParams", searchParams);
-
-  const ogUrl = new URL(`https://www.echoes.team/api/og?title=Hello+brother`);
-  console.log("ogUrl", ogUrl.toString());
-
-  // const res = await axios.get(`/api/og`);
-  // console.log("fetchImageResponce", res.data)
-  // const imageUrl = `image=${encodeURIComponent(
-  //   res.data.imageUrl || "",
-  // )}&description=${encodeURIComponent(
-  //   res.data.description || "",
-  // )}`;
-
-  // console.log("imageUrl", imageUrl)
-
-  // fetch(ogUrl)
-  //   .then(response => {
-  //     if (!response.ok) {
-  //       throw new Error('Network response was not ok');
-  //     }
-  //     return response.json();
-  //   })
-  //   .then(data => {
-  //     const imageUrl = data.imageUrl;
-  //     console.log("img",imageUrl);
-  //     const img = document.createElement('img');
-  //     img.src = imageUrl;
-  //     document.body.appendChild(img); // Append the image to the body or any other desired element
-  //   })
-  //   .catch(error => {
-  //     console.error('Error fetching data:', error);
-  //   });
-
-  return {
+export const metadata = {
+  openGraph: {
     title: "Echoes",
-    description:
-      "Collaborative Platform for Researchers. Designed for Humans and AIs.",
-    openGraph: {
-      title: "Echoes",
-      description:
-        "Collaborative Platform for Researchers. Designed for Humans and AIs.",
-      images: [
-        {
-          // url: ogUrl.toString(),
-          url: "https://0901.static.prezi.com/preview/v2/hxsohg2f6zal6vcgzqdlh4lsfx6jc3sachvcdoaizecfr3dnitcq_3_0.png", // Must be an absolute URL
-          width: 1800,
-          height: 1600,
-          alt: "My custom alt",
-        },
-      ],
-      locale: "en_US",
-      type: "website",
-    },
-  };
-}
+    description: "The React Framework for the Web slug",
+    url: "https://www.echoes.team",
+    siteName: "Echoes",
+    images: [
+      {
+        url: `/api/og`, // Must be an absolute URL
+        width: 800,
+        height: 600,
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+};
 export default async function Page({
   params,
   searchParams,
