@@ -4,6 +4,41 @@ import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
 
+// Gradient Square Component
+function GradientSquare() {
+  return (
+    <div
+      style={{
+        width: "60px",
+        height: "60px",
+        background:
+          "linear-gradient(180deg, rgba(0,128,0,1) 0%, rgba(0,255,0,1) 100%)",
+        marginBottom: "20px",
+      }}
+    ></div>
+  );
+}
+
+function Circle() {
+  return (
+    <div
+      style={{
+        width: "60px",
+        height: "60px",
+        backgroundColor: "blue", // Assuming a blue background for the circle
+        borderRadius: "50%",
+        color: "white",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        marginBottom: "20px",
+      }}
+    >
+      IK
+    </div>
+  );
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -16,49 +51,54 @@ export async function GET(request: Request) {
 
     return new ImageResponse(
       (
+        // Main Design Component
         <div
           style={{
             backgroundColor: "black",
             backgroundSize: "150px 150px",
-            height: "100%",
+            height: "100vh",
             width: "100%",
             display: "flex",
-            textAlign: "center",
-            alignItems: "center",
-            justifyContent: "center",
+            padding: "80px",
             flexDirection: "column",
             flexWrap: "nowrap",
           }}
         >
+          <h1
+            style={{
+              color: "white",
+              marginBottom: "2px",
+              fontSize: "2.5rem",
+              width: "50vw",
+              fontFamily: "serif",
+              fontWeight: "900",
+            }}
+          >
+            The Dual Role of Tween 80 in Biofilm Formation
+          </h1>
+          <h2
+            style={{
+              color: "grey",
+              fontWeight: "normal",
+              fontFamily: "sans-serif",
+              fontSize: "2rem",
+            }}
+          >
+            Inhibition and Enhancement
+          </h2>
           <div
             style={{
               display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              justifyItems: "center",
+              justifyContent: "space-between",
+              marginTop: "30vh",
             }}
           >
-            <img
-              alt="Vercel"
-              height={200}
-              src="data:image/svg+xml,%3Csvg width='116' height='100' fill='white' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M57.5 0L115 100H0L57.5 0z' /%3E%3C/svg%3E"
-              style={{ margin: "0 30px" }}
-              width={232}
-            />
-          </div>
-          <div
-            style={{
-              fontSize: 60,
-              fontStyle: "normal",
-              letterSpacing: "-0.025em",
-              color: "white",
-              marginTop: 30,
-              padding: "0 120px",
-              lineHeight: 1.4,
-              whiteSpace: "pre-wrap",
-            }}
-          >
-            {title}
+            <span>
+              <Circle />
+            </span>
+            <span>
+              <GradientSquare />
+            </span>
           </div>
         </div>
       ),

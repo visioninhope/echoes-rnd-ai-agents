@@ -24,16 +24,48 @@ export async function generateMetadata(
   console.log("params", params);
   console.log("searchParams", searchParams);
 
-  // fetch data
+  const ogUrl = new URL(`https://www.echoes.team/api/og?title=Hello+brother`);
+  console.log("ogUrl", ogUrl.toString());
+
+  // const res = await axios.get(`/api/og`);
+  // console.log("fetchImageResponce", res.data)
+  // const imageUrl = `image=${encodeURIComponent(
+  //   res.data.imageUrl || "",
+  // )}&description=${encodeURIComponent(
+  //   res.data.description || "",
+  // )}`;
+
+  // console.log("imageUrl", imageUrl)
+
+  // fetch(ogUrl)
+  //   .then(response => {
+  //     if (!response.ok) {
+  //       throw new Error('Network response was not ok');
+  //     }
+  //     return response.json();
+  //   })
+  //   .then(data => {
+  //     const imageUrl = data.imageUrl;
+  //     console.log("img",imageUrl);
+  //     const img = document.createElement('img');
+  //     img.src = imageUrl;
+  //     document.body.appendChild(img); // Append the image to the body or any other desired element
+  //   })
+  //   .catch(error => {
+  //     console.error('Error fetching data:', error);
+  //   });
 
   return {
     title: "Echoes",
     description:
       "Collaborative Platform for Researchers. Designed for Humans and AIs.",
     openGraph: {
+      title: "Echoes",
+      description:
+        "Collaborative Platform for Researchers. Designed for Humans and AIs.",
       images: [
         {
-          // url: "https//www.echoes.team/api/og?title=Hello brother",
+          // url: ogUrl.toString(),
           url: "https://0901.static.prezi.com/preview/v2/hxsohg2f6zal6vcgzqdlh4lsfx6jc3sachvcdoaizecfr3dnitcq_3_0.png", // Must be an absolute URL
           width: 1800,
           height: 1600,
