@@ -5,7 +5,7 @@ import { chats, Chat as ChatSchema } from "@/lib/db/schema";
 import { eq, desc, ne, and } from "drizzle-orm";
 import { auth } from "@clerk/nextjs";
 import ChatCardWrapper from "@/components/chatcardwrapper";
-import { Metadata, ResolvingMetadata } from "next";
+import { Metadata } from "next";
 
 // import Uploadzone from "@/components/uploadzone";
 
@@ -18,17 +18,21 @@ type Props = {
 };
 
 let chattitle: any = "";
-export async function generateMetadata(
-  { params, searchParams }: Props,
-  parent: ResolvingMetadata,
-): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+  searchParams,
+}: Props): Promise<Metadata> {
   // read route params
   const id = params.id;
 
   return {
     title: "Echoes",
+    description: "echoes slug",
     openGraph: {
-      images: ["api/og"],
+      title: "Echoes",
+      description: "Echoes Slug",
+      type: "website",
+      images: ["api/og?title=hello slug"],
     },
   };
 }

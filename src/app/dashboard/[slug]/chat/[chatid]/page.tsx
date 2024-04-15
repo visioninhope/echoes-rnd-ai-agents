@@ -23,17 +23,18 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   // read route params
   const id = params.id;
+  const ogurl = new URL("api/og");
+  ogurl.searchParams.set("title", chattitle);
 
+  console.log("chattitle in chat id page ", chattitle);
   return {
     title: "Echoes",
+    description: "echoes slug",
     openGraph: {
-      images: [
-        {
-          url: "api/og", // Must be an absolute URL
-          width: 1200,
-          height: 680,
-        },
-      ],
+      title: "Echoes",
+      description: "Echoes Slug",
+      type: "website",
+      images: ["api/og?title=hello id"],
     },
   };
 }

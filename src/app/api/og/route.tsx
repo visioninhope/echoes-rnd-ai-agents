@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+
 // App router includes @vercel/og.
 // No need to install it.
 
@@ -41,13 +42,15 @@ function Circle() {
 
 export async function GET(request: Request) {
   try {
-    const { searchParams } = new URL(request.url);
-
-    // ?title=<title>
-    const hasTitle = searchParams.has("title");
-    const title = hasTitle
-      ? searchParams.get("title")?.slice(0, 100)
-      : "My default title";
+    const urlParams = new URLSearchParams(request.url.split("?")[1]); // Splitting URL to get query params
+    const title = urlParams.get("title");
+    console.log("title01", title);
+    // const { searchParams } = new URL(request.url);
+    // console.log("searchParams", searchParams)
+    // const hasTitle = searchParams.has("title");
+    // const title = hasTitle
+    //   ? searchParams.get("title")?.slice(0, 100)
+    //   : "My default title";
 
     return new ImageResponse(
       (
@@ -97,6 +100,14 @@ export async function GET(request: Request) {
               <Circle />
             </span>
             <span>
+              {/* <img
+                width="40"
+                height="40"
+                src={"https://ik.imagekit.io/echoes/echoes_logo.png"}
+                style={{
+                  borderRadius: 128,
+                }}
+              /> */}
               <GradientSquare />
             </span>
           </div>
