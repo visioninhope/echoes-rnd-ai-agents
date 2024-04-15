@@ -24,7 +24,7 @@ export const metadata = {
     images: [
       {
         // url:'https//api/og?title=Hello brother',
-        url: "https://media.licdn.com/dms/image/C560BAQG1AcH3R1tVQA/company-logo_200_200/0/1630661181669?e=2147483647&v=beta&t=UcvY6346uivc84MbUXi7IaPcPNJz9Wd5isemdDWMydI", // Must be an absolute URL
+        url: "https//www.echoes.team/api/og", // Must be an absolute URL
         width: 1800,
         height: 1600,
         alt: "My custom alt",
