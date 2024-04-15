@@ -31,7 +31,7 @@ export async function generateMetadata(
     openGraph: {
       images: [
         {
-          url: "https//www.echoes.team/api/og",
+          url: "/api/og",
           // url: "https://0901.static.prezi.com/preview/v2/hxsohg2f6zal6vcgzqdlh4lsfx6jc3sachvcdoaizecfr3dnitcq_3_0.png", // Must be an absolute URL
           width: 1800,
           height: 1600,

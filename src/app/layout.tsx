@@ -24,7 +24,7 @@ export const metadata = {
     images: [
       {
         // url:'https//api/og?title=Hello brother',
-        url: "https//www.echoes.team/api/og", // Must be an absolute URL
+        url: "/api/og", // Must be an absolute URL
         width: 1800,
         height: 1600,
         alt: "My custom alt",
