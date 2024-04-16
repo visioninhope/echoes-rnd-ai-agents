@@ -25,7 +25,7 @@ export async function generateMetadata({
   const id = params.id;
 
   return {
-    title: "Echoes",
+    title: "Echoes slug",
     description: "echoes",
     openGraph: {
       title: "Echoes",
