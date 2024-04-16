@@ -28,13 +28,19 @@ export async function generateMetadata(
 
   console.log("chattitle in chat id page ", chattitle);
   return {
-    title: "Echoes",
+    title: "Echoesss",
     description: "echoes slug",
     openGraph: {
       title: "Echoes",
-      description: "Echoes Slug",
+      description: "Echoes id",
       type: "website",
-      images: ["api/og?title=Hello id"],
+      images: [
+        {
+          url: "api/og",
+          width: 1200,
+          height: 680,
+        },
+      ],
       siteName: "Echoes",
       url: `https://www.echoes.team`,
     },
