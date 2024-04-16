@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic",
   revalidate = 0;
 
 type Props = {
-  params: { id: string };
+  params: { id: string; uid: string; chatid: string; chattitle: string };
   searchParams: { [key: string]: string | string[] | undefined };
 };
 
@@ -25,18 +25,33 @@ export async function generateMetadata(
   const id = params.id;
   const ogurl = new URL("http://localhost:3000/api/og?title=Hello");
   ogurl.searchParams.set("title", chattitle);
+  const { userId, sessionClaims } = auth();
+  let fetchedChat: ChatSchema[] = [];
+  if (sessionClaims?.org_id) {
+    fetchedChat = await db
+      .select()
+      .from(chats)
+      .where(
+        and(
+          eq(chats.id, Number(params.chatid)),
+          eq(chats.user_id, sessionClaims?.org_id),
+        ),
+      )
+      .limit(1)
+      .all();
+  }
 
-  console.log("chattitle in chat id page ", chattitle);
+  console.log("chattitle in chat id page ", fetchedChat[0]?.title as string);
   return {
-    title: "Echoesss",
-    description: "echoes slug",
+    title: "Echoes Chat",
+    description: "echoes Chat",
     openGraph: {
-      title: "Echoes",
-      description: "Echoes id",
+      title: fetchedChat[0]?.title as string,
+      description: "Echoes",
       type: "website",
       images: [
         {
-          url: "api/og",
+          url: `api/og?title=${fetchedChat[0]?.title as string}`,
           width: 1200,
           height: 680,
         },
@@ -47,11 +62,7 @@ export async function generateMetadata(
   };
 }
 
-export default async function Page({
-  params,
-}: {
-  params: { uid: string; chatid: string };
-}) {
+export default async function Page({ params }: Props) {
   const { userId, sessionClaims } = auth();
 
   const user = await currentUser();
@@ -65,7 +76,6 @@ export default async function Page({
   }
 
   let chatlog: ChatLog = { log: [], tldraw_snapshot: [] };
-  // let tldrawSnapshot: SnapShot = { tldraw_snapshot: [] }
   let fetchedChat: ChatSchema[] = [];
 
   if (sessionClaims.org_id) {
@@ -82,13 +92,11 @@ export default async function Page({
       .all();
   }
   const msg = fetchedChat[0]?.messages;
-  console.log("msg", msg);
   if (fetchedChat.length === 1 && msg) {
     chatlog = JSON.parse(msg as string) as ChatLog;
-    console.log("chatlog", chatlog);
-    console.log("chatlogData", chatlog.log);
+    // console.log("chatlog", chatlog);
+    // console.log("chatlogData", chatlog.log);
     chattitle = fetchedChat[0]?.title as string;
-    // console.log("chatlogSnapshot", chatlog.tldraw_snapshot);
   }
 
   return (

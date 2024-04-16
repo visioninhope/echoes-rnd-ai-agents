@@ -44,13 +44,14 @@ export async function GET(request: Request) {
   try {
     const urlParams = new URLSearchParams(request.url.split("?")[1]); // Splitting URL to get query params
     const title = urlParams.get("title");
-    console.log("title01", title);
-    const { searchParams } = new URL(request.url);
-    console.log("searchParams", searchParams);
-    const hasTitle = searchParams.has("title");
-    const title01 = hasTitle
-      ? searchParams.get("title")?.slice(0, 100)
-      : "My default title";
+    console.log("title", title);
+    console.log("request.url", request.url);
+    // const { searchParams } = new URL(request.url);
+    // console.log("searchParams", searchParams);
+    // const hasTitle = searchParams.has("title");
+    // const title01 = hasTitle
+    //   ? searchParams.get("title")?.slice(0, 100)
+    //   : "My default title";
 
     return new ImageResponse(
       (

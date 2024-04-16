@@ -23,7 +23,7 @@ export const metadata = {
     siteName: "Echoes",
     images: [
       {
-        url: `/api/og`, // Must be an absolute URL
+        url: `/api/og?title=This is Echoes Team`,
         width: 1800,
         height: 1600,
         alt: "Echoes",
