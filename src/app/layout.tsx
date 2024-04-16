@@ -15,23 +15,23 @@ export const metadata = {
   manifest: "/manifest.json",
   viewport:
     "minimum-scale=1.0, initial-scale=1.0, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover",
-  // openGraph: {
-  //   title: "Echoes",
-  //   description:
-  //     "Collaborative Platform for Researchers. Designed for Humans and AIs.",
-  //   url: "https://echoes.team",
-  //   siteName: "Echoes",
-  //   images: [
-  //     {
-  //       url: `/api/og`, // Must be an absolute URL
-  //       width: 1800,
-  //       height: 1600,
-  //       alt: "Echoes",
-  //     },
-  //   ],
-  //   locale: "en_US",
-  //   type: "website",
-  // },
+  openGraph: {
+    title: "Echoes",
+    description:
+      "Collaborative Platform for Researchers. Designed for Humans and AIs.",
+    url: "https://echoes.team",
+    siteName: "Echoes",
+    images: [
+      {
+        url: `/api/og`, // Must be an absolute URL
+        width: 1800,
+        height: 1600,
+        alt: "Echoes",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -253,15 +253,15 @@ export default function RootLayout({
             content="https://echoes.team/android-chrome-192x192.png"
           />
           <meta name="twitter:creator" content="@satiyum" />
-          <meta property="og:type" content="website" />
+          {/* <meta property="og:type" content="website" />
           <meta property="og:title" content="Echoes" />
           <meta
             property="og:description"
             content="Collaborative Platform for Researchers. Designed for Humans and AIs."
           />
           <meta property="og:site_name" content="Echoes" />
-          <meta property="og:url" content="/api/og" />
-          <meta property="og:image" content="/api/og" />
+          <meta property="og:url" content="https://www.echoes.team/api/og" />
+          <meta property="og:image" content="https://echoes.team/api/og" /> */}
 
           {/* <title>Echoes</title> */}
         </head>
