@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-
+import logo from "@/assets/logo.png";
 // App router includes @vercel/og.
 // No need to install it.
 
@@ -45,7 +45,8 @@ export async function GET(request: Request) {
     const urlParams = new URLSearchParams(request.url.split("?")[1]); // Splitting URL to get query params
     const title = urlParams.get("title");
     console.log("title", title);
-    console.log("request.url", request.url);
+    console.log("request.url", request.url, logo);
+
     // const { searchParams } = new URL(request.url);
     // console.log("searchParams", searchParams);
     // const hasTitle = searchParams.has("title");
@@ -55,7 +56,6 @@ export async function GET(request: Request) {
 
     return new ImageResponse(
       (
-        // Main Design Component
         <div
           style={{
             backgroundColor: "black",
@@ -68,48 +68,57 @@ export async function GET(request: Request) {
             flexWrap: "nowrap",
           }}
         >
-          <h1
+          <div
             style={{
-              color: "white",
-              marginBottom: "2px",
-              fontSize: "2.5rem",
+              display: "flex",
+              gap: "6px",
+              flexDirection: "column",
               width: "50vw",
-              fontFamily: "serif",
-              fontWeight: "900",
+              overflowWrap: "normal",
             }}
           >
-            {title ? title : " The Dual Role of Tween 80 in Biofilm Formation"}
-          </h1>
-          <h2
-            style={{
-              color: "grey",
-              fontWeight: "normal",
-              fontFamily: "sans-serif",
-              fontSize: "2rem",
-            }}
-          >
-            Inhibition and Enhancement
-          </h2>
+            <h1
+              style={{
+                color: "white",
+                marginBottom: "2px",
+                fontSize: "2.5rem",
+                width: "50vw",
+                fontFamily: "serif",
+                fontWeight: "900",
+              }}
+            >
+              {title
+                ? title
+                : " The Dual Role of Tween 80 in Biofilm Formation"}
+            </h1>
+            <h2
+              style={{
+                color: "grey",
+                fontWeight: "normal",
+                fontFamily: "sans-serif",
+                fontSize: "2rem",
+              }}
+            >
+              Inhibition and Enhancement
+            </h2>
+          </div>
           <div
             style={{
               display: "flex",
               justifyContent: "space-between",
-              marginTop: "30vh",
+              marginTop: "25vh",
             }}
           >
             <span>
               <Circle />
             </span>
             <span>
-              {/* <img
-                width="40"
-                height="40"
-                src={"https://ik.imagekit.io/echoes/echoes_logo.png"}
-                style={{
-                  borderRadius: 128,
-                }}
-              /> */}
-              <GradientSquare />
+              <img
+                width="60"
+                height="60"
+                src={`https://www.echoes.team${logo.src}`}
+              />
+              {/* <GradientSquare /> */}
             </span>
           </div>
         </div>
