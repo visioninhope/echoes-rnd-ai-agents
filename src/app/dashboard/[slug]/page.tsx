@@ -34,7 +34,7 @@ export async function generateMetadata({
       type: "website",
       images: [
         {
-          url: "api/og", // Must be an absolute URL
+          url: "api/og",
           width: 1200,
           height: 680,
         },

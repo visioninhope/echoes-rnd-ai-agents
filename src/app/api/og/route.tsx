@@ -24,9 +24,9 @@ function Circle() {
   return (
     <div
       style={{
-        width: "60px",
-        height: "60px",
-        backgroundColor: "blue", // Assuming a blue background for the circle
+        width: "85px",
+        height: "85px",
+        backgroundColor: "green", // Assuming a blue background for the circle
         borderRadius: "50%",
         color: "white",
         display: "flex",
@@ -45,7 +45,6 @@ export async function GET(request: Request) {
     const urlParams = new URLSearchParams(request.url.split("?")[1]); // Splitting URL to get query params
     const title = urlParams.get("title");
     console.log("title", title);
-    console.log("request.url", request.url, logo);
 
     // const { searchParams } = new URL(request.url);
     // console.log("searchParams", searchParams);
@@ -81,10 +80,10 @@ export async function GET(request: Request) {
               style={{
                 color: "white",
                 marginBottom: "2px",
-                fontSize: "2.5rem",
+                fontSize: "2.9rem",
                 width: "50vw",
                 fontFamily: "serif",
-                fontWeight: "900",
+                fontWeight: "bolder",
               }}
             >
               {title
@@ -96,7 +95,7 @@ export async function GET(request: Request) {
                 color: "grey",
                 fontWeight: "normal",
                 fontFamily: "sans-serif",
-                fontSize: "2rem",
+                fontSize: "2.2rem",
               }}
             >
               Inhibition and Enhancement
@@ -106,7 +105,7 @@ export async function GET(request: Request) {
             style={{
               display: "flex",
               justifyContent: "space-between",
-              marginTop: "25vh",
+              marginTop: "22vh",
             }}
           >
             <span>
@@ -114,8 +113,8 @@ export async function GET(request: Request) {
             </span>
             <span>
               <img
-                width="60"
-                height="60"
+                width="85"
+                height="85"
                 src={`https://www.echoes.team${logo.src}`}
               />
               {/* <GradientSquare /> */}
