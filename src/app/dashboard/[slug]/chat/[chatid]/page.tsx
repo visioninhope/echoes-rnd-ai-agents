@@ -16,16 +16,11 @@ type Props = {
   searchParams: { [key: string]: string | string[] | undefined };
 };
 
-let chattitle: any = "";
 export async function generateMetadata(
   { params, searchParams }: Props,
   parent: ResolvingMetadata,
 ): Promise<Metadata> {
-  // read route params
-  const id = params.id;
-  const ogurl = new URL("http://localhost:3000/api/og?title=Hello");
-  ogurl.searchParams.set("title", chattitle);
-  const { userId, sessionClaims } = auth();
+  const { sessionClaims } = auth();
   let fetchedChat: ChatSchema[] = [];
   if (sessionClaims?.org_id) {
     fetchedChat = await db
@@ -40,8 +35,7 @@ export async function generateMetadata(
       .limit(1)
       .all();
   }
-
-  console.log("chattitle in chat id page ", fetchedChat[0]?.title as string);
+  console.log("chattitle in chat id page", fetchedChat[0]?.title as string);
   return {
     title: "Echoes Chat",
     description: "echoes Chat",
@@ -56,8 +50,6 @@ export async function generateMetadata(
           height: 680,
         },
       ],
-      siteName: "Echoes",
-      url: `https://www.echoes.team`,
     },
   };
 }
@@ -96,7 +88,6 @@ export default async function Page({ params }: Props) {
     chatlog = JSON.parse(msg as string) as ChatLog;
     // console.log("chatlog", chatlog);
     // console.log("chatlogData", chatlog.log);
-    chattitle = fetchedChat[0]?.title as string;
   }
 
   return (

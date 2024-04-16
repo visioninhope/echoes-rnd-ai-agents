@@ -39,8 +39,6 @@ export async function generateMetadata({
           height: 680,
         },
       ],
-      siteName: "Echoes",
-      url: `https://www.echoes.team`,
     },
   };
 }

@@ -6,7 +6,7 @@ import { env } from "@/app/env.mjs";
 // This is your original middleware
 const clerkMiddleware = authMiddleware({
   // "/" will be accessible to all users
-  publicRoutes: ["/api/og"],
+  publicRoutes: ["/api/og", "/dashboard/user"],
 });
 
 export async function middleware(req: NextRequest, event: NextFetchEvent) {

@@ -23,7 +23,7 @@ export const metadata = {
     siteName: "Echoes",
     images: [
       {
-        url: `/api/og?title=This is Echoes Team`,
+        url: `/api/og?title=Collaborative Platform for Researchers. Designed for Humans and AIs.`,
         width: 1800,
         height: 1600,
         alt: "Echoes",
