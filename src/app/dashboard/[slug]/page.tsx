@@ -17,7 +17,6 @@ type Props = {
   searchParams: { [key: string]: string | string[] | undefined };
 };
 
-let chattitle: any = "";
 export async function generateMetadata({
   params,
   searchParams,
@@ -27,10 +26,10 @@ export async function generateMetadata({
 
   return {
     title: "Echoes",
-    description: "echoes slug",
+    description: "echoes",
     openGraph: {
       title: "Echoes",
-      description: "Echoes Slug",
+      description: "Echoes",
       type: "website",
       images: [
         {

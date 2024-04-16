@@ -22,22 +22,19 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const { sessionClaims } = auth();
   let fetchedChat: ChatSchema[] = [];
-  if (sessionClaims?.org_id) {
-    fetchedChat = await db
-      .select()
-      .from(chats)
-      .where(
-        and(
-          eq(chats.id, Number(params.chatid)),
-          eq(chats.user_id, sessionClaims?.org_id),
-        ),
-      )
-      .limit(1)
-      .all();
-  }
+
+  console.log("params", params);
+  console.log("searchParams", searchParams);
+  fetchedChat = await db
+    .select()
+    .from(chats)
+    .where(and(eq(chats.id, Number(params.chatid))))
+    .limit(1)
+    .all();
   console.log("chattitle in chat id page", fetchedChat[0]?.title as string);
+
   return {
-    title: "Echoes Chat",
+    title: "Echoes",
     description: "echoes Chat",
     openGraph: {
       title: fetchedChat[0]?.title as string,

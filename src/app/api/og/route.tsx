@@ -26,7 +26,7 @@ function Circle() {
       style={{
         width: "85px",
         height: "85px",
-        backgroundColor: "green", // Assuming a blue background for the circle
+        backgroundColor: "green",
         borderRadius: "50%",
         color: "white",
         display: "flex",
@@ -42,9 +42,17 @@ function Circle() {
 
 export async function GET(request: Request) {
   try {
-    const urlParams = new URLSearchParams(request.url.split("?")[1]); // Splitting URL to get query params
-    const title = urlParams.get("title");
-    console.log("title", title);
+    let title: string | null = "";
+    try {
+      const urlParams = new URLSearchParams(request.url.split("?")[1]); // Splitting URL to get query params
+      title = urlParams.get("title");
+      console.log("title", title);
+    } catch (error) {
+      console.error("Error parsing URL:", error);
+    }
+    // const urlParams = new URLSearchParams(request.url.split("?")[1]); // Splitting URL to get query params
+    // const title = urlParams.get("title");
+    // console.log("title", title);
 
     // const { searchParams } = new URL(request.url);
     // console.log("searchParams", searchParams);
@@ -55,59 +63,18 @@ export async function GET(request: Request) {
 
     return new ImageResponse(
       (
-        <div
-          style={{
-            backgroundColor: "black",
-            backgroundSize: "150px 150px",
-            height: "100vh",
-            width: "100%",
-            display: "flex",
-            padding: "80px",
-            flexDirection: "column",
-            flexWrap: "nowrap",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              gap: "6px",
-              flexDirection: "column",
-              width: "50vw",
-              overflowWrap: "normal",
-            }}
-          >
-            <h1
-              style={{
-                color: "white",
-                marginBottom: "2px",
-                fontSize: "2.9rem",
-                width: "50vw",
-                fontFamily: "serif",
-                fontWeight: "bolder",
-              }}
-            >
+        <div tw="bg-black bg-cover h-screen w-full flex flex-col  justify-center p-20">
+          <div tw="flex flex-col gap-8">
+            <h1 tw="text-white mb-2 text-3xl font-serif  font-extrabold w-[42vw]">
               {title
                 ? title
                 : " The Dual Role of Tween 80 in Biofilm Formation"}
             </h1>
-            <h2
-              style={{
-                color: "grey",
-                fontWeight: "normal",
-                fontFamily: "sans-serif",
-                fontSize: "2.2rem",
-              }}
-            >
+            <h2 tw="text-gray-500 font-normal font-sans text-2xl">
               Inhibition and Enhancement
             </h2>
           </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              marginTop: "22vh",
-            }}
-          >
+          <div tw="flex justify-between mt-[100px]">
             <span>
               <Circle />
             </span>
