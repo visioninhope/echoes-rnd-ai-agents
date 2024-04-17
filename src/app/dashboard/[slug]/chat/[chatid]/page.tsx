@@ -22,19 +22,23 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const { sessionClaims } = auth();
   let fetchedChat: ChatSchema[] = [];
+  // console.log("parent",parent)
+  const previousImages = (await parent).openGraph?.images || [];
 
-  console.log("params", params);
-  console.log("searchParams", searchParams);
-  fetchedChat = await db
-    .select()
-    .from(chats)
-    .where(and(eq(chats.id, Number(params.chatid))))
-    .limit(1)
-    .all();
+  // console.log("params", params);
+  // console.log("searchParams", searchParams)
+  if (sessionClaims?.org_id) {
+    fetchedChat = await db
+      .select()
+      .from(chats)
+      .where(and(eq(chats.id, Number(params.chatid))))
+      .limit(1)
+      .all();
+  }
   console.log("chattitle in chat id page", fetchedChat[0]?.title as string);
 
   return {
-    title: "Echoes chat",
+    title: "Echoes",
     description: "echoes Chat",
     openGraph: {
       title: fetchedChat[0]?.title as string,
@@ -43,9 +47,11 @@ export async function generateMetadata(
       images: [
         {
           url: `api/og?title=${fetchedChat[0]?.title as string}`,
+
           width: 1200,
           height: 680,
         },
+        ...previousImages,
       ],
     },
   };

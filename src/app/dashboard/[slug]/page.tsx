@@ -5,42 +5,40 @@ import { chats, Chat as ChatSchema } from "@/lib/db/schema";
 import { eq, desc, ne, and } from "drizzle-orm";
 import { auth } from "@clerk/nextjs";
 import ChatCardWrapper from "@/components/chatcardwrapper";
-import { Metadata } from "next";
+// import { Metadata } from "next";
 
 // import Uploadzone from "@/components/uploadzone";
 
 export const dynamic = "force-dynamic",
   revalidate = 0;
 
-type Props = {
-  params: { id: string };
-  searchParams: { [key: string]: string | string[] | undefined };
-};
+// type Props = {
+//   params: { id: string };
+//   searchParams: { [key: string]: string | string[] | undefined };
+// };
 
-export async function generateMetadata({
-  params,
-  searchParams,
-}: Props): Promise<Metadata> {
-  // read route params
-  const id = params.id;
+// export async function generateMetadata({
+//   params,
+//   searchParams,
+// }: Props): Promise<Metadata> {
 
-  return {
-    title: "Echoes slug",
-    description: "echoes",
-    openGraph: {
-      title: "Echoes",
-      description: "Echoes",
-      type: "website",
-      images: [
-        {
-          url: "api/og",
-          width: 1200,
-          height: 680,
-        },
-      ],
-    },
-  };
-}
+//   return {
+//     title: "Echoes slug",
+//     description: "echoes",
+//     openGraph: {
+//       title: "Echoes",
+//       description: "Echoes",
+//       type: "website",
+//       images: [
+//         {
+//           url: "api/og",
+//           width: 1200,
+//           height: 680,
+//         },
+//       ],
+//     },
+//   };
+// }
 export default async function Page({
   params,
   searchParams,

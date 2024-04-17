@@ -7,6 +7,7 @@ import { Inter } from "next/font/google";
 import QueryProviders from "@/app/queryProvider";
 import { Toaster } from "@/components/ui/toaster";
 import { Providers } from "@/app/providers";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {

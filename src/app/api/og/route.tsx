@@ -44,7 +44,7 @@ export async function GET(request: Request) {
   try {
     let title: string | null = "";
     try {
-      const urlParams = new URLSearchParams(request.url.split("?")[1]); // Splitting URL to get query params
+      const urlParams = new URLSearchParams(request.url.split("?")[1]);
       title = urlParams.get("title");
       console.log("title", title);
     } catch (error) {
