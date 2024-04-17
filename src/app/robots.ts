@@ -7,7 +7,7 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: "*",
-      allow: "/dashboard/[slug]/chat/[chatid]/page.tsx",
+      allow: "/dashboard/[slug]/chat/[chatid]",
     },
     sitemap: 'https://acme.com/sitemap.xml',
   };
