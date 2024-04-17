@@ -9,8 +9,7 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: [
         "/dashboard/[slug]/chat/[chatid]",
-        "/dashboard/testtest/chat/3918",
-      ],
+        "/dashboard/[slug]/chat/[chatid]/page",],
     },
     sitemap: "https://acme.com/sitemap.xml",
   };
