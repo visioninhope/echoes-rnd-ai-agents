@@ -38,7 +38,7 @@ export async function generateMetadata(
   console.log("chattitle in chat id page", fetchedChat[0]?.title as string);
 
   return {
-    title: "Echoes",
+    title: "Echoes chat",
     description: "echoes Chat",
     openGraph: {
       title: fetchedChat[0]?.title as string,
@@ -47,7 +47,6 @@ export async function generateMetadata(
       images: [
         {
           url: `api/og?title=${fetchedChat[0]?.title as string}`,
-
           width: 1200,
           height: 680,
         },
