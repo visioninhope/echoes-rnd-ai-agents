@@ -40,10 +40,14 @@ export async function generateMetadata(
   return {
     title: "Echoes chat",
     description: "echoes Chat",
+    alternates: {
+      canonical: `https://www.echoes.team/dashboard/${sessionClaims?.org_slug}/chat/${params.chatid}`,
+    },
     openGraph: {
       title: fetchedChat[0]?.title as string,
       description: "Echoes",
       type: "website",
+
       images: [
         {
           url: `api/og?title=${fetchedChat[0]?.title as string}`,
