@@ -11,6 +11,7 @@ import { Providers } from "@/app/providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
+  metadataBase: new URL("https://www.echoes.team"),
   title: "Echoes",
   description: "Seek using Research Agents",
   manifest: "/manifest.json",
