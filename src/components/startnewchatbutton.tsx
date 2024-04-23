@@ -69,8 +69,28 @@ const Startnewchatbutton = (props: Props) => {
       body: JSON.stringify({ type: type, title: title }),
     });
     const data = await res.json();
-    isLoding(false);
-    router.push(`/dashboard/${props.org_slug}/chat/${Number(data.newChatId)}`);
+    console.log("got the data", data);
+    if (data.newChatId) {
+      isLoding(false);
+      try {
+        const res = await fetch("/api/assistantApi/createAssistant", {
+          method: "GET",
+        });
+        const assistantData = await res.json();
+        if (assistantData.status === "ok") {
+          console.log("Got assistant data:", assistantData);
+          router.push(
+            `/dashboard/${props.org_slug}/chat/${Number(data.newChatId)}`,
+          );
+        } else {
+          console.error("Assistant data status is not OK:", assistantData);
+          // Handle error response
+        }
+      } catch (error) {
+        console.error("Error fetching assistant data:", error);
+        // Handle fetch error
+      }
+    }
   };
 
   return (
