@@ -23,11 +23,12 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePresence } from "ably/react";
 import { useQueryClient } from "@tanstack/react-query";
-import { fetchEventSource } from "@microsoft/fetch-event-source";
 import z from "zod";
 import { toast } from "./ui/use-toast";
 import usePreferences from "@/store/userPreferences";
 import { useImageState } from "@/store/tlDrawImage";
+import { useAssistantState } from "@/store/assistant";
+import axios from "axios";
 const isValidImageType = (value: string) =>
   /^image\/(jpeg|png|jpg|webp)$/.test(value);
 
@@ -96,6 +97,7 @@ const InputBar = (props: InputBarProps) => {
     settldrawImageUrl,
     onClickOpenChatSheet,
   } = useImageState();
+  const { threadId, setThreadId } = useAssistantState();
   const [isAudioWaveVisible, setIsAudioWaveVisible] = useState<boolean>(false);
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [isTranscribing, setIsTranscribing] = useState<boolean>(false);
@@ -137,6 +139,52 @@ const InputBar = (props: InputBarProps) => {
       name: `${props.username},${props.userId}`,
       audio: "",
     };
+
+    if (props.chattype === "rag") {
+      props.setInput("");
+      if (threadId) {
+        const res = await fetch("/api/messagesThread/createMessages", {
+          method: "POST",
+          body: JSON.stringify({
+            message: props.value,
+            threadId: threadId,
+          }),
+        });
+        const data = await res.json();
+
+        console.log("res thread message", data);
+        console.log("user message", data.message.content[0].text.value);
+        // const responce = await fetch("/api/messagesThread/messagesList", {
+        //   method: "POST",
+        //   body: JSON.stringify({
+        //     threadId: threadId
+        //   })
+        // });
+        // console.log("responce", responce.json())
+        return;
+      } else {
+        const createThread = async () => {
+          const res = await axios.get(`/api/assistantThread/createThread`);
+          console.log("thread data", res.data.thread.id);
+          setThreadId(res.data.thread.id);
+        };
+        createThread();
+        if (threadId) {
+          const res = await fetch("/api/messagesThread/createMessages", {
+            method: "POST",
+            body: JSON.stringify({
+              message: props.value,
+              threadId: threadId,
+            }),
+          });
+          const data = await res.json();
+          console.log("else thread message", data);
+          console.log("else user message", data.message.content[0].text.value);
+          return;
+        }
+      }
+    }
+
     if (props.dropZoneActive) {
       setDisableInputs(true);
       setIsRagLoading(true);
@@ -241,81 +289,82 @@ const InputBar = (props: InputBarProps) => {
       return;
     }
 
-    if (props.chattype === "rag") {
-      setIsRagLoading(true);
-      setDisableInputs(true);
-      props.setMessages([...props.messages, message]);
-      props.setInput("");
-      let content = "";
-      const id = nanoid();
-      const assistantMessage: Message = {
-        id,
-        role: "assistant",
-        content: "",
-      };
-      let message2 = "";
-      try {
-        await fetchEventSource(`/api/chatmodel/${props.chatId}}`, {
-          method: "POST",
-          credentials: "include",
-          body: JSON.stringify({
-            input: props.value,
-            messages: [...props.messages, message],
-            userId: props.userId,
-            orgId: props.orgId,
-            chattype: props.chattype,
-            enableStreaming: true,
-          }),
-          openWhenHidden: true,
-          async onopen(response) {
-            setDisableInputs(true);
-            console.log("events started");
-          },
-          async onclose() {
-            setDisableInputs(false);
-            setIsRagLoading(false);
-            console.log("event reading closed", message2);
-            fetch(`/api/updatedb/${props.chatId}`, {
-              method: "POST",
-              body: JSON.stringify({
-                messages: [
-                  ...props.messages,
-                  message,
-                  {
-                    ...assistantMessage,
-                    content: content,
-                  },
-                ],
-                orgId: props.orgId,
-                usreId: props.userId,
-              }),
-            }); // TODO: handle echoes is typing
-            return;
-          },
-          async onmessage(event: any) {
-            if (event.data !== "[END]" && event.event !== "function_call") {
-              message2 += event.data === "" ? `${event.data} \n` : event.data;
-              content += event.data === "" ? `${event.data} \n` : event.data;
-              props.setMessages([
-                ...props.messages,
-                message,
-                {
-                  ...assistantMessage,
-                  content: content,
-                },
-              ]);
-            }
-          },
-          onerror(error: any) {
-            console.error("event reading error", error);
-          },
-        });
-        return;
-      } catch (error) {
-        console.error(error);
-        return;
-      }
-    }
+    // if (props.chattype === "rag") {
+    //   setIsRagLoading(true);
+    //   setDisableInputs(true);
+
+    // props.setMessages([...props.messages, message]);
+    // props.setInput("");
+    // let content = "";
+    // const id = nanoid();
+    // const assistantMessage: Message = {
+    //   id,
+    //   role: "assistant",
+    //   content: "",
+    // };
+    // let message2 = "";
+    // try {
+    //   await fetchEventSource(`/api/chatmodel/${props.chatId}}`, {
+    //     method: "POST",
+    //     credentials: "include",
+    //     body: JSON.stringify({
+    //       input: props.value,
+    //       messages: [...props.messages, message],
+    //       userId: props.userId,
+    //       orgId: props.orgId,
+    //       chattype: props.chattype,
+    //       enableStreaming: true,
+    //     }),
+    //     openWhenHidden: true,
+    //     async onopen(response) {
+    //       setDisableInputs(true);
+    //       console.log("events started");
+    //     },
+    //     async onclose() {
+    //       setDisableInputs(false);
+    //       setIsRagLoading(false);
+    //       console.log("event reading closed", message2);
+    //       fetch(`/api/updatedb/${props.chatId}`, {
+    //         method: "POST",
+    //         body: JSON.stringify({
+    //           messages: [
+    //             ...props.messages,
+    //             message,
+    //             {
+    //               ...assistantMessage,
+    //               content: content,
+    //             },
+    //           ],
+    //           orgId: props.orgId,
+    //           usreId: props.userId,
+    //         }),
+    //       }); // TODO: handle echoes is typing
+    //       return;
+    //     },
+    //     async onmessage(event: any) {
+    //       if (event.data !== "[END]" && event.event !== "function_call") {
+    //         message2 += event.data === "" ? `${event.data} \n` : event.data;
+    //         content += event.data === "" ? `${event.data} \n` : event.data;
+    //         props.setMessages([
+    //           ...props.messages,
+    //           message,
+    //           {
+    //             ...assistantMessage,
+    //             content: content,
+    //           },
+    //         ]);
+    //       }
+    //     },
+    //     onerror(error: any) {
+    //       console.error("event reading error", error);
+    //     },
+    //   });
+    //   return;
+    // } catch (error) {
+    //   console.error(error);
+    //   return;
+    // }
+    // }
     if (props.choosenAI === "universal") {
       props.append(message as Message);
       props.setInput("");

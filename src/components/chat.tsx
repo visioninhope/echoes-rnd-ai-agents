@@ -14,6 +14,7 @@ import { getUserIdList } from "./chatusersavatars";
 import { useDropzone } from "react-dropzone";
 import { X } from "lucide-react";
 import { useImageState } from "@/store/tlDrawImage";
+import { useAssistantState } from "@/store/assistant";
 
 interface ChatProps {
   orgId: string;
@@ -40,6 +41,7 @@ export default function Chat(props: ChatProps) {
     settldrawImageUrl,
     onClickOpenChatSheet,
   } = useImageState();
+  const { threadId } = useAssistantState();
   const [choosenAI, setChoosenAI] = useState<AIType>("universal");
   const [isChatCompleted, setIsChatCompleted] = useState<boolean>(false);
   const [calculatedMessages, setCalculatedMessages] = useState<Message[][]>([]);
@@ -82,6 +84,24 @@ export default function Chat(props: ChatProps) {
     noClick: true,
     noKeyboard: true,
   });
+
+  const threadMessagesFetch = async () => {
+    if (threadId) {
+      const responce = await fetch("/api/messagesThread/messagesList", {
+        method: "POST",
+        body: JSON.stringify({
+          threadId: threadId,
+        }),
+      });
+      const data = await responce.json();
+      console.log("responce", data);
+    }
+  };
+  useEffect(() => {
+    if (props.type === "rag") {
+      threadMessagesFetch();
+    }
+  }, [threadId]);
 
   const chatFetcher = async () => {
     const res = await axios.get(`/api/chats/${props.chatId}`);

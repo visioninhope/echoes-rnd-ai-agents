@@ -25,6 +25,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { MessageSquarePlus, PenTool, Database } from "lucide-react";
+import { useAssistantState } from "@/store/assistant";
 
 interface Props {
   org_slug: string;
@@ -42,6 +43,7 @@ const Startnewchatbutton = (props: Props) => {
   const [isBoardCreating, setIsBoardCreating] = useState(false);
   const [showTitleInput, setShowTitleInput] = useState(false);
   const [title, setTitle] = useState("");
+  const { setAssistantId, setThreadId } = useAssistantState();
 
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
@@ -69,15 +71,17 @@ const Startnewchatbutton = (props: Props) => {
       body: JSON.stringify({ type: type, title: title }),
     });
     const data = await res.json();
-    console.log("got the data", data);
-    if (data.newChatId) {
+    if (data.newChatId && type === "rag") {
       isLoding(false);
       try {
         const res = await fetch("/api/assistantApi/createAssistant", {
           method: "GET",
         });
         const assistantData = await res.json();
-        if (assistantData.status === "ok") {
+        console.log("Got assistant data:", assistantData.id);
+        if (assistantData) {
+          setAssistantId(assistantData.id);
+          setThreadId("");
           console.log("Got assistant data:", assistantData);
           router.push(
             `/dashboard/${props.org_slug}/chat/${Number(data.newChatId)}`,
@@ -90,6 +94,10 @@ const Startnewchatbutton = (props: Props) => {
         console.error("Error fetching assistant data:", error);
         // Handle fetch error
       }
+    } else {
+      router.push(
+        `/dashboard/${props.org_slug}/chat/${Number(data.newChatId)}`,
+      );
     }
   };
 
