@@ -100,7 +100,7 @@ const Search = (props: Props) => {
         <CommandGroup heading="Chat History">
           {results.length
             ? results.map((result: any, index: number) => (
-                <CommandItem key={index}>
+                <CommandItem key={index} value={`${result?.id}`}>
                   <Link
                     href={
                       result.id
@@ -113,7 +113,7 @@ const Search = (props: Props) => {
                   >
                     <div>
                       <p className="text-md text-muted-foreground">
-                        {result.chatTitle
+                        {result?.chatTitle
                           .replace('"', "")
                           .replace('"', "")
                           .split(" ")
