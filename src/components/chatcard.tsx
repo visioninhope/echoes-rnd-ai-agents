@@ -44,7 +44,6 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority, type }: Props) => {
     const chatlog = JSON.parse(chat.messages as string) as ChatLog;
     console.log("chatlog", chatlog.log);
     const msgs = chatlog.log as ChatEntry[];
-    console.log("messages", msgs);
     const chats = msgs.slice(0, 2);
     const res = await fetch(`/api/generateTitle/${chat.id}/${org_id}`, {
       method: "POST",

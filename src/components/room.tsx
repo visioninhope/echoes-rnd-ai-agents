@@ -39,9 +39,6 @@ const RoomWrapper = (props: Props) => {
   const { channel } = useChannel("room_5", (message) => {
     console.log(message);
   });
-  console.log("props.Chat", props.chat);
-
-  console.log("props.Chat.tldraw_snapshot", props.snapShot);
 
   const preferences = usePreferences();
   const { presenceData, updateStatus } = usePresence(

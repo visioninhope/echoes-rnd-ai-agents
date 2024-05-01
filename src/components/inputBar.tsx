@@ -75,7 +75,6 @@ interface InputBarProps {
     chatRequestOptions?: ChatRequestOptions | undefined,
   ) => Promise<string | null | undefined>;
   setInput: Dispatch<SetStateAction<string>>;
-  isChatCompleted: boolean;
   chatId: string;
   messages: Message[];
   orgId: string;
@@ -498,7 +497,6 @@ const InputBar = (props: InputBarProps) => {
             >
               {/* <ModelSwitcher
                 disabled={
-                  props.isChatCompleted ||
                   isRecording ||
                   isTranscribing ||
                   disableInputs
@@ -541,12 +539,7 @@ const InputBar = (props: InputBarProps) => {
                 </div>
               )}
               <TextareaAutosize
-                disabled={
-                  props.isChatCompleted ||
-                  isRecording ||
-                  isTranscribing ||
-                  disableInputs
-                }
+                disabled={isRecording || isTranscribing || disableInputs}
                 maxRows={10}
                 placeholder={
                   isTranscribing
@@ -600,12 +593,7 @@ const InputBar = (props: InputBarProps) => {
               <Button
                 size="icon"
                 variant="secondary"
-                disabled={
-                  props.isChatCompleted ||
-                  isRecording ||
-                  isTranscribing ||
-                  disableInputs
-                }
+                disabled={isRecording || isTranscribing || disableInputs}
                 type="submit"
                 className="disabled:text-muted"
               >

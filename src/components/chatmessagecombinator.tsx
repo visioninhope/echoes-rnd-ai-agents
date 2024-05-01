@@ -1,8 +1,7 @@
-import React, { SetStateAction, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import Image from "next/image";
 import { ContextWrapper } from "@/components/contextwrapper";
 import { ChatRequestOptions, CreateMessage, Message } from "ai";
-import { CHAT_COMPLETION_CONTENT } from "@/lib/types";
 import ChatMessage from "@/components/chatmessage";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/button";
@@ -24,8 +23,6 @@ type Props = {
   chatTitle: string;
   imageUrl: string;
   setMessages: (messages: Message[]) => void;
-  isChatCompleted: boolean;
-  setIsChatCompleted: React.Dispatch<SetStateAction<boolean>>;
   append: (
     message: Message | CreateMessage,
     chatRequestOptions?: ChatRequestOptions | undefined,
@@ -42,8 +39,6 @@ const ChatMessageCombinator = ({
   calculatedMessages,
   messages,
   name,
-  isChatCompleted,
-  setIsChatCompleted,
   append,
   setMessages,
   chatId,
@@ -201,11 +196,6 @@ const ChatMessageCombinator = ({
               )}
             >
               {msgs.map((msg, idx) => {
-                if (index === messages.length - 1 && !isChatCompleted) {
-                  if (messages[index].content === CHAT_COMPLETION_CONTENT) {
-                    setIsChatCompleted(true);
-                  }
-                }
                 messageIndex++;
                 const msgIdx = messageIndex;
                 if (msg.subRole === "patent-search") return null;

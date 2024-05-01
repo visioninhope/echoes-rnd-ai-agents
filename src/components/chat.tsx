@@ -3,7 +3,6 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { AIType, ChatType } from "@/lib/types";
 import InputBar from "@/components/inputBar";
 import { Message, useChat } from "ai/react";
-import Startnewchatbutton from "@/components/startnewchatbutton";
 import ChatMessageCombinator from "@/components/chatmessagecombinator";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -41,7 +40,6 @@ export default function Chat(props: ChatProps) {
     onClickOpenChatSheet,
   } = useImageState();
   const [choosenAI, setChoosenAI] = useState<AIType>("universal");
-  const [isChatCompleted, setIsChatCompleted] = useState<boolean>(false);
   const [calculatedMessages, setCalculatedMessages] = useState<Message[][]>([]);
   // const { presenceData, updateStatus } = usePresence(`channel_${props.chatId}`);
   const [dropZoneActive, setDropzoneActive] = useState<boolean>(false);
@@ -143,8 +141,7 @@ export default function Chat(props: ChatProps) {
       chattype: props.type,
     },
     onError: (error) => {
-      console.log("got the error", error);
-      setIsChatCompleted(true);
+      console.log("got the error from api", error);
     },
     onResponse(response) {
       console.log("got the response", response);
@@ -154,7 +151,6 @@ export default function Chat(props: ChatProps) {
     },
     sendExtraMessageFields: true,
   });
-  console.log("messages", messages);
 
   useEffect(() => {
     let mainArray: Message[][] = [];
@@ -270,8 +266,6 @@ export default function Chat(props: ChatProps) {
                 setMessages={setMessages}
                 chatTitle={props.chatTitle}
                 imageUrl={props.imageUrl}
-                isChatCompleted={isChatCompleted}
-                setIsChatCompleted={setIsChatCompleted}
                 append={append}
                 isLoading={isLoading}
                 shouldShowConfidentialToggler={userIds.includes(props.uid)}
@@ -304,15 +298,6 @@ export default function Chat(props: ChatProps) {
               </div>
             </>
           ) : null}
-
-          {isChatCompleted && (
-            <div>
-              <Startnewchatbutton
-                org_slug={props.org_slug}
-                org_id={props.orgId}
-              />
-            </div>
-          )}
           <InputBar
             onClickOpenChatSheet={props.onClickOpenChatSheet}
             onClickOpen={open}
@@ -331,7 +316,6 @@ export default function Chat(props: ChatProps) {
             onChange={handleInputChange}
             setInput={setInput}
             append={append}
-            isChatCompleted={isChatCompleted}
             isLoading={isLoading}
             chattype={props.type}
           />

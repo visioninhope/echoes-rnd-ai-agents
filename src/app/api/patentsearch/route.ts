@@ -27,7 +27,6 @@ export async function POST(request: Request) {
   console.log("chatId", chatId);
   console.log("lastMessageIndex", lastMessageIndex);
 
-  // console.log("messages", msgs)
   const query = msgs.map((msg) => msg.content).join(" ");
   console.log("query", query);
 
