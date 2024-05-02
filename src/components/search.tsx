@@ -62,16 +62,14 @@ const Search = (props: Props) => {
         filters: `orgSlug: "${props.orgSlug}"`,
       })
       .then((response) => {
-        console.log(response);
         return setResults(response.hits);
       });
-  }, [throttledValue]);
+  }, [throttledValue, props?.orgSlug]);
 
   return (
     <CommandDialog open={showSearchDialog} onOpenChange={toggleSearchDialog}>
       <CommandInput
         onValueChange={(val) => {
-          console.log("got the input value");
           setValue(val);
         }}
         value={value}

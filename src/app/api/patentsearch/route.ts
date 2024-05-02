@@ -55,8 +55,6 @@ export async function POST(request: Request) {
     chatlog.log.length,
   );
 
-  console.log("prevChatData", nextChatData);
-
   const res = await axios.get(`${baseUrl}/search/102`, {
     params: {
       q: query,
@@ -70,6 +68,9 @@ export async function POST(request: Request) {
 
   console.log("data", data);
 
+  if (data?.length === 0) {
+    return NextResponse.json({ data: null }, { status: 404 });
+  }
   const patentMessage = {
     role: "assistant",
     subRole: "patent-search",
@@ -88,8 +89,6 @@ export async function POST(request: Request) {
     })
     .where(eq(chats.id, Number(chatId)))
     .run();
-
-  // console.log(data)
 
   return NextResponse.json({ data: updatedChatLog });
 }

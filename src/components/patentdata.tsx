@@ -42,7 +42,6 @@ const PatentData = ({
     "item",
     parseAsInteger,
   );
-  console.log(parsedInput);
   const [open, setOpen] = React.useState(
     isOpen && dialogIndex === dialogNumber ? isOpen : false,
   );

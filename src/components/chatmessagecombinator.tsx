@@ -60,24 +60,29 @@ const ChatMessageCombinator = ({
   const queryClient = useQueryClient();
   const sheetContentRef = useRef<HTMLDivElement>(null); // Specify the type as HTMLDivElement
 
-  const mutation = useMutation(
-    async (data: { id: string; msgs: Message[]; lastMessageIndex: number }) => {
+  const mutation = useMutation<
+    Message[] | null,
+    unknown,
+    { msgs: Message[]; id: string; lastMessageIndex: number }
+  >({
+    mutationFn: async (data) => {
       const res = await axios.post(`/api/patentsearch`, {
         msgs: data.msgs,
         orgId: orgId,
         chatId: chatId,
         lastMessageIndex: data.lastMessageIndex,
       });
-      const result = res.data;
-      console.log("patentresult", result);
+      console.log("patentresult", res.data);
+      return res.data;
     },
-    {
-      onSuccess: () => {
-        // Invalidate and refetch
-        queryClient.invalidateQueries(["chats", chatId]);
-      },
+    onSuccess: (data, variables) => {
+      if (!data) {
+        console.log("no patients found");
+      }
+      queryClient.invalidateQueries({ queryKey: ["chats", chatId] });
     },
-  );
+    onError: (_error: any) => {},
+  });
 
   const titleSplit = chatTitle?.replaceAll('"', "").split(":");
   const chat_title = titleSplit?.[0];
@@ -236,6 +241,14 @@ const ChatMessageCombinator = ({
                         preferences.showSubRoll ? (
                           patentMessage ? (
                             <PatentData index={index} message={patentMessage} />
+                          ) : mutation.isLoading &&
+                            mutation.variables?.id === msg.id ? (
+                            <div>
+                              <div className="w-[150px]">
+                                <Skeleton className=" w-[150px] h-[225px] rounded object-cover" />
+                              </div>
+                              <Skeleton className="scroll-m-20 tracking-tight text-xs line-clamp-2 w-[150px]"></Skeleton>
+                            </div>
                           ) : (
                             <Button
                               disabled={mutation.isLoading}
@@ -248,17 +261,10 @@ const ChatMessageCombinator = ({
                               }
                               className={cn("mx-4 my-3", isLoading && "hidden")}
                             >
-                              {mutation.isLoading &&
-                              mutation.variables?.id === msg.id ? (
-                                <div>
-                                  <div className="w-[150px]">
-                                    <Skeleton className=" w-[150px] h-[225px] rounded object-cover" />
-                                  </div>
-                                  <Skeleton className="scroll-m-20 tracking-tight text-xs line-clamp-2 w-[150px]"></Skeleton>
-                                </div>
-                              ) : (
-                                "Search For Patents"
-                              )}
+                              {mutation?.isError &&
+                              mutation?.variables?.id === msg.id
+                                ? "No patents found. Search Again"
+                                : "Search For Patents"}
                             </Button>
                           )
                         ) : null
