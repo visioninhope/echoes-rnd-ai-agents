@@ -322,7 +322,7 @@ export default function Chat(props: ChatProps) {
         </>
       )}
       <div className="h-0" ref={sheetContentRef} />
-      {/* {scrollToBottom()} */}
+      {scrollToBottom()}
     </div>
   );
 }
