@@ -18,7 +18,6 @@ const AudioWaveForm = (props: Props) => {
     props.setIsRecording(true);
   };
 
-
   const onData = (recordedBlob: Blob) => {
     // console.log("isRecording", props.isOpen);
     console.log("chunk of real-time data is: ", recordedBlob);
