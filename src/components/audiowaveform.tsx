@@ -18,16 +18,6 @@ const AudioWaveForm = (props: Props) => {
     props.setIsRecording(true);
   };
 
-  useEffect(() => {
-    if (window !== undefined) {
-      startRecording();
-    }
-    const timeout = setTimeout(() => {
-      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-    }, 100);
-
-    return () => clearTimeout(timeout);
-  }, []);
 
   const onData = (recordedBlob: Blob) => {
     // console.log("isRecording", props.isOpen);

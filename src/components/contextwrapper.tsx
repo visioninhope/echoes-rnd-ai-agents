@@ -41,10 +41,6 @@ export function ContextWrapper(props: Props) {
       };
       props.append(message as Message);
       selection?.deleteFromDocument();
-      window.scrollTo({
-        top: document.body.scrollHeight + 200,
-        behavior: "smooth",
-      });
     }
   };
 

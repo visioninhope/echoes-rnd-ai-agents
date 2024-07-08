@@ -226,20 +226,6 @@ export default function Chat(props: ChatProps) {
       sheetContentRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
-  const scrollToBottom = () => {
-    const isMobile = window.innerWidth <= 500;
-    const scrollFunction = () => {
-      if (sheetContentRef.current) {
-        sheetContentRef.current.scrollIntoView({ behavior: "smooth" });
-      }
-    };
-    if (isMobile) {
-      setTimeout(scrollFunction, 1000);
-    } else {
-      scrollFunction();
-    }
-    return null;
-  };
   return (
     <div className="flex flex-col gap-1 mx-auto">
       {props.type === "tldraw" && !props.onClickOpenChatSheet ? (
@@ -338,7 +324,6 @@ export default function Chat(props: ChatProps) {
         </>
       )}
       <div className="h-0" ref={sheetContentRef} />
-      {scrollToBottom()}
     </div>
   );
 }

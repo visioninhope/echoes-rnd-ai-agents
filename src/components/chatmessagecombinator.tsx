@@ -87,14 +87,6 @@ const ChatMessageCombinator = ({
   const titleSplit = chatTitle.replaceAll('"', "").split(":");
   const chat_title = titleSplit[0];
   const chat_sub_title = titleSplit.length > 1 ? titleSplit[1] : "";
-  const scrollToBottom = () => {
-    if (sheetContentRef.current) {
-      sheetContentRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-  useEffect(() => {
-    scrollToBottom(); // Scroll to bottom when component mounts
-  }, [onClickOpenChatSheet]); // Empty dependency array ensures it only runs once when component mounts
 
   let messageIndex = 0;
   return (
