@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { AIType, ChatType } from "@/lib/types";
 import InputBar from "@/components/inputBar";
 import { Message, useChat } from "ai/react";
@@ -31,7 +31,6 @@ interface ChatProps {
 }
 
 export default function Chat(props: ChatProps) {
-  const sheetContentRef = useRef<HTMLDivElement>(null);
   // const { toast} = useToast()
   const {
     tldrawImageUrl,
@@ -221,25 +220,6 @@ export default function Chat(props: ChatProps) {
       });
     },
   });
-  useEffect(() => {
-    if (sheetContentRef.current) {
-      sheetContentRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages]);
-  const scrollToBottom = () => {
-    const isMobile = window.innerWidth <= 500;
-    const scrollFunction = () => {
-      if (sheetContentRef.current) {
-        sheetContentRef.current.scrollIntoView({ behavior: "smooth" });
-      }
-    };
-    if (isMobile) {
-      setTimeout(scrollFunction, 1000);
-    } else {
-      scrollFunction();
-    }
-    return null;
-  };
   return (
     <div className="flex flex-col gap-1 mx-auto">
       {props.type === "tldraw" && !props.onClickOpenChatSheet ? (
@@ -337,8 +317,6 @@ export default function Chat(props: ChatProps) {
           />
         </>
       )}
-      <div className="h-0" ref={sheetContentRef} />
-      {scrollToBottom()}
     </div>
   );
 }

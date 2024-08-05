@@ -1,4 +1,4 @@
-import React, { SetStateAction, useEffect, useRef } from "react";
+import React, { SetStateAction } from "react";
 import Image from "next/image";
 import { ContextWrapper } from "@/components/contextwrapper";
 import { ChatRequestOptions, CreateMessage, Message } from "ai";
@@ -63,7 +63,6 @@ const ChatMessageCombinator = ({
 
   const preferences = usePreferences();
   const queryClient = useQueryClient();
-  const sheetContentRef = useRef<HTMLDivElement>(null); // Specify the type as HTMLDivElement
 
   const mutation = useMutation(
     async (data: { id: string; msgs: Message[]; lastMessageIndex: number }) => {
@@ -87,14 +86,6 @@ const ChatMessageCombinator = ({
   const titleSplit = chatTitle.replaceAll('"', "").split(":");
   const chat_title = titleSplit[0];
   const chat_sub_title = titleSplit.length > 1 ? titleSplit[1] : "";
-  const scrollToBottom = () => {
-    if (sheetContentRef.current) {
-      sheetContentRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-  useEffect(() => {
-    scrollToBottom(); // Scroll to bottom when component mounts
-  }, [onClickOpenChatSheet]); // Empty dependency array ensures it only runs once when component mounts
 
   let messageIndex = 0;
   return (
@@ -280,7 +271,6 @@ const ChatMessageCombinator = ({
             </div>
           );
         })}
-        {/* <div id="scroll" ref={sheetContentRef} /> */}
       </div>
     </div>
   );
