@@ -98,7 +98,7 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority, type }: Props) => {
 
   const msg = chat.messages;
   const chatlog = JSON.parse(msg as string) as ChatLog;
-  const firstMessage = chatlog.log[0]?.content;
+  const firstMessage = chatlog?.log?.[0]?.content;
   const chatTitle = chat.title || firstMessage || "No Title";
 
   // extracts chatentry from chatlog

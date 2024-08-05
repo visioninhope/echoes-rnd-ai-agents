@@ -7,6 +7,10 @@ const client = new SuperAgentClient({
   token: env.SUPERAGENT_API_KEY,
 });
 
+export const revalidate = 0; // disable cache
+
+export const maxDuration = 60;
+
 export async function GET(request: Request) {
   // list agents
   const { data: agents } = await client.agent.list();
