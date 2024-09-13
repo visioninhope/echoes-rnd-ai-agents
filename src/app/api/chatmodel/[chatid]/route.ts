@@ -85,7 +85,8 @@ export async function POST(
     chatType === "ella" ? ellaPrompt : systemPrompt,
   );
 
-  const model = OPEN_AI_MODELS.gpt4Turbo;
+  // const model = OPEN_AI_MODELS.gpt4Turbo;
+  const model = OPEN_AI_MODELS.o1Mini;
 
   const { stream, handlers } = LangChainStream({
     onCompletion: async (fullResponse: string) => {
