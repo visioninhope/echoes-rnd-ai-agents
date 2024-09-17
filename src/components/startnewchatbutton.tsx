@@ -37,6 +37,7 @@ const formSchema = z.object({
 
 const Startnewchatbutton = (props: Props) => {
   const [showLoading, setShowLoading] = useState(false); // normal chat
+  const [advancedChatLoading, setAdvancedChatLoading] = useState(false); // advanced chat
   const [isKnowledgeChatLoading, setIsKnowledgeChatLoading] = useState(false); // knowledge chat
   const [isEllaChatLoading, setIsEllaChatLoading] = useState(false); // knowledge chat
   const [isBoardCreating, setIsBoardCreating] = useState(false);
@@ -79,6 +80,7 @@ const Startnewchatbutton = (props: Props) => {
       onOpenChange={(val) => {
         if (!val) {
           setShowLoading(false);
+          setAdvancedChatLoading(false);
           setIsBoardCreating(false);
           setShowTitleInput(false);
           form.reset();
@@ -112,19 +114,39 @@ const Startnewchatbutton = (props: Props) => {
               variant="outline"
               onClick={() => {
                 // setShowLoading(true);
-                handleNavigate("chat", setShowLoading, "");
+                handleNavigate("advanced", setShowLoading, "");
               }}
               disabled={showLoading || isBoardCreating || showTitleInput}
             >
               {showLoading ? (
                 <>
                   <CircleNotch className="w-4 h-4 mr-2 animate-spin" />
-                  Starting New Chat
+                  Starting Simple Chat
                 </>
               ) : (
                 <>
                   <MessageSquarePlus className="w-4 h-4 mr-2" />
-                  New Chat
+                  Simple Chat
+                </>
+              )}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                // setShowLoading(true);
+                handleNavigate("advanced", setAdvancedChatLoading, "");
+              }}
+              disabled={showLoading || isBoardCreating || showTitleInput}
+            >
+              {advancedChatLoading ? (
+                <>
+                  <CircleNotch className="w-4 h-4 mr-2 animate-spin" />
+                  Starting Advanced Chat
+                </>
+              ) : (
+                <>
+                  <MessageSquarePlus className="w-4 h-4 mr-2" />
+                  Advanced Chat
                 </>
               )}
             </Button>
