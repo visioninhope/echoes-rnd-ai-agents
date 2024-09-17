@@ -431,7 +431,7 @@ const InputBar = (props: InputBarProps) => {
       const timer = setTimeout(() => {
         updateStatus({
           isTyping: false,
-          username: props.username,
+          username: `${props.username} is typing...`,
           id: props.userId,
         });
         // setDisableInputs(false);
@@ -441,21 +441,49 @@ const InputBar = (props: InputBarProps) => {
   }, [props.value]);
 
   useEffect(() => {
+    let timer: NodeJS.Timeout | undefined;
+    let countdown = 60;
+
     if (props.isLoading || isRagLoading) {
-      updateStatus({
-        isTyping: true,
-        username: "Echo",
-        id: props.userId,
-      });
-      // setDisableInputs(true)
+      if (props.chattype === "advanced") {
+        timer = setInterval(() => {
+          if (countdown > 0) {
+            updateStatus({
+              isTyping: true,
+              username: `Echoes is thinking (${countdown--} secs)`,
+              id: props.userId,
+            });
+          } else {
+            clearInterval(timer);
+            if (props.isLoading) {
+              updateStatus({
+                isTyping: true,
+                username:
+                  "It's taking longer than expected. Please keep patience",
+                id: props.userId,
+              });
+            }
+          }
+        }, 1000); // 1 second interval
+      } else {
+        updateStatus({
+          isTyping: true,
+          username: "Echoes is thinking...",
+          id: props.userId,
+        });
+      }
     } else {
+      if (timer) {
+        clearInterval(timer);
+      }
       updateStatus({
         isTyping: false,
-        username: "Echo",
+        username: "Echoes",
         id: props.userId,
       });
-      // setDisableInputs(false)
     }
+
+    return () => clearInterval(timer);
   }, [props.isLoading, isRagLoading]);
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     if (props.dropZoneActive) {
@@ -535,7 +563,6 @@ const InputBar = (props: InputBarProps) => {
                       <span className="text-foreground">
                         {presenceData.map((p) => p.data.username).join(", ")}
                       </span>{" "}
-                      is typing
                     </p>
                   </div>
                 </div>
