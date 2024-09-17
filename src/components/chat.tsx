@@ -133,7 +133,10 @@ export default function Chat(props: ChatProps) {
     isLoading,
     data,
   } = useChat({
-    api: `/api/chatmodel/${props.chatId}`,
+    api:
+      props.type === "advanced"
+        ? `/api/chatmodel-o1preview/${props.chatId}`
+        : `/api/chatmodel/${props.chatId}`,
     initialMessages: chatsData,
     body: {
       orgId: props.orgId,
