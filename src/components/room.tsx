@@ -68,18 +68,6 @@ const RoomWrapper = (props: Props) => {
         {" "}
         <div className="flex space-between mb-2">
           <div className="flex items-center gap-2">
-            {/* <Button variant="outline" className="mr-2" asChild>
-              <Link
-                onClick={() => setShowLoading(true)}
-                href={`/dashboard/user`}
-              >
-                {showLoading ? (
-                  <CircleNotch className="w-4 h-4 animate-spin" />
-                ) : (
-                  <ArrowLeft className="h-4 w-4" />
-                )}
-              </Link>
-            </Button> */}
             <ChatSidebar
               org_id={props.orgId}
               org_slug={props.org_slug}
