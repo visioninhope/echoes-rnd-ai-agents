@@ -5,6 +5,7 @@ import { chats, Chat as ChatSchema } from "@/lib/db/schema";
 import { eq, desc, ne, and } from "drizzle-orm";
 import { auth } from "@clerk/nextjs";
 import ChatCardWrapper from "@/components/chatcardwrapper";
+import { redirect } from "next/navigation";
 // import Uploadzone from "@/components/uploadzone";
 
 export const dynamic = "force-dynamic",
@@ -19,6 +20,19 @@ export default async function Page({
 }) {
   const { slug } = params;
   const { userId, sessionClaims } = auth();
+  const org_slug = sessionClaims?.org_slug;
+  const org_id = String(sessionClaims?.org_id);
+  const data = await db
+    .insert(chats)
+    .values({
+      user_id: org_id,
+      type: "chat",
+      title: "",
+    })
+    .run();
+
+  const chatId = data.toJSON().lastInsertRowid;
+  redirect(`/dashboard/${org_slug}/chat/${Number(chatId)}`);
 
   let orgConversations = [] as ChatSchema[];
   // fetch initial posts to start with

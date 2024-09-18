@@ -114,7 +114,7 @@ const Startnewchatbutton = (props: Props) => {
               variant="outline"
               onClick={() => {
                 // setShowLoading(true);
-                handleNavigate("advanced", setShowLoading, "");
+                handleNavigate("chat", setShowLoading, "");
               }}
               disabled={showLoading || isBoardCreating || showTitleInput}
             >
