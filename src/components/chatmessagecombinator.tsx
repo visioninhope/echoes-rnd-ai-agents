@@ -83,9 +83,9 @@ const ChatMessageCombinator = ({
     },
   );
 
-  const titleSplit = chatTitle.replaceAll('"', "").split(":");
-  const chat_title = titleSplit[0];
-  const chat_sub_title = titleSplit.length > 1 ? titleSplit[1] : "";
+  const titleSplit = chatTitle?.replaceAll('"', "").split(":");
+  const chat_title = titleSplit?.[0];
+  const chat_sub_title = titleSplit?.length > 1 ? titleSplit[1] : "";
 
   let messageIndex = 0;
   return (

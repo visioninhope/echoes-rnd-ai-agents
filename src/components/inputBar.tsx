@@ -535,7 +535,8 @@ const InputBar = (props: InputBarProps) => {
                 setAIType={props.setChoosenAI}
               /> */}
               <Button
-                disabled={isRecording || isTranscribing || disableInputs}
+                // disabled={isRecording || isTranscribing || disableInputs}
+                disabled={true}
                 onClick={props.onClickOpen}
                 size="icon"
                 variant="secondary"
