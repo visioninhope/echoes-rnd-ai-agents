@@ -171,7 +171,7 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority, type }: Props) => {
                 description={description}
                 id={String(chat.id)} // id for the track
                 imageUrl={chat.image_url}
-                messages={chatlog!.log}
+                messages={chatlog!?.log || []}
                 summarize={true}
                 orgId={org_id}
                 audio={chat.audio}

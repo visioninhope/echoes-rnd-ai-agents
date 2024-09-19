@@ -1,8 +1,6 @@
 import {
   Sheet,
   SheetContent,
-  SheetHeader,
-  SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
 import ChatCardWrapper from "./chatcardwrapper";
@@ -10,7 +8,6 @@ import { Chat as ChatSchema } from "@/lib/db/schema";
 import { AlignLeftIcon, Building, User } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
 import { useQueryState } from "next-usequerystate";
-import Startnewchatbutton from "./startnewchatbutton";
 
 type Props = {
   org_id: string;
@@ -31,9 +28,6 @@ export default function ChatSidebar({
         <AlignLeftIcon className="text-gray-500" size={32} />
       </SheetTrigger>
       <SheetContent side={"left"}>
-        <SheetHeader className="mt-4">
-          <SheetTitle>Chats</SheetTitle>
-        </SheetHeader>
         <div className="flex flex-col gap-y-4">
           <OrgChatToggler orgId={org_id} orgSlug={org_slug} />
           <div className="h-[calc(100dvh-200px)] overflow-y-auto scrollbar-hide ">
@@ -64,7 +58,7 @@ const OrgChatToggler = ({
         <div className="">
           <Tabs
             className="mx-auto"
-            value={cards || "org"}
+            value={cards || "me"}
             onValueChange={(val) => {
               console.log("onvalchange", val);
               setCards(val);
@@ -82,12 +76,6 @@ const OrgChatToggler = ({
             </TabsList>
           </Tabs>
         </div>
-      </div>
-      <div className="self-start">
-        <Startnewchatbutton
-          org_id={orgId as string}
-          org_slug={orgSlug as string}
-        />
       </div>
     </div>
   );

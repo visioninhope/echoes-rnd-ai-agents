@@ -12,6 +12,7 @@ import { useChannel, usePresence } from "ably/react";
 import ChatSheet from "./chatSheet";
 import { useImageState } from "@/store/tlDrawImage";
 import ChatSidebar from "./chatSidebar";
+import Startnewchatbutton from "./startnewchatbutton";
 
 let chatToMap: any = "";
 
@@ -84,6 +85,10 @@ const RoomWrapper = (props: Props) => {
 
           <div className="grow" />
           <div className="flex gap-2">
+            <Startnewchatbutton
+              org_slug={props.org_slug}
+              org_id={props.orgId}
+            />
             <Button
               onClick={() => preferences.toggleShowSubRoll()}
               variant="outline"
