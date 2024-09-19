@@ -10,14 +10,10 @@ import {
   useState,
 } from "react";
 import { ChatRequestOptions, CreateMessage, Message, nanoid } from "ai";
-import {
-  Microphone,
-  PaperPlaneTilt,
-  UploadSimple,
-} from "@phosphor-icons/react";
+import { Microphone, PaperPlaneTilt } from "@phosphor-icons/react";
 import { Button } from "@/components/button";
 import AudioWaveForm from "@/components/audiowaveform";
-import { AIType, ChatType, chattype } from "@/lib/types";
+import { ChatType, chattype } from "@/lib/types";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -28,6 +24,7 @@ import z from "zod";
 import { toast } from "./ui/use-toast";
 import usePreferences from "@/store/userPreferences";
 import { useImageState } from "@/store/tlDrawImage";
+import ModelSwitcher from "./modelswitcher";
 const isValidImageType = (value: string) =>
   /^image\/(jpeg|png|jpg|webp)$/.test(value);
 
@@ -66,8 +63,6 @@ interface InputBarProps {
   onChange: (
     e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>,
   ) => void;
-  choosenAI: AIType;
-  setChoosenAI: Dispatch<SetStateAction<AIType>>;
   username: string;
   userId: string;
   append: (
@@ -82,6 +77,7 @@ interface InputBarProps {
   setMessages: (messages: Message[]) => void;
   isLoading: boolean;
   chattype: ChatType;
+  setChattype: Dispatch<SetStateAction<ChatType>>;
   setDropzoneActive: Dispatch<SetStateAction<boolean>>;
   dropZoneActive: boolean;
   onClickOpen: any;
@@ -126,6 +122,7 @@ const InputBar = (props: InputBarProps) => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log("props.value", props.value);
     if (props.value.trim() === "") {
       return;
     }
@@ -316,74 +313,74 @@ const InputBar = (props: InputBarProps) => {
         return;
       }
     }
-    if (props.choosenAI === "universal") {
-      props.append(message as Message);
-      props.setInput("");
-    }
-    if (props.choosenAI === "agent") {
-      setDisableInputs(true);
-      props.setMessages([...props.messages, message]);
-      props.setInput("");
-      const res = await fetch(`/api/chatagent/${props.chatId}`, {
-        method: "POST",
-        body: JSON.stringify({
-          messages: [...props.messages, message],
-          isFast: true,
-          orgId: props.orgId,
-        }),
-      });
-      let content = "";
-      const id = nanoid();
-      const assistantMessage: Message = {
-        id,
-        role: "assistant",
-        content: "",
-      };
-      let functionMessages: Message[] = [];
-      if (res.body) {
-        const reader = res?.body.getReader();
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) {
-            console.log("controller closed");
-            setDisableInputs(false);
-            break;
-          }
-          const text = new TextDecoder().decode(value);
-          if (text.startsWith(`$__JSON_START__`)) {
-            const jsonStr = text
-              .replace("$__JSON_START__", "")
-              .replace("__JSON_END__", "");
-            if (isJSON(jsonStr)) {
-              console.log("this is json", jsonStr);
-              const functionMessage: Message = {
-                id: nanoid(),
-                role: "function",
-                content: jsonStr,
-              };
-              functionMessages.push(functionMessage);
-              props.setMessages([
-                ...props.messages,
-                message,
-                ...functionMessages,
-              ]);
-            }
-          } else {
-            console.log("non-json", text);
-            content += text;
-            props.setMessages([
-              ...props.messages,
-              message,
-              ...functionMessages,
-              {
-                ...assistantMessage,
-                content: content,
-              },
-            ]);
-          }
-        }
-      }
-    }
+    // if (props.choosenAI === "universal") {
+    props.append(message as Message);
+    props.setInput("");
+    // }
+    // if (props.choosenAI === "agent") {
+    //   setDisableInputs(true);
+    //   props.setMessages([...props.messages, message]);
+    //   props.setInput("");
+    //   const res = await fetch(`/api/chatagent/${props.chatId}`, {
+    //     method: "POST",
+    //     body: JSON.stringify({
+    //       messages: [...props.messages, message],
+    //       isFast: true,
+    //       orgId: props.orgId,
+    //     }),
+    //   });
+    //   let content = "";
+    //   const id = nanoid();
+    //   const assistantMessage: Message = {
+    //     id,
+    //     role: "assistant",
+    //     content: "",
+    //   };
+    //   let functionMessages: Message[] = [];
+    //   if (res.body) {
+    //     const reader = res?.body.getReader();
+    //     while (true) {
+    //       const { done, value } = await reader.read();
+    //       if (done) {
+    //         console.log("controller closed");
+    //         setDisableInputs(false);
+    //         break;
+    //       }
+    //       const text = new TextDecoder().decode(value);
+    //       if (text.startsWith(`$__JSON_START__`)) {
+    //         const jsonStr = text
+    //           .replace("$__JSON_START__", "")
+    //           .replace("__JSON_END__", "");
+    //         if (isJSON(jsonStr)) {
+    //           console.log("this is json", jsonStr);
+    //           const functionMessage: Message = {
+    //             id: nanoid(),
+    //             role: "function",
+    //             content: jsonStr,
+    //           };
+    //           functionMessages.push(functionMessage);
+    //           props.setMessages([
+    //             ...props.messages,
+    //             message,
+    //             ...functionMessages,
+    //           ]);
+    //         }
+    //       } else {
+    //         console.log("non-json", text);
+    //         content += text;
+    //         props.setMessages([
+    //           ...props.messages,
+    //           message,
+    //           ...functionMessages,
+    //           {
+    //             ...assistantMessage,
+    //             content: content,
+    //           },
+    //         ]);
+    //       }
+    //     }
+    //   }
+    // }
   };
 
   const handleAudio = async (audioFile: File) => {
@@ -489,6 +486,15 @@ const InputBar = (props: InputBarProps) => {
     if (props.dropZoneActive) {
       props.setInput(e.target.value);
     } else {
+      const inputValue = e.target.value;
+      navigator.clipboard
+        .writeText(inputValue)
+        .then(() => {
+          console.log("Input value copied to clipboard");
+        })
+        .catch((err) => {
+          console.error("Could not copy text: ", err);
+        });
       props.onChange(e);
     }
     updateStatus({
@@ -524,17 +530,17 @@ const InputBar = (props: InputBarProps) => {
               animate={{ x: 0, opacity: 1, transition: { duration: 0.5 } }}
               exit={{ x: -50, opacity: 0, transition: { duration: 0.5 } }}
             >
-              {/* <ModelSwitcher
+              <ModelSwitcher
                 disabled={
                   props.isChatCompleted ||
                   isRecording ||
                   isTranscribing ||
                   disableInputs
                 }
-                aiType={props.choosenAI}
-                setAIType={props.setChoosenAI}
-              /> */}
-              <Button
+                chattype={props.chattype}
+                setChatType={props.setChattype}
+              />
+              {/* <Button
                 // disabled={isRecording || isTranscribing || disableInputs}
                 disabled={true}
                 onClick={props.onClickOpen}
@@ -548,7 +554,7 @@ const InputBar = (props: InputBarProps) => {
                   color="#618a9e"
                   weight="bold"
                 />
-              </Button>
+              </Button> */}
             </motion.div>
             <motion.div
               initial={{ y: 20, opacity: 0 }}
@@ -586,6 +592,12 @@ const InputBar = (props: InputBarProps) => {
                 autoFocus
                 value={props.value}
                 onChange={handleInputChange}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSubmit(e as unknown as FormEvent<HTMLFormElement>);
+                  }
+                }}
                 className="flex-none resize-none rounded-sm grow w-full bg-background border border-secondary text-primary p-2 text-sm disabled:text-muted"
               />
               <Loader2

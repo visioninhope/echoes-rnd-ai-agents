@@ -1,8 +1,4 @@
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import ChatCardWrapper from "./chatcardwrapper";
 import { Chat as ChatSchema } from "@/lib/db/schema";
 import { AlignLeftIcon, Building, User } from "lucide-react";
@@ -27,10 +23,13 @@ export default function ChatSidebar({
       <SheetTrigger>
         <AlignLeftIcon className="text-gray-500" size={32} />
       </SheetTrigger>
-      <SheetContent side={"left"}>
+      <SheetContent
+        className="h-full overflow-scroll scrollbar-hide"
+        side={"left"}
+      >
         <div className="flex flex-col gap-y-4">
           <OrgChatToggler orgId={org_id} orgSlug={org_slug} />
-          <div className="h-[calc(100dvh-200px)] overflow-y-auto scrollbar-hide ">
+          <div className="h-[calc(100vh-60px)] overflow-y-scroll scrollbar-hide ">
             <ChatCardWrapper
               org_id={org_id}
               org_slug={org_slug}

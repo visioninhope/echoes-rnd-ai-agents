@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { AIType, ChatType } from "@/lib/types";
+import { ChatType } from "@/lib/types";
 import InputBar from "@/components/inputBar";
 import { Message, useChat } from "ai/react";
 import Startnewchatbutton from "@/components/startnewchatbutton";
@@ -39,7 +39,7 @@ export default function Chat(props: ChatProps) {
     settldrawImageUrl,
     onClickOpenChatSheet,
   } = useImageState();
-  const [choosenAI, setChoosenAI] = useState<AIType>("universal");
+  const [chattype, setChattype] = useState<ChatType>(props?.type || "chat");
   const [isChatCompleted, setIsChatCompleted] = useState<boolean>(false);
   const [calculatedMessages, setCalculatedMessages] = useState<Message[][]>([]);
   // const { presenceData, updateStatus } = usePresence(`channel_${props.chatId}`);
@@ -139,7 +139,7 @@ export default function Chat(props: ChatProps) {
       orgId: props.orgId,
       name: props.username,
       userId: props.uid,
-      chattype: props.type,
+      chattype: chattype,
     },
     onError: (error) => {
       console.log("got the error", error);
@@ -305,15 +305,14 @@ export default function Chat(props: ChatProps) {
             setMessages={setMessages}
             username={props.username}
             userId={props.uid}
-            choosenAI={choosenAI}
-            setChoosenAI={setChoosenAI}
+            chattype={chattype}
+            setChattype={setChattype}
             value={input}
             onChange={handleInputChange}
             setInput={setInput}
             append={append}
             isChatCompleted={isChatCompleted}
             isLoading={isLoading}
-            chattype={props.type}
           />
         </>
       )}
