@@ -14,6 +14,8 @@ import { getUserIdList } from "./chatusersavatars";
 import { useDropzone } from "react-dropzone";
 import { X } from "lucide-react";
 import { useImageState } from "@/store/tlDrawImage";
+import { useQueryState } from "next-usequerystate";
+import { nanoid } from "ai";
 
 interface ChatProps {
   orgId: string;
@@ -48,6 +50,10 @@ export default function Chat(props: ChatProps) {
   const [imageUrl, setImageUrl] = useState<string>("");
   const [imageName, setImageName] = useState<string>("");
   const queryClient = useQueryClient();
+  const [isNewChat] = useQueryState("new");
+  const [isFromClipboard] = useQueryState("clipboard");
+  console.log("isFromClipboard", isFromClipboard);
+  console.log("isNewChat", isNewChat);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles && acceptedFiles[0]?.type.startsWith("image/")) {
@@ -154,6 +160,28 @@ export default function Chat(props: ChatProps) {
     sendExtraMessageFields: true,
   });
   console.log("messages", messages);
+
+  useEffect(() => {
+    if (isFromClipboard && isNewChat) {
+      navigator.clipboard
+        .readText()
+        .then((text) => {
+          if (text) {
+            const newMessage = {
+              id: nanoid(),
+              role: "user",
+              content: text,
+              name: `${props.username},${props.uid}`,
+              audio: "",
+            } as Message;
+            append(newMessage);
+          }
+        })
+        .catch((err) => {
+          console.error("Failed to read clipboard contents: ", err);
+        });
+    }
+  }, [isFromClipboard, isNewChat]);
 
   useEffect(() => {
     let mainArray: Message[][] = [];

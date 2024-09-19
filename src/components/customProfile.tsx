@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -40,6 +40,9 @@ const CustomProfile = (props: Props) => {
 
   const { user } = useUser();
   const { theme, setTheme } = useTheme();
+  useEffect(() => {
+    setTheme("light");
+  }, []);
 
   let permission = false;
   if (has) {

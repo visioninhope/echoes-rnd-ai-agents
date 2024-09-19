@@ -442,33 +442,25 @@ const InputBar = (props: InputBarProps) => {
     let countdown = 60;
 
     if (props.isLoading || isRagLoading) {
-      if (props.chattype === "advanced") {
-        timer = setInterval(() => {
-          if (countdown > 0) {
+      timer = setInterval(() => {
+        if (countdown > 0) {
+          updateStatus({
+            isTyping: true,
+            username: `Echoes is thinking (${countdown--} secs)`,
+            id: props.userId,
+          });
+        } else {
+          clearInterval(timer);
+          if (props.isLoading) {
             updateStatus({
               isTyping: true,
-              username: `Echoes is thinking (${countdown--} secs)`,
+              username:
+                "It's taking longer than expected. Please keep patience",
               id: props.userId,
             });
-          } else {
-            clearInterval(timer);
-            if (props.isLoading) {
-              updateStatus({
-                isTyping: true,
-                username:
-                  "It's taking longer than expected. Please keep patience",
-                id: props.userId,
-              });
-            }
           }
-        }, 1000); // 1 second interval
-      } else {
-        updateStatus({
-          isTyping: true,
-          username: "Echoes is thinking...",
-          id: props.userId,
-        });
-      }
+        }
+      }, 1000); // 1 second interval
     } else {
       if (timer) {
         clearInterval(timer);

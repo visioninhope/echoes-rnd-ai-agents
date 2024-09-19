@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Header } from "@/components/header";
 import { Button, buttonVariants } from "@/components/button";
 import Link from "next/link";
@@ -10,6 +10,9 @@ import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Key, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@clerk/nextjs";
+import TextareaAutosize from "react-textarea-autosize";
+import { useRouter } from "next/navigation";
+
 const handleSmoothScroll = (): void => {
   if (typeof window !== "undefined") {
     const hashId = window.location.hash;
@@ -37,6 +40,8 @@ const footerAnimationStates = {
 };
 
 export default function Home() {
+  const [input, setInput] = useState("");
+  const router = useRouter();
   const controls = useAnimation();
   const [ref, inView] = useInView();
   useEffect(() => {
@@ -47,10 +52,40 @@ export default function Home() {
     }
   }, [controls, inView]);
 
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, orgId, orgSlug, userId } = useAuth();
   // if (isSignedIn) {
   //   redirect("/dashboard/user");
   // }
+
+  console.log(
+    "orgId, orgSlug, userId",
+    { isSignedIn, orgId, orgSlug, userId },
+    "\n\n\n\n\n\n",
+  );
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value);
+    navigator.clipboard.writeText(e.target.value);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (input.trim() === "") return;
+
+    try {
+      const res = await fetch(`/api/generateNewChatId/${orgId}`, {
+        method: "POST",
+        body: JSON.stringify({ type: "chat" }),
+      });
+      const data = await res.json();
+
+      router.push(
+        `/dashboard/${orgSlug}/chat/${data.newChatId}?new=true&clipboard=true`,
+      );
+    } catch (error) {
+      console.error("Error creating new chat:", error);
+    }
+  };
 
   return (
     <div>
@@ -81,13 +116,36 @@ export default function Home() {
                 Let's hyper-accelerate your research.
               </h1>
               <div className="grid md:grid-col-2 gap-4 sm:grid-col-1 p-4">
-                <Link
-                  href="/dashboard"
-                  className={buttonVariants({ variant: "default" })}
-                >
-                  <LayoutDashboard className="mr-2 w-4 h-4" />
-                  Dashboard
-                </Link>
+                {isSignedIn ? (
+                  <form
+                    onSubmit={handleSubmit}
+                    className="flex flex-col items-center gap-2"
+                  >
+                    <TextareaAutosize
+                      maxRows={3}
+                      placeholder="Type your message here..."
+                      value={input}
+                      onChange={handleInputChange}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                          e.preventDefault();
+                          handleSubmit(
+                            e as unknown as React.FormEvent<HTMLFormElement>,
+                          );
+                        }
+                      }}
+                      className="flex-none resize-none rounded-sm grow w-full bg-background border border-secondary text-primary p-2 text-sm"
+                    />
+                  </form>
+                ) : (
+                  <Link
+                    href="/dashboard"
+                    className={buttonVariants({ variant: "default" })}
+                  >
+                    <LayoutDashboard className="mr-2 w-4 h-4" />
+                    Dashboard
+                  </Link>
+                )}
                 {isSignedIn || (
                   <Link
                     className={buttonVariants({ variant: "secondary" })}
