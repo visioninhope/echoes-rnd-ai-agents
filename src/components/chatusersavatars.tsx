@@ -81,14 +81,14 @@ export default Chatusersavatars;
 
 export const getUserIdList = (chatMessages: ChatEntry[]): Array<string> => {
   // const chatArray = (JSON.parse(chatMessages as string) as ChatLog)?.log;
-  const ArrayContainingUsers = chatMessages.filter((chat) =>
+  const ArrayContainingUsers = chatMessages?.filter((chat) =>
     chat.name !== "" ? chat.name : null,
   );
-  const ids = ArrayContainingUsers.map((usr) => {
+  const ids = ArrayContainingUsers?.map((usr) => {
     const split = usr.name?.split(",");
     return split && split.length > 0 ? split[1] : null;
   });
-  const filteredIds = ids.filter((id) => id !== undefined);
+  const filteredIds = ids?.filter((id) => id !== undefined);
   const uniqueIds = Array.from(new Set(filteredIds));
   return uniqueIds as Array<string>;
 };

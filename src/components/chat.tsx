@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { AIType, ChatType } from "@/lib/types";
+import { ChatType } from "@/lib/types";
 import InputBar from "@/components/inputBar";
 import { Message, useChat } from "ai/react";
 import Startnewchatbutton from "@/components/startnewchatbutton";
@@ -14,6 +14,8 @@ import { getUserIdList } from "./chatusersavatars";
 import { useDropzone } from "react-dropzone";
 import { X } from "lucide-react";
 import { useImageState } from "@/store/tlDrawImage";
+import { useQueryState } from "next-usequerystate";
+import { nanoid } from "ai";
 
 interface ChatProps {
   orgId: string;
@@ -39,7 +41,6 @@ export default function Chat(props: ChatProps) {
     settldrawImageUrl,
     onClickOpenChatSheet,
   } = useImageState();
-  const [choosenAI, setChoosenAI] = useState<AIType>("universal");
   const [isChatCompleted, setIsChatCompleted] = useState<boolean>(false);
   const [calculatedMessages, setCalculatedMessages] = useState<Message[][]>([]);
   // const { presenceData, updateStatus } = usePresence(`channel_${props.chatId}`);
@@ -48,6 +49,12 @@ export default function Chat(props: ChatProps) {
   const [imageUrl, setImageUrl] = useState<string>("");
   const [imageName, setImageName] = useState<string>("");
   const queryClient = useQueryClient();
+  const [isNewChat, setIsNewChat] = useQueryState("new");
+  const [isFromClipboard, setIsFromClipboard] = useQueryState("clipboard");
+  const [incomingModel] = useQueryState("model");
+  const [chattype, setChattype] = useState<ChatType>(
+    props?.type || incomingModel || "chat",
+  );
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles && acceptedFiles[0]?.type.startsWith("image/")) {
@@ -134,15 +141,15 @@ export default function Chat(props: ChatProps) {
     data,
   } = useChat({
     api:
-      props.type === "advanced"
-        ? `/api/chatmodel-o1preview/${props.chatId}`
-        : `/api/chatmodel/${props.chatId}`,
+      chattype === "ella"
+        ? `/api/chatmodel/${props.chatId}`
+        : `/api/chatmodel-o1preview/${props.chatId}`,
     initialMessages: chatsData,
     body: {
       orgId: props.orgId,
       name: props.username,
       userId: props.uid,
-      chattype: props.type,
+      chattype: chattype,
     },
     onError: (error) => {
       console.log("got the error", error);
@@ -157,6 +164,31 @@ export default function Chat(props: ChatProps) {
     sendExtraMessageFields: true,
   });
   console.log("messages", messages);
+
+  useEffect(() => {
+    if (isFromClipboard === "true" && isNewChat === "true") {
+      //TODO: use types for useQueryState
+      navigator.clipboard
+        .readText()
+        .then((text) => {
+          if (text && chattype !== "tldraw") {
+            const newMessage = {
+              id: nanoid(),
+              role: "user",
+              content: text,
+              name: `${props.username},${props.uid}`,
+              audio: "",
+            } as Message;
+            append(newMessage);
+          }
+          setIsFromClipboard("false");
+          setIsNewChat("false");
+        })
+        .catch((err) => {
+          console.error("Failed to read clipboard contents: ", err);
+        });
+    }
+  }, [isFromClipboard, isNewChat]);
 
   useEffect(() => {
     let mainArray: Message[][] = [];
@@ -308,15 +340,14 @@ export default function Chat(props: ChatProps) {
             setMessages={setMessages}
             username={props.username}
             userId={props.uid}
-            choosenAI={choosenAI}
-            setChoosenAI={setChoosenAI}
+            chattype={chattype}
+            setChattype={setChattype}
             value={input}
             onChange={handleInputChange}
             setInput={setInput}
             append={append}
             isChatCompleted={isChatCompleted}
             isLoading={isLoading}
-            chattype={props.type}
           />
         </>
       )}

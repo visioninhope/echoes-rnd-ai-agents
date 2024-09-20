@@ -4,6 +4,10 @@ import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { env } from "@/app/env.mjs";
+import { chattype } from "@/lib/types";
+import { db } from "@/lib/db";
+import { chats } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
 
 export const revalidate = 0; // disable cache
 
@@ -30,8 +34,26 @@ export async function POST(
   }
 
   const msgs = jsonToLangchain(_chat);
+  // getting chat type
+  let model: string = OPEN_AI_MODELS.o1Preview;
+  const chatType = chattype.parse(body.chattype);
 
-  const model = OPEN_AI_MODELS.o1Preview;
+  if (chatType === "chat") {
+    model = OPEN_AI_MODELS.o1Mini;
+  }
+
+  //TODO: update chattype to database
+  try {
+    await db
+      .update(chats)
+      .set({
+        type: chatType,
+      })
+      .where(eq(chats.id, Number(id)))
+      .run();
+  } catch (err: any) {
+    console.error("updating chattype failed for chatid", id);
+  }
   const openai_chat_model = new ChatOpenAI({
     modelName: model,
     openAIApiKey: env.OPEN_AI_API_KEY,

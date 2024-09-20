@@ -31,6 +31,7 @@ export const OPEN_AI_MODELS = {
   gptTurbo16k: "gpt-3.5-turbo-16k" as const,
   gpt4Turbo: "gpt-4-turbo" as const,
   o1Preview: "o1-preview" as const,
+  o1Mini: "o1-mini" as const,
   //TODO: gpt-40-mini
 };
 

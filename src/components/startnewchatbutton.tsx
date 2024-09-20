@@ -24,7 +24,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { MessageSquarePlus, PenTool, Database } from "lucide-react";
+import {
+  MessageSquarePlus,
+  PenTool,
+  Database,
+  Layers,
+  Settings,
+} from "lucide-react";
 
 interface Props {
   org_slug: string;
@@ -71,7 +77,7 @@ const Startnewchatbutton = (props: Props) => {
     });
     const data = await res.json();
     isLoding(false);
-    router.push(`/dashboard/${props.org_slug}/chat/${Number(data.newChatId)}`);
+    router.push(`/dashboard/chat/${Number(data.newChatId)}`);
   };
 
   return (
@@ -114,7 +120,7 @@ const Startnewchatbutton = (props: Props) => {
               variant="outline"
               onClick={() => {
                 // setShowLoading(true);
-                handleNavigate("advanced", setShowLoading, "");
+                handleNavigate("chat", setShowLoading, "");
               }}
               disabled={showLoading || isBoardCreating || showTitleInput}
             >
@@ -145,7 +151,7 @@ const Startnewchatbutton = (props: Props) => {
                 </>
               ) : (
                 <>
-                  <MessageSquarePlus className="w-4 h-4 mr-2" />
+                  <Layers className="w-4 h-4 mr-2" />
                   Advanced Chat
                 </>
               )}
@@ -174,7 +180,8 @@ const Startnewchatbutton = (props: Props) => {
               onClick={() => {
                 handleNavigate("rag", setIsKnowledgeChatLoading, ""); // TODO: update loading state
               }}
-              disabled={showLoading || isBoardCreating || showTitleInput}
+              // disabled={showLoading || isBoardCreating || showTitleInput}
+              disabled={true}
             >
               {isKnowledgeChatLoading ? (
                 <>
@@ -207,7 +214,7 @@ const Startnewchatbutton = (props: Props) => {
                 </>
               ) : (
                 <>
-                  <MessageSquarePlus className="w-4 h-4 mr-2" />
+                  <Settings className="w-4 h-4 mr-2" />
                   New Ella Chat
                 </>
               )}

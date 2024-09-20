@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Header } from "@/components/header";
 import { Button, buttonVariants } from "@/components/button";
 import Link from "next/link";
@@ -10,6 +10,11 @@ import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Key, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import InputBar from "@/components/inputBar2";
+import { ChatType } from "@/lib/types";
+import { parseAsString, useQueryState } from "next-usequerystate";
+
 const handleSmoothScroll = (): void => {
   if (typeof window !== "undefined") {
     const hashId = window.location.hash;
@@ -37,6 +42,8 @@ const footerAnimationStates = {
 };
 
 export default function Home() {
+  const [input, setInput] = useState("");
+  const router = useRouter();
   const controls = useAnimation();
   const [ref, inView] = useInView();
   useEffect(() => {
@@ -46,11 +53,39 @@ export default function Home() {
       controls.start("hidden");
     }
   }, [controls, inView]);
+  const [chatType, setChattype] = useQueryState(
+    "model",
+    parseAsString.withDefault("chat"),
+  );
 
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, orgId, orgSlug, userId } = useAuth();
   // if (isSignedIn) {
   //   redirect("/dashboard/user");
   // }
+
+  const handleInputChange = (e: any) => {
+    setInput(e.target.value);
+    navigator.clipboard.writeText(e.target.value);
+  };
+
+  const handleSubmit = async () => {
+    console.log("handleSubmit");
+    if (input.trim() === "") return;
+
+    try {
+      const res = await fetch(`/api/generateNewChatId/${orgId}`, {
+        method: "POST",
+        body: JSON.stringify({ type: "chat" }),
+      });
+      const data = await res.json();
+
+      router.push(
+        `/dashboard/chat/${data.newChatId}?new=true&clipboard=true&model=${chatType}`,
+      );
+    } catch (error) {
+      console.error("Error creating new chat:", error);
+    }
+  };
 
   return (
     <div>
@@ -73,7 +108,7 @@ export default function Home() {
                 quality={5}
               />
             </div>
-            <div className="z-10">
+            <div className="z-10 flex flex-col items-center">
               <h1 className="text-4xl font-bold tracking-tight text-foreground">
                 Hello Innovator,
               </h1>
@@ -81,13 +116,30 @@ export default function Home() {
                 Let's hyper-accelerate your research.
               </h1>
               <div className="grid md:grid-col-2 gap-4 sm:grid-col-1 p-4">
-                <Link
-                  href="/dashboard"
-                  className={buttonVariants({ variant: "default" })}
-                >
-                  <LayoutDashboard className="mr-2 w-4 h-4" />
-                  Dashboard
-                </Link>
+                {isSignedIn ? (
+                  <div className="w-full md:min-w-[400px] lg:min-w-[600px] xl:min-w-[800px] ">
+                    <InputBar
+                      isHome={true}
+                      value={input}
+                      onChange={handleInputChange}
+                      setInput={setInput}
+                      submitInput={handleSubmit}
+                      orgId={orgId as string}
+                      chattype={chatType as ChatType}
+                      setChattype={
+                        setChattype as Dispatch<SetStateAction<ChatType>>
+                      }
+                    />
+                  </div>
+                ) : (
+                  <Link
+                    href="/dashboard"
+                    className={buttonVariants({ variant: "default" })}
+                  >
+                    <LayoutDashboard className="mr-2 w-4 h-4" />
+                    Dashboard
+                  </Link>
+                )}
                 {isSignedIn || (
                   <Link
                     className={buttonVariants({ variant: "secondary" })}

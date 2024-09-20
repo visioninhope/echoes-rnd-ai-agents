@@ -1,18 +1,18 @@
 "use client";
-import React, { useState } from "react";
+import React, { useMemo } from "react";
 import { ChatEntry, ChatType } from "@/lib/types";
 import { Chat as ChatSchema } from "@/lib/db/schema";
 import { MessageCircle } from "lucide-react";
 import { Button } from "@/components/button";
-import Link from "next/link";
 import Chatusers, { getUserIdList } from "@/components/chatusersavatars";
 import Chat from "@/components/chat";
-import { CircleNotch, ArrowLeft } from "@phosphor-icons/react";
 import { Eye, EyeOff } from "lucide-react";
 import usePreferences from "@/store/userPreferences";
 import { useChannel, usePresence } from "ably/react";
 import ChatSheet from "./chatSheet";
 import { useImageState } from "@/store/tlDrawImage";
+import ChatSidebar from "./chatSidebar";
+import Startnewchatbutton from "./startnewchatbutton";
 
 let chatToMap: any = "";
 
@@ -35,13 +35,9 @@ const RoomWrapper = (props: Props) => {
   const { setOnClickOpenChatSheet, onClickOpenChatSheet, tlDrawImage } =
     useImageState();
 
-  const [showLoading, setShowLoading] = useState(false);
   const { channel } = useChannel("room_5", (message) => {
-    console.log(message);
+    // console.log(message);
   });
-  console.log("props.Chat", props.chat);
-
-  console.log("props.Chat.tldraw_snapshot", props.snapShot);
 
   const preferences = usePreferences();
   const { presenceData, updateStatus } = usePresence(
@@ -51,36 +47,35 @@ const RoomWrapper = (props: Props) => {
       username: props.username,
       isTyping: false,
     },
+    (presenseUpdate) => {
+      console.log("presenseUpdate", presenseUpdate);
+    },
   );
   const dbIds = getUserIdList(
     props.type === "tldraw" ? props.snapShot : props.chat,
   );
   const chatCreatorId = dbIds[0];
 
-  const liveUserIds = presenceData.map((p) => p.data.id);
+  const liveUserIds = useMemo(() => {
+    return presenceData.map((p) => p.data.id);
+  }, [presenceData]);
 
-  const uniqueIds = [...dbIds, ...liveUserIds].filter(
-    (v, i, a) => a.indexOf(v) === i,
-  );
+  const uniqueIds = useMemo(() => {
+    return [...dbIds, ...liveUserIds].filter((v, i, a) => a.indexOf(v) === i);
+  }, [dbIds, liveUserIds]);
 
   return (
     <>
       <div className="flex flex-col flex-grow min-h-[calc(100dvh-100px)] justify-between h-full mt-[80px]">
         {" "}
         <div className="flex space-between mb-2">
-          <div className="flex items-center">
-            <Button variant="outline" className="mr-2" asChild>
-              <Link
-                onClick={() => setShowLoading(true)}
-                href={`/dashboard/user`}
-              >
-                {showLoading ? (
-                  <CircleNotch className="w-4 h-4 animate-spin" />
-                ) : (
-                  <ArrowLeft className="h-4 w-4" />
-                )}
-              </Link>
-            </Button>
+          <div className="flex items-center gap-2">
+            <ChatSidebar
+              org_id={props.orgId}
+              org_slug={props.org_slug}
+              uid={props.uid}
+              initialData={props.chat as unknown as ChatSchema[]}
+            />
             <Chatusers
               allPresenceIds={uniqueIds}
               liveUserIds={liveUserIds}
@@ -91,6 +86,10 @@ const RoomWrapper = (props: Props) => {
 
           <div className="grow" />
           <div className="flex gap-2">
+            <Startnewchatbutton
+              org_slug={props.org_slug}
+              org_id={props.orgId}
+            />
             <Button
               onClick={() => preferences.toggleShowSubRoll()}
               variant="outline"

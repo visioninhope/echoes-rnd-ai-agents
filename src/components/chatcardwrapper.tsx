@@ -24,11 +24,12 @@ const ChatCardWrapper = ({ org_id, org_slug, uid, initialData }: Props) => {
     redirect(`${uid}`);
   }
   const [chatsQuery] = useQueryState("chats");
+  console.log("chatsQuery from chatcardwrapper", chatsQuery);
 
   const fetchChats = async ({ pageParam = 0 }) => {
     const response = await fetch(
       `/api/getPaginatedChats/${org_id}?page=${pageParam}&userId=${uid}&chats=${
-        chatsQuery ? chatsQuery : "org"
+        chatsQuery ? chatsQuery : "me"
       }`,
       {
         method: "GET",
@@ -67,7 +68,7 @@ const ChatCardWrapper = ({ org_id, org_slug, uid, initialData }: Props) => {
 
   return (
     <div>
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+      <div className="grid sm:grid-cols-1 gap-3">
         {allCards?.map((chat, i) => {
           return (
             <div

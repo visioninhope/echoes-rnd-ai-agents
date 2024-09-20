@@ -12,22 +12,30 @@ import {
 } from "@/components/ui/dropdownmeu";
 
 import { Button } from "@/components/button";
-import { Dna, Brain } from "@phosphor-icons/react";
-import { AIType } from "@/lib/types";
+import { Cpu, Layers, PenTool, Settings } from "lucide-react";
+import { ChatType } from "@/lib/types";
 
 export interface InputBarActionProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  aiType: AIType;
-  setAIType: Dispatch<SetStateAction<AIType>>;
+  chattype?: ChatType;
+  setChatType?: Dispatch<SetStateAction<ChatType>>;
+  isHome?: boolean;
 }
 
 const ModelSwitcher = React.forwardRef<HTMLButtonElement, InputBarActionProps>(
-  ({ aiType, setAIType, className, ...props }, ref) => {
+  (
+    { chattype = "chat", setChatType, className, isHome = false, ...props },
+    ref,
+  ) => {
     const Comp =
-      aiType === "universal" ? (
-        <Brain className="h-4 w-4 fill-current" />
+      chattype === "advanced" ? (
+        <Layers className="h-4 w-4" />
+      ) : chattype === "chat" ? (
+        <Cpu className="h-4 w-4" />
+      ) : chattype === "tldraw" ? (
+        <PenTool className="h-4 w-4" />
       ) : (
-        <Dna className="h-4 w-4 fill-current" />
+        <Settings className="h-4 w-4" />
       );
 
     return (
@@ -46,16 +54,14 @@ const ModelSwitcher = React.forwardRef<HTMLButtonElement, InputBarActionProps>(
         <DropdownMenuContent>
           <DropdownMenuGroup>
             <DropdownMenuRadioGroup
-              value={aiType}
-              onValueChange={(value) => setAIType(value as AIType)}
+              value={chattype}
+              onValueChange={(value) => setChatType?.(value as ChatType)}
             >
-              <DropdownMenuRadioItem value="universal">
-                Universal
+              <DropdownMenuRadioItem value="advanced">
+                Advanced
               </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="oligoai">
-                OligoAI
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="agent">Agent</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="chat">Simple</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="ella">Ella</DropdownMenuRadioItem>
               <DropdownMenuSeparator />
               <DropdownMenuLabel inset>AIModels</DropdownMenuLabel>
             </DropdownMenuRadioGroup>

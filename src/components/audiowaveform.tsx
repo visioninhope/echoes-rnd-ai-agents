@@ -1,7 +1,6 @@
 import React, { Dispatch, SetStateAction, useEffect } from "react";
 import { ReactMic, ReactMicStopEvent } from "react-mic";
 import { Button } from "@/components/button";
-import { motion } from "framer-motion";
 import { StopCircle } from "@phosphor-icons/react";
 import { useTheme } from "next-themes";
 
@@ -44,15 +43,15 @@ const AudioWaveForm = (props: Props) => {
   };
 
   return (
-    <motion.div
-      layout
-      initial={{ height: 0, opacity: 0 }}
-      animate={{
-        height: "100%",
-        opacity: 1,
-        transition: { duration: 1, type: "spring" },
-      }}
-      exit={{ height: 0, opacity: 0, transition: { duration: 1 } }}
+    <div
+      // layout
+      // initial={{ height: 0, opacity: 0 }}
+      // animate={{
+      //   height: "100%",
+      //   opacity: 1,
+      //   transition: { duration: 1, type: "spring" },
+      // }}
+      // exit={{ height: 0, opacity: 0, transition: { duration: 1 } }}
       className="flex w-full gap-2 p-2"
     >
       <div className="flex flex-grow">
@@ -70,10 +69,10 @@ const AudioWaveForm = (props: Props) => {
           noiseSuppression={true}
         />
       </div>
-      <motion.div
-        initial={{ x: -20, y: -25, opacity: 0 }}
-        animate={{ x: 0, y: 0, opacity: 1, transition: { duration: 0.5 } }}
-        exit={{ x: -20, y: -25, opacity: 0, transition: { duration: 0.5 } }}
+      <div
+      // initial={{ x: -20, y: -25, opacity: 0 }}
+      // animate={{ x: 0, y: 0, opacity: 1, transition: { duration: 0.5 } }}
+      // exit={{ x: -20, y: -25, opacity: 0, transition: { duration: 0.5 } }}
       >
         <Button
           type="button"
@@ -83,8 +82,8 @@ const AudioWaveForm = (props: Props) => {
         >
           <StopCircle className="h-4 w-4 text-destructive" />
         </Button>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 };
 

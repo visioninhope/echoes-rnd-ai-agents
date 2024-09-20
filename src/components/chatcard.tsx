@@ -96,21 +96,27 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority, type }: Props) => {
     }
   });
 
-  const msg = chat.messages;
-  const chatlog = JSON.parse(msg as string) as ChatLog;
-  const firstMessage = chatlog?.log?.[0]?.content;
-  const chatTitle = chat.title || firstMessage || "No Title";
-
-  // extracts chatentry from chatlog
-  const chats = JSON.parse(chat.messages as string) as ChatLog;
-  const userIds = getUserIdList(chats.log);
+  const msg = chat?.messages;
+  let chatlog: ChatLog;
+  let firstMessage: string;
+  let chatTitle: string;
+  let userIds: string[];
+  try {
+    chatlog = JSON.parse(msg as string) as ChatLog;
+    firstMessage = chatlog?.log?.[0]?.content;
+    chatTitle = chat.title || firstMessage || "No Title";
+    userIds = getUserIdList(chatlog?.log || []);
+  } catch (err: any) {
+    chatTitle = chat.title || "No Title";
+    console.error("error in chatcard", err);
+  }
 
   return (
     <div
       className="relative cursor-pointer shadow-sm"
       onClick={() => {
         setShowLoading(true);
-        router.push(`${org_slug}/chat/${chat.id}`);
+        router.replace(`${chat.id}`);
       }}
     >
       <Card className="relative overflow-hidden">
@@ -135,9 +141,9 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority, type }: Props) => {
           </CardDescription>
           <Chatusers
             count={2}
-            allPresenceIds={userIds}
+            allPresenceIds={userIds! || []}
             chatId={chat.id}
-            chatCreatorId={userIds[0]}
+            chatCreatorId={userIds!?.[0] || ""}
           />
         </CardHeader>
         <CardContent className="flex justify-between ">
@@ -165,7 +171,7 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority, type }: Props) => {
                 description={description}
                 id={String(chat.id)} // id for the track
                 imageUrl={chat.image_url}
-                messages={chatlog.log}
+                messages={chatlog!?.log || []}
                 summarize={true}
                 orgId={org_id}
                 audio={chat.audio}
@@ -177,7 +183,7 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority, type }: Props) => {
             <Link
               onClick={() => setShowLoading(true)}
               href={{
-                pathname: `${org_slug}/chat/${chat.id}`,
+                pathname: `/chat/${chat.id}`,
               }}
               key={chat.id}
               className={cn(

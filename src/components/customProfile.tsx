@@ -28,6 +28,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
 import Link from "next/link";
 import { PERMISSIONS, USER_ROLES } from "@/utils/constants";
 import { useTheme } from "next-themes";
+import { useRouter } from "next/navigation";
 
 type Props = {};
 
@@ -62,6 +63,7 @@ const CustomProfile = (props: Props) => {
       infinite: true,
     },
   });
+  const router = useRouter();
 
   const organization = useOrganization();
   return (
@@ -91,6 +93,7 @@ const CustomProfile = (props: Props) => {
                 checked={o.membership.organization.id === orgId}
                 onCheckedChange={() => {
                   setActive({ organization: o.membership.organization.id });
+                  router.replace(`/`);
                 }}
                 key={o.membership.organization.id}
                 className="cursor-pointer"
