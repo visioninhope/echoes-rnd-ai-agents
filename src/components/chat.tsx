@@ -41,7 +41,6 @@ export default function Chat(props: ChatProps) {
     settldrawImageUrl,
     onClickOpenChatSheet,
   } = useImageState();
-  const [chattype, setChattype] = useState<ChatType>(props?.type || "chat");
   const [isChatCompleted, setIsChatCompleted] = useState<boolean>(false);
   const [calculatedMessages, setCalculatedMessages] = useState<Message[][]>([]);
   // const { presenceData, updateStatus } = usePresence(`channel_${props.chatId}`);
@@ -50,10 +49,12 @@ export default function Chat(props: ChatProps) {
   const [imageUrl, setImageUrl] = useState<string>("");
   const [imageName, setImageName] = useState<string>("");
   const queryClient = useQueryClient();
-  const [isNewChat] = useQueryState("new");
-  const [isFromClipboard] = useQueryState("clipboard");
-  console.log("isFromClipboard", isFromClipboard);
-  console.log("isNewChat", isNewChat);
+  const [isNewChat, setIsNewChat] = useQueryState("new");
+  const [isFromClipboard, setIsFromClipboard] = useQueryState("clipboard");
+  const [incomingModel] = useQueryState("model");
+  const [chattype, setChattype] = useState<ChatType>(
+    props?.type || incomingModel || "chat",
+  );
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles && acceptedFiles[0]?.type.startsWith("image/")) {
@@ -162,7 +163,8 @@ export default function Chat(props: ChatProps) {
   console.log("messages", messages);
 
   useEffect(() => {
-    if (isFromClipboard && isNewChat) {
+    if (isFromClipboard === "true" && isNewChat === "true") {
+      //TODO: use types for useQueryState
       navigator.clipboard
         .readText()
         .then((text) => {
@@ -176,6 +178,8 @@ export default function Chat(props: ChatProps) {
             } as Message;
             append(newMessage);
           }
+          setIsFromClipboard("false");
+          setIsNewChat("false");
         })
         .catch((err) => {
           console.error("Failed to read clipboard contents: ", err);

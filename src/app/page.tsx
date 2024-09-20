@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Header } from "@/components/header";
 import { Button, buttonVariants } from "@/components/button";
 import Link from "next/link";
@@ -10,8 +10,10 @@ import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Key, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@clerk/nextjs";
-import TextareaAutosize from "react-textarea-autosize";
 import { useRouter } from "next/navigation";
+import InputBar from "@/components/inputBar2";
+import { ChatType, chattype } from "@/lib/types";
+import { parseAsStringEnum, useQueryState } from "next-usequerystate";
 
 const handleSmoothScroll = (): void => {
   if (typeof window !== "undefined") {
@@ -51,25 +53,23 @@ export default function Home() {
       controls.start("hidden");
     }
   }, [controls, inView]);
+  const [chatType, setChattype] = useQueryState(
+    "model",
+    parseAsStringEnum<ChatType>(Object.values(chattype)),
+  );
 
   const { isSignedIn, orgId, orgSlug, userId } = useAuth();
   // if (isSignedIn) {
   //   redirect("/dashboard/user");
   // }
 
-  console.log(
-    "orgId, orgSlug, userId",
-    { isSignedIn, orgId, orgSlug, userId },
-    "\n\n\n\n\n\n",
-  );
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleInputChange = (e: any) => {
     setInput(e.target.value);
     navigator.clipboard.writeText(e.target.value);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
+    console.log("handleSubmit");
     if (input.trim() === "") return;
 
     try {
@@ -84,6 +84,7 @@ export default function Home() {
       console.error("Error creating new chat:", error);
     }
   };
+
   return (
     <div>
       <AnimatePresence onExitComplete={handleSmoothScroll}>
@@ -105,7 +106,7 @@ export default function Home() {
                 quality={5}
               />
             </div>
-            <div className="z-10">
+            <div className="z-10 flex flex-col items-center">
               <h1 className="text-4xl font-bold tracking-tight text-foreground">
                 Hello Innovator,
               </h1>
@@ -114,26 +115,18 @@ export default function Home() {
               </h1>
               <div className="grid md:grid-col-2 gap-4 sm:grid-col-1 p-4">
                 {isSignedIn ? (
-                  <form
-                    onSubmit={handleSubmit}
-                    className="flex flex-col items-center gap-2"
-                  >
-                    <TextareaAutosize
-                      maxRows={3}
-                      placeholder="Type your message here..."
-                      value={input}
-                      onChange={handleInputChange}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && !e.shiftKey) {
-                          e.preventDefault();
-                          handleSubmit(
-                            e as unknown as React.FormEvent<HTMLFormElement>,
-                          );
-                        }
-                      }}
-                      className="flex-none resize-none rounded-sm grow w-full bg-background border border-secondary text-primary p-2 text-sm"
-                    />
-                  </form>
+                  <InputBar
+                    isHome={true}
+                    value={input}
+                    onChange={handleInputChange}
+                    setInput={setInput}
+                    submitInput={handleSubmit}
+                    orgId={orgId as string}
+                    chattype={chatType as ChatType}
+                    setChattype={
+                      setChattype as Dispatch<SetStateAction<ChatType>>
+                    }
+                  />
                 ) : (
                   <Link
                     href="/dashboard"

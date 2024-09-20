@@ -17,12 +17,12 @@ import { ChatType } from "@/lib/types";
 
 export interface InputBarActionProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  chattype: ChatType;
-  setChatType: Dispatch<SetStateAction<ChatType>>;
+  chattype?: ChatType;
+  setChatType?: Dispatch<SetStateAction<ChatType>>;
 }
 
 const ModelSwitcher = React.forwardRef<HTMLButtonElement, InputBarActionProps>(
-  ({ chattype, setChatType, className, ...props }, ref) => {
+  ({ chattype = "chat", setChatType, className, ...props }, ref) => {
     const Comp =
       chattype === "advanced" ? (
         <Layers className="h-4 w-4" />
@@ -49,7 +49,7 @@ const ModelSwitcher = React.forwardRef<HTMLButtonElement, InputBarActionProps>(
           <DropdownMenuGroup>
             <DropdownMenuRadioGroup
               value={chattype}
-              onValueChange={(value) => setChatType(value as ChatType)}
+              onValueChange={(value) => setChatType?.(value as ChatType)}
             >
               <DropdownMenuRadioItem value="advanced">
                 Advanced
