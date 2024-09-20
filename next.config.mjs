@@ -1,6 +1,5 @@
 import "./src/app/env.mjs";
 import withPWAInit from "@ducanh2912/next-pwa";
-import CopyPlugin from "copy-webpack-plugin"
 
 const withPWA = withPWAInit({
   dest: "public",
@@ -37,42 +36,6 @@ const nextConfig = {
       },
     ];
   },
-  webpack: (config, { buildId, dev, isServer, defaultLoaders, nextRuntime, webpack }) => {
-    config.resolve.extensions.push(".ts", ".js",".mjs", ".tsx")
-    config.resolve.fallback = { fs: false }
-    config.plugins.push(
-      new CopyPlugin({
-        patterns: [
-          {
-            from: "./node_modules/@ricky0123/vad-web/dist/vad.worklet.bundle.min.js",
-            to: "static/chunks/app/vad.worklet.bundle.min.js",
-          },
-          {
-            from: "./node_modules/@ricky0123/vad-web/dist/vad.worklet.bundle.min.js",
-            to: "static/chunks/app/vad.worklet.bundle.min.js",
-          },
-          {
-            from: "./node_modules/@ricky0123/vad-web/dist/silero_vad.onnx",
-            to: "static/chunks/app/silero_vad.onnx",
-
-          },
-          { from: "./node_modules/onnxruntime-web/dist/*", to: "static/chunks/app/[name][ext]" },
-          {
-            from: "./node_modules/@ricky0123/vad-web/dist/vad.worklet.bundle.min.js",
-            to: "static/chunks/app/dashboard/chat/[chatid]/vad.worklet.bundle.min.js",
-          },
-          {
-            from: "./node_modules/@ricky0123/vad-web/dist/silero_vad.onnx",
-            to: "static/chunks/app/dashboard/chat/[chatid]/silero_vad.onnx",
-
-          },
-          { from: "./node_modules/onnxruntime-web/dist/*", to: "static/chunks/app/dashboard/chat/[chatid]/[name][ext]" },
-        ],
-      })
-    )
-
-    return config
-  }
 };
 
 export default withPWA(nextConfig);
