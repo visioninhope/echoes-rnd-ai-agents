@@ -183,7 +183,7 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority, type }: Props) => {
             <Link
               onClick={() => setShowLoading(true)}
               href={{
-                pathname: `${org_slug}/chat/${chat.id}`,
+                pathname: `/chat/${chat.id}`,
               }}
               key={chat.id}
               className={cn(

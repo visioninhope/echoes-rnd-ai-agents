@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useMemo } from "react";
 import { ChatEntry, ChatType } from "@/lib/types";
 import { Chat as ChatSchema } from "@/lib/db/schema";
 import { MessageCircle } from "lucide-react";
@@ -35,13 +35,9 @@ const RoomWrapper = (props: Props) => {
   const { setOnClickOpenChatSheet, onClickOpenChatSheet, tlDrawImage } =
     useImageState();
 
-  const [showLoading, setShowLoading] = useState(false);
   const { channel } = useChannel("room_5", (message) => {
-    console.log(message);
+    // console.log(message);
   });
-  console.log("props.Chat", props.chat);
-
-  console.log("props.Chat.tldraw_snapshot", props.snapShot);
 
   const preferences = usePreferences();
   const { presenceData, updateStatus } = usePresence(
@@ -51,17 +47,22 @@ const RoomWrapper = (props: Props) => {
       username: props.username,
       isTyping: false,
     },
+    (presenseUpdate) => {
+      console.log("presenseUpdate", presenseUpdate);
+    },
   );
   const dbIds = getUserIdList(
     props.type === "tldraw" ? props.snapShot : props.chat,
   );
   const chatCreatorId = dbIds[0];
 
-  const liveUserIds = presenceData.map((p) => p.data.id);
+  const liveUserIds = useMemo(() => {
+    return presenceData.map((p) => p.data.id);
+  }, [presenceData]);
 
-  const uniqueIds = [...dbIds, ...liveUserIds].filter(
-    (v, i, a) => a.indexOf(v) === i,
-  );
+  const uniqueIds = useMemo(() => {
+    return [...dbIds, ...liveUserIds].filter((v, i, a) => a.indexOf(v) === i);
+  }, [dbIds, liveUserIds]);
 
   return (
     <>

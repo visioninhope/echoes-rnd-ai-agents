@@ -104,8 +104,8 @@ const Search = (props: Props) => {
                   <Link
                     href={
                       result.id
-                        ? `/dashboard/${props.orgSlug}/chat/${result.chatId}/#${result.id}`
-                        : `/dashboard/${props.orgSlug}/chat/${result.chatId}`
+                        ? `/dashboard/chat/${result.chatId}/#${result.id}`
+                        : `/dashboard/chat/${result.chatId}`
                     } // needs to be updated
                     onClick={toggleSearchDialog}
                     key={result.objectID}

@@ -79,14 +79,11 @@ export default function Home() {
       });
       const data = await res.json();
 
-      router.push(
-        `/dashboard/${orgSlug}/chat/${data.newChatId}?new=true&clipboard=true`,
-      );
+      router.push(`/dashboard/chat/${data.newChatId}?new=true&clipboard=true`);
     } catch (error) {
       console.error("Error creating new chat:", error);
     }
   };
-
   return (
     <div>
       <AnimatePresence onExitComplete={handleSmoothScroll}>
