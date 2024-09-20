@@ -55,7 +55,7 @@ export default function Home() {
   }, [controls, inView]);
   const [chatType, setChattype] = useQueryState(
     "model",
-    parseAsString.withDefault("chat")
+    parseAsString.withDefault("chat"),
   );
 
   const { isSignedIn, orgId, orgSlug, userId } = useAuth();
@@ -80,7 +80,7 @@ export default function Home() {
       const data = await res.json();
 
       router.push(
-        `/dashboard/chat/${data.newChatId}?new=true&clipboard=true&model=${chatType}`
+        `/dashboard/chat/${data.newChatId}?new=true&clipboard=true&model=${chatType}`,
       );
     } catch (error) {
       console.error("Error creating new chat:", error);
