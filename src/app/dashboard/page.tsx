@@ -24,6 +24,6 @@ export default async function Page() {
   console.log("org_id", org_id);
   console.log("userId", userId);
   console.log("\n\n\n\n\n\n");
-  redirect(`/dashboard/${org_slug}/chat/${Number(chatId)}`);
+  redirect(`/dashboard/chat/${Number(chatId)}`);
   // redirect(`/dashboard/user`);
 }
