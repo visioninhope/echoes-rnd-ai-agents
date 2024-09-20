@@ -12,22 +12,28 @@ import {
 } from "@/components/ui/dropdownmeu";
 
 import { Button } from "@/components/button";
-import { Cpu, Layers, Settings } from "lucide-react";
+import { Cpu, Layers, PenTool, Settings } from "lucide-react";
 import { ChatType } from "@/lib/types";
 
 export interface InputBarActionProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   chattype?: ChatType;
   setChatType?: Dispatch<SetStateAction<ChatType>>;
+  isHome?: boolean;
 }
 
 const ModelSwitcher = React.forwardRef<HTMLButtonElement, InputBarActionProps>(
-  ({ chattype = "chat", setChatType, className, ...props }, ref) => {
+  (
+    { chattype = "chat", setChatType, className, isHome = false, ...props },
+    ref,
+  ) => {
     const Comp =
       chattype === "advanced" ? (
         <Layers className="h-4 w-4" />
       ) : chattype === "chat" ? (
         <Cpu className="h-4 w-4" />
+      ) : chattype === "tldraw" ? (
+        <PenTool className="h-4 w-4" />
       ) : (
         <Settings className="h-4 w-4" />
       );

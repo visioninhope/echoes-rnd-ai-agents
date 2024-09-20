@@ -366,7 +366,7 @@ const InputBar = (props: InputBarProps) => {
           />
         )}
         <div></div>
-        <div className="flex flex-grow w-full gap-2">
+        <div className="flex flex-grow w-full">
           <div className="relative w-full">
             <TextareaAutosize
               disabled={
@@ -420,6 +420,7 @@ const InputBar = (props: InputBarProps) => {
               }
               chattype={props.chattype}
               setChatType={props.setChattype}
+              isHome={props.isHome}
             />
           </div>
           <div>

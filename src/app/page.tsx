@@ -12,8 +12,8 @@ import { Key, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import InputBar from "@/components/inputBar2";
-import { ChatType, chattype } from "@/lib/types";
-import { parseAsStringEnum, useQueryState } from "next-usequerystate";
+import { ChatType } from "@/lib/types";
+import { parseAsString, useQueryState } from "next-usequerystate";
 
 const handleSmoothScroll = (): void => {
   if (typeof window !== "undefined") {
@@ -55,7 +55,7 @@ export default function Home() {
   }, [controls, inView]);
   const [chatType, setChattype] = useQueryState(
     "model",
-    parseAsStringEnum<ChatType>(Object.values(chattype)),
+    parseAsString.withDefault("chat")
   );
 
   const { isSignedIn, orgId, orgSlug, userId } = useAuth();
@@ -79,7 +79,9 @@ export default function Home() {
       });
       const data = await res.json();
 
-      router.push(`/dashboard/chat/${data.newChatId}?new=true&clipboard=true`);
+      router.push(
+        `/dashboard/chat/${data.newChatId}?new=true&clipboard=true&model=${chatType}`
+      );
     } catch (error) {
       console.error("Error creating new chat:", error);
     }
@@ -115,18 +117,20 @@ export default function Home() {
               </h1>
               <div className="grid md:grid-col-2 gap-4 sm:grid-col-1 p-4">
                 {isSignedIn ? (
-                  <InputBar
-                    isHome={true}
-                    value={input}
-                    onChange={handleInputChange}
-                    setInput={setInput}
-                    submitInput={handleSubmit}
-                    orgId={orgId as string}
-                    chattype={chatType as ChatType}
-                    setChattype={
-                      setChattype as Dispatch<SetStateAction<ChatType>>
-                    }
-                  />
+                  <div className="w-full md:min-w-[400px] lg:min-w-[600px] xl:min-w-[800px] ">
+                    <InputBar
+                      isHome={true}
+                      value={input}
+                      onChange={handleInputChange}
+                      setInput={setInput}
+                      submitInput={handleSubmit}
+                      orgId={orgId as string}
+                      chattype={chatType as ChatType}
+                      setChattype={
+                        setChattype as Dispatch<SetStateAction<ChatType>>
+                      }
+                    />
+                  </div>
                 ) : (
                   <Link
                     href="/dashboard"

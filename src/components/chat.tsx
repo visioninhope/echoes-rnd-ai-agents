@@ -140,7 +140,10 @@ export default function Chat(props: ChatProps) {
     isLoading,
     data,
   } = useChat({
-    api: `/api/chatmodel-o1preview/${props.chatId}`,
+    api:
+      chattype === "ella"
+        ? `/api/chatmodel/${props.chatId}`
+        : `/api/chatmodel-o1preview/${props.chatId}`,
     initialMessages: chatsData,
     body: {
       orgId: props.orgId,
@@ -168,7 +171,7 @@ export default function Chat(props: ChatProps) {
       navigator.clipboard
         .readText()
         .then((text) => {
-          if (text) {
+          if (text && chattype !== "tldraw") {
             const newMessage = {
               id: nanoid(),
               role: "user",
