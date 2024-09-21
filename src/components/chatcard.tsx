@@ -125,7 +125,9 @@ const Chatcard = ({
       className="relative cursor-pointer shadow-sm"
       onClick={() => {
         setShowLoading(true);
-        router.replace(`${chat.id}`);
+        if (!isHome) {
+          router.replace(`${chat.id}`);
+        }
       }}
     >
       <Card className="relative overflow-hidden">
