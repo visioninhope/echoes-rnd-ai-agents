@@ -127,6 +127,8 @@ const Chatcard = ({
         setShowLoading(true);
         if (!isHome) {
           router.replace(`${chat.id}`);
+        } else {
+          router.push(`/dashboard/chat/${chat.id}`);
         }
       }}
     >
