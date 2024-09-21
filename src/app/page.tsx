@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import InputBar from "@/components/inputBar2";
 import { ChatType } from "@/lib/types";
 import { parseAsString, useQueryState } from "next-usequerystate";
+import ChatCardWrapper from "@/components/chatcardwrapper";
 
 const handleSmoothScroll = (): void => {
   if (typeof window !== "undefined") {
@@ -69,7 +70,6 @@ export default function Home() {
   };
 
   const handleSubmit = async () => {
-    console.log("handleSubmit");
     if (input.trim() === "") return;
 
     try {
@@ -80,7 +80,7 @@ export default function Home() {
       const data = await res.json();
 
       router.push(
-        `/dashboard/chat/${data.newChatId}?new=true&clipboard=true&model=${chatType}`,
+        `/dashboard/chat/${data.newChatId}?new=true&clipboard=true&model=${chatType}&input=${input}`,
       );
     } catch (error) {
       console.error("Error creating new chat:", error);
@@ -116,7 +116,7 @@ export default function Home() {
                 Let's hyper-accelerate your research.
               </h1>
               <div className="grid md:grid-col-2 gap-4 sm:grid-col-1 p-4">
-                {isSignedIn ? (
+                {isSignedIn && orgId ? (
                   <div className="w-full md:min-w-[400px] lg:min-w-[600px] xl:min-w-[800px] ">
                     <InputBar
                       isHome={true}
@@ -130,6 +130,15 @@ export default function Home() {
                         setChattype as Dispatch<SetStateAction<ChatType>>
                       }
                     />
+                    <div className="w-full md:w-[400px] lg:w-[600px] xl:w-[800px] h-[500px] overflow-y-scroll scrollbar-hide">
+                      <ChatCardWrapper
+                        isHome={true}
+                        org_id={orgId}
+                        org_slug={orgSlug!}
+                        uid={userId}
+                        initialData={[]}
+                      />
+                    </div>
                   </div>
                 ) : (
                   <Link

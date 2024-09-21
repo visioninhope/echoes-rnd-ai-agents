@@ -9,6 +9,7 @@ import { Button, buttonVariants } from "@/components/button";
 import { useIntersection } from "@mantine/hooks";
 import { CircleNotch } from "@phosphor-icons/react";
 import { useQueryState } from "next-usequerystate";
+import { cn } from "@/lib/utils";
 
 interface Props {
   org_id: string | undefined;
@@ -16,15 +17,21 @@ interface Props {
   uid: string;
   // initial conversation data
   initialData: ChatSchema[];
+  isHome?: boolean;
 }
 
 // here will get all the conversation, will make them paginated and generate card for them
-const ChatCardWrapper = ({ org_id, org_slug, uid, initialData }: Props) => {
+const ChatCardWrapper = ({
+  org_id,
+  org_slug,
+  uid,
+  initialData,
+  isHome = false,
+}: Props) => {
   if (org_id === undefined) {
     redirect(`${uid}`);
   }
   const [chatsQuery] = useQueryState("chats");
-  console.log("chatsQuery from chatcardwrapper", chatsQuery);
 
   const fetchChats = async ({ pageParam = 0 }) => {
     const response = await fetch(
@@ -68,7 +75,12 @@ const ChatCardWrapper = ({ org_id, org_slug, uid, initialData }: Props) => {
 
   return (
     <div>
-      <div className="grid sm:grid-cols-1 gap-3">
+      <div
+        className={cn(
+          "grid sm:grid-cols-1 gap-3",
+          isHome ? "sm:grid-cols-2" : "",
+        )}
+      >
         {allCards?.map((chat, i) => {
           return (
             <div

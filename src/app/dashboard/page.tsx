@@ -20,10 +20,6 @@ export default async function Page() {
     .run();
 
   const chatId = data.toJSON().lastInsertRowid;
-  console.log("org_slug", org_slug);
-  console.log("org_id", org_id);
-  console.log("userId", userId);
-  console.log("\n\n\n\n\n\n");
   redirect(`/dashboard/chat/${Number(chatId)}`);
   // redirect(`/dashboard/user`);
 }
