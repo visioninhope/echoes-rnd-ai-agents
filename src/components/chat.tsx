@@ -52,6 +52,7 @@ export default function Chat(props: ChatProps) {
   const [isNewChat, setIsNewChat] = useQueryState("new");
   const [isFromClipboard, setIsFromClipboard] = useQueryState("clipboard");
   const [incomingModel] = useQueryState("model");
+  const [incomingInput] = useQueryState("input");
   const [chattype, setChattype] = useState<ChatType>(
     props?.type || incomingModel || "chat",
   );
@@ -166,27 +167,20 @@ export default function Chat(props: ChatProps) {
   console.log("messages", messages);
 
   useEffect(() => {
-    if (isFromClipboard === "true" && isNewChat === "true") {
+    if (isNewChat === "true" && incomingInput) {
       //TODO: use types for useQueryState
-      navigator.clipboard
-        .readText()
-        .then((text) => {
-          if (text && chattype !== "tldraw") {
-            const newMessage = {
-              id: nanoid(),
-              role: "user",
-              content: text,
-              name: `${props.username},${props.uid}`,
-              audio: "",
-            } as Message;
-            append(newMessage);
-          }
-          setIsFromClipboard("false");
-          setIsNewChat("false");
-        })
-        .catch((err) => {
-          console.error("Failed to read clipboard contents: ", err);
-        });
+      if (incomingInput && chattype !== "tldraw") {
+        const newMessage = {
+          id: nanoid(),
+          role: "user",
+          content: incomingInput,
+          name: `${props.username},${props.uid}`,
+          audio: "",
+        } as Message;
+        append(newMessage);
+      }
+      setIsFromClipboard("false");
+      setIsNewChat("false");
     }
   }, [isFromClipboard, isNewChat]);
 
