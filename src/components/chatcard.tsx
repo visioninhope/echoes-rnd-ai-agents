@@ -27,9 +27,18 @@ type Props = {
   org_slug: string;
   priority: boolean;
   type: string;
+  isHome?: boolean;
 };
 
-const Chatcard = ({ chat, uid, org_id, org_slug, priority, type }: Props) => {
+const Chatcard = ({
+  chat,
+  uid,
+  org_id,
+  org_slug,
+  priority,
+  type,
+  isHome = false,
+}: Props) => {
   const queryClient = useQueryClient();
   const [showLoading, setShowLoading] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
@@ -183,7 +192,9 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority, type }: Props) => {
             <Link
               onClick={() => setShowLoading(true)}
               href={{
-                pathname: `/chat/${chat.id}`,
+                pathname: isHome
+                  ? `/dashboard/chat/${chat.id}`
+                  : `/chat/${chat.id}`,
               }}
               key={chat.id}
               className={cn(
