@@ -43,7 +43,7 @@ export default function ChatSidebar({
   );
 }
 
-const OrgChatToggler = ({
+export const OrgChatToggler = ({
   orgId,
   orgSlug,
 }: {
