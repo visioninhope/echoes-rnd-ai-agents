@@ -89,6 +89,7 @@ const ChatCardWrapper = ({
               ref={allCards.length - 1 === i ? ref : null}
             >
               <Chatcard
+                isHome={isHome}
                 type={chat.type}
                 priority={i < 4}
                 chat={chat}
