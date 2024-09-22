@@ -6,14 +6,13 @@ import {
   Dispatch,
   FormEvent,
   SetStateAction,
+  useEffect,
   useState,
 } from "react";
 import { ChatRequestOptions, CreateMessage, Message, nanoid } from "ai";
-import { Microphone, PaperPlaneTilt } from "@phosphor-icons/react";
+import { PaperPlaneTilt } from "@phosphor-icons/react";
 import { Button } from "@/components/button";
 import { ChatType, chattype } from "@/lib/types";
-import { Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import z from "zod";
@@ -21,7 +20,7 @@ import { toast } from "./ui/use-toast";
 import { useImageState } from "@/store/tlDrawImage";
 import ModelSwitcher from "./modelswitcher";
 // import VadAudio from "./vadAudio";
-import AudioWaveForm from "./audiowaveform";
+import VadAudio from "./VadAudio";
 const isValidImageType = (value: string) =>
   /^image\/(jpeg|png|jpg|webp)$/.test(value);
 
@@ -331,6 +330,26 @@ const InputBar = (props: InputBarProps) => {
     }
   };
 
+  const handleAudioChunk = async (audioChunk: File) => {
+    setIsTranscribing(true);
+    const f = new FormData();
+    f.append("file", audioChunk);
+    console.log(audioChunk);
+    try {
+      const res = await fetch("/api/transcript", {
+        method: "POST",
+        body: f,
+      });
+
+      const data = await res.json();
+      props?.setInput?.((prev) => prev + data.text);
+      setIsTranscribing(false);
+    } catch (err) {
+      console.error("got in error", err);
+      setIsTranscribing(false);
+    }
+  };
+
   //TODO:
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     if (props.dropZoneActive) {
@@ -349,6 +368,20 @@ const InputBar = (props: InputBarProps) => {
     }
   };
 
+  const [isBlinking, setIsBlinking] = useState(false); // Control blinking state
+  const [displayNumber, setDisplayNumber] = useState(1);
+
+  useEffect(() => {
+    let interval: any;
+    if (isBlinking) {
+      interval = setInterval(() => {
+        setDisplayNumber((prev) => (prev === 5 ? 1 : prev + 1));
+      }, 100); // Change every 500ms
+    }
+
+    return () => clearInterval(interval);
+  }, [isBlinking]);
+
   return (
     <form
       onSubmit={handleSubmit}
@@ -358,23 +391,9 @@ const InputBar = (props: InputBarProps) => {
     >
       <div className="flex flex-col flex-grow bg-linear-900 p-2 pt-2 rounded-sm gap-2 ">
         {/* <AnimatePresence> */}
-        {isAudioWaveVisible && (
-          <AudioWaveForm
-            handleAudio={handleAudio}
-            isRecording={isRecording}
-            setIsRecording={setIsRecording}
-          />
-        )}
-        <div></div>
         <div className="flex flex-grow w-full">
           <div className="relative w-full">
             <TextareaAutosize
-              disabled={
-                props.isChatCompleted ||
-                isRecording ||
-                isTranscribing ||
-                disableInputs
-              }
               maxRows={10}
               placeholder={
                 isTranscribing
@@ -384,7 +403,9 @@ const InputBar = (props: InputBarProps) => {
                   : "Type your message here..."
               }
               autoFocus
-              value={props.value}
+              value={
+                props.value + (isBlinking ? ".".repeat(displayNumber) : "")
+              }
               onChange={handleInputChange}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
@@ -398,12 +419,6 @@ const InputBar = (props: InputBarProps) => {
                 }
               }}
               className="flex-none resize-none rounded-sm grow w-full bg-background border border-secondary text-primary p-2 text-sm disabled:text-muted"
-            />
-            <Loader2
-              className={cn(
-                "h-4 w-4 animate-spin absolute left-2 top-3",
-                isTranscribing ? "visible" : "hidden",
-              )}
             />
           </div>
 
@@ -425,20 +440,21 @@ const InputBar = (props: InputBarProps) => {
           </div>
           <div>
             <div className="flex gap-2">
-              <Button
-                disabled={isRecording || isTranscribing || disableInputs}
-                onClick={() => setIsAudioWaveVisible(true)}
-                size="icon"
-                variant="secondary"
-                type="button"
-                className="disabled:text-muted"
-              >
-                <Microphone
-                  className="h-4 w-4 fill-current"
-                  color="#618a9e"
-                  weight="bold"
-                />
-              </Button>
+              <VadAudio
+                onStartListening={() => {
+                  setIsBlinking(true);
+                  setIsAudioWaveVisible(true);
+                }}
+                onStopListening={() => {
+                  setIsBlinking(false);
+                  setIsAudioWaveVisible(false);
+                }}
+                // disabled={isRecording || isTranscribing || disableInputs}
+                onAudioCapture={(file: File) => {
+                  // trigger a call to the backend to transcribe the audio
+                  handleAudioChunk(file);
+                }}
+              />
               <Button
                 size="icon"
                 variant="secondary"

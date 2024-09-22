@@ -10,12 +10,10 @@ import {
   useState,
 } from "react";
 import { ChatRequestOptions, CreateMessage, Message, nanoid } from "ai";
-import { Microphone, PaperPlaneTilt } from "@phosphor-icons/react";
+import { PaperPlaneTilt } from "@phosphor-icons/react";
 import { Button } from "@/components/button";
 import { ChatType, chattype } from "@/lib/types";
 import { motion } from "framer-motion";
-import { Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { usePresence } from "ably/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
@@ -25,7 +23,7 @@ import usePreferences from "@/store/userPreferences";
 import { useImageState } from "@/store/tlDrawImage";
 import ModelSwitcher from "./modelswitcher";
 // import VadAudio from "./vadAudio";
-import AudioWaveForm from "./audiowaveform";
+import VadAudio from "./VadAudio";
 const isValidImageType = (value: string) =>
   /^image\/(jpeg|png|jpg|webp)$/.test(value);
 
@@ -314,74 +312,8 @@ const InputBar = (props: InputBarProps) => {
         return;
       }
     }
-    // if (props.choosenAI === "universal") {
     props.append(message as Message);
     props.setInput("");
-    // }
-    // if (props.choosenAI === "agent") {
-    //   setDisableInputs(true);
-    //   props.setMessages([...props.messages, message]);
-    //   props.setInput("");
-    //   const res = await fetch(`/api/chatagent/${props.chatId}`, {
-    //     method: "POST",
-    //     body: JSON.stringify({
-    //       messages: [...props.messages, message],
-    //       isFast: true,
-    //       orgId: props.orgId,
-    //     }),
-    //   });
-    //   let content = "";
-    //   const id = nanoid();
-    //   const assistantMessage: Message = {
-    //     id,
-    //     role: "assistant",
-    //     content: "",
-    //   };
-    //   let functionMessages: Message[] = [];
-    //   if (res.body) {
-    //     const reader = res?.body.getReader();
-    //     while (true) {
-    //       const { done, value } = await reader.read();
-    //       if (done) {
-    //         console.log("controller closed");
-    //         setDisableInputs(false);
-    //         break;
-    //       }
-    //       const text = new TextDecoder().decode(value);
-    //       if (text.startsWith(`$__JSON_START__`)) {
-    //         const jsonStr = text
-    //           .replace("$__JSON_START__", "")
-    //           .replace("__JSON_END__", "");
-    //         if (isJSON(jsonStr)) {
-    //           console.log("this is json", jsonStr);
-    //           const functionMessage: Message = {
-    //             id: nanoid(),
-    //             role: "function",
-    //             content: jsonStr,
-    //           };
-    //           functionMessages.push(functionMessage);
-    //           props.setMessages([
-    //             ...props.messages,
-    //             message,
-    //             ...functionMessages,
-    //           ]);
-    //         }
-    //       } else {
-    //         console.log("non-json", text);
-    //         content += text;
-    //         props.setMessages([
-    //           ...props.messages,
-    //           message,
-    //           ...functionMessages,
-    //           {
-    //             ...assistantMessage,
-    //             content: content,
-    //           },
-    //         ]);
-    //       }
-    //     }
-    //   }
-    // }
   };
 
   const handleAudio = async (audioFile: File) => {
@@ -407,26 +339,25 @@ const InputBar = (props: InputBarProps) => {
       setIsTranscribing(false);
     }
   };
-  // const handleAudioChunk = async (audioChunk: File) => {
-  //   setIsTranscribing(true);
-  //   const f = new FormData();
-  //   f.append("file", audioChunk);
-  //   console.log(audioChunk);
-  //   try {
-  //     const res = await fetch("/api/transcript", {
-  //       method: "POST",
-  //       body: f,
-  //     });
+  const handleAudioChunk = async (audioChunk: File) => {
+    setIsTranscribing(true);
+    const f = new FormData();
+    f.append("file", audioChunk);
+    console.log(audioChunk);
+    try {
+      const res = await fetch("/api/transcript", {
+        method: "POST",
+        body: f,
+      });
 
-  //     const data = await res.json();
-  //     console.log("got the data", data);
-  //     props.setInput((prev) => prev + data.text);
-  //     setIsTranscribing(false);
-  //   } catch (err) {
-  //     console.error("got in error", err);
-  //     setIsTranscribing(false);
-  //   }
-  // };
+      const data = await res.json();
+      props.setInput((prev) => prev + data.text);
+      setIsTranscribing(false);
+    } catch (err) {
+      console.error("got in error", err);
+      setIsTranscribing(false);
+    }
+  };
 
   useEffect(() => {
     if (
@@ -518,6 +449,19 @@ const InputBar = (props: InputBarProps) => {
     // setDisableInputs(true)
   };
 
+  const [isBlinking, setIsBlinking] = useState(false); // Control blinking state
+  const [displayNumber, setDisplayNumber] = useState(1);
+
+  useEffect(() => {
+    let interval: any;
+    if (isBlinking) {
+      interval = setInterval(() => {
+        setDisplayNumber((prev) => (prev === 5 ? 1 : prev + 1));
+      }, 100); // Change every 500ms
+    }
+
+    return () => clearInterval(interval);
+  }, [isBlinking]);
   return (
     <form
       onSubmit={handleSubmit}
@@ -529,31 +473,23 @@ const InputBar = (props: InputBarProps) => {
         layout
         className="flex flex-grow bg-linear-900 p-2 pt-2 rounded-sm gap-2 "
       >
-        {/* <AnimatePresence> */}
-        {isAudioWaveVisible ? (
-          <AudioWaveForm
-            handleAudio={handleAudio}
-            isRecording={isRecording}
-            setIsRecording={setIsRecording}
-          />
-        ) : (
-          <motion.div layout className="flex flex-grow w-full gap-2">
-            <motion.div
-              initial={{ x: -50, opacity: 0 }}
-              animate={{ x: 0, opacity: 1, transition: { duration: 0.5 } }}
-              exit={{ x: -50, opacity: 0, transition: { duration: 0.5 } }}
-            >
-              <ModelSwitcher
-                disabled={
-                  props.isChatCompleted ||
-                  isRecording ||
-                  isTranscribing ||
-                  disableInputs
-                }
-                chattype={props.chattype}
-                setChatType={props.setChattype}
-              />
-              {/* <Button
+        <motion.div layout className="flex flex-grow w-full gap-2">
+          <motion.div
+            initial={{ x: -50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1, transition: { duration: 0.5 } }}
+            exit={{ x: -50, opacity: 0, transition: { duration: 0.5 } }}
+          >
+            <ModelSwitcher
+              disabled={
+                props.isChatCompleted ||
+                isRecording ||
+                isTranscribing ||
+                disableInputs
+              }
+              chattype={props.chattype}
+              setChatType={props.setChattype}
+            />
+            {/* <Button
                 // disabled={isRecording || isTranscribing || disableInputs}
                 disabled={true}
                 onClick={props.onClickOpen}
@@ -568,69 +504,71 @@ const InputBar = (props: InputBarProps) => {
                   weight="bold"
                 />
               </Button> */}
-            </motion.div>
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1, transition: { duration: 0.5 } }}
-              exit={{ y: 50, opacity: 0, transition: { duration: 0.5 } }}
-              className="relative w-full"
-            >
-              {presenceData.some((p) => p.data.isTyping) && (
-                <div className="flex items-center absolute top-[-120%] left-[50%] translate-x-[-50%] h-full z-50 overflow-hidden rounded-md border bg-popover px-3 py-1.5 text-sm text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2">
-                  <div className="flex items-center justify-center gap-4 h-8 ">
-                    <div className="w-2 h-2 bg-green-400 rounded-full animate-ping" />
-                    <p className="">
-                      <span className="text-foreground">
-                        {presenceData.map((p) => p.data.username).join(", ")}
-                      </span>{" "}
-                    </p>
-                  </div>
+          </motion.div>
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1, transition: { duration: 0.5 } }}
+            exit={{ y: 50, opacity: 0, transition: { duration: 0.5 } }}
+            className="relative w-full"
+          >
+            {presenceData.some((p) => p.data.isTyping) && (
+              <div className="flex items-center absolute top-[-120%] left-[50%] translate-x-[-50%] h-full z-50 overflow-hidden rounded-md border bg-popover px-3 py-1.5 text-sm text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2">
+                <div className="flex items-center justify-center gap-4 h-8 ">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-ping" />
+                  <p className="">
+                    <span className="text-foreground">
+                      {presenceData.map((p) => p.data.username).join(", ")}
+                    </span>{" "}
+                  </p>
                 </div>
-              )}
-              <TextareaAutosize
-                disabled={
-                  props.isChatCompleted ||
-                  isRecording ||
-                  isTranscribing ||
-                  disableInputs
+              </div>
+            )}
+            <TextareaAutosize
+              // disabled={
+              //   props.isChatCompleted ||
+              //   isRecording ||
+              //   isTranscribing ||
+              //   disableInputs
+              // }
+              maxRows={10}
+              placeholder={
+                isTranscribing
+                  ? ""
+                  : props.dropZoneActive
+                  ? "Ask question about image"
+                  : "Type your message here..."
+              }
+              autoFocus
+              value={
+                props.value + (isBlinking ? ".".repeat(displayNumber) : "")
+              }
+              onChange={handleInputChange}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSubmit(e as unknown as FormEvent<HTMLFormElement>);
                 }
-                maxRows={10}
-                placeholder={
-                  isTranscribing
-                    ? ""
-                    : props.dropZoneActive
-                    ? "Ask question about image"
-                    : "Type your message here..."
-                }
-                autoFocus
-                value={props.value}
-                onChange={handleInputChange}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSubmit(e as unknown as FormEvent<HTMLFormElement>);
-                  }
-                }}
-                className="flex-none resize-none rounded-sm grow w-full bg-background border border-secondary text-primary p-2 text-sm disabled:text-muted"
-              />
-              <Loader2
-                className={cn(
-                  "h-4 w-4 animate-spin absolute left-2 top-3",
-                  isTranscribing ? "visible" : "hidden",
-                )}
-              />
-            </motion.div>
-            <motion.div
-              initial={{ x: 20, y: 25, opacity: 0 }}
-              animate={{
-                x: 0,
-                y: 0,
-                opacity: 1,
-                transition: { duration: 0.5 },
               }}
-              exit={{ x: 20, y: 25, opacity: 0, transition: { duration: 0.5 } }}
-            >
-              <Button
+              className="flex-none resize-none rounded-sm grow w-full bg-background border border-secondary text-primary p-2 text-sm disabled:text-muted"
+            />
+            {/* <Loader2
+              className={cn(
+                "h-4 w-4 animate-spin absolute left-2 top-3",
+                isTranscribing ? "visible" : "hidden"
+              )}
+            /> */}
+          </motion.div>
+          <motion.div
+            initial={{ x: 20, y: 25, opacity: 0 }}
+            animate={{
+              x: 0,
+              y: 0,
+              opacity: 1,
+              transition: { duration: 0.5 },
+            }}
+            exit={{ x: 20, y: 25, opacity: 0, transition: { duration: 0.5 } }}
+          >
+            {/* <Button
                 disabled={isRecording || isTranscribing || disableInputs}
                 onClick={() => setIsAudioWaveVisible(true)}
                 size="icon"
@@ -643,43 +581,45 @@ const InputBar = (props: InputBarProps) => {
                   color="#618a9e"
                   weight="bold"
                 />
-              </Button>
-              {/* <VadAudio
+              </Button> */}
+            <VadAudio
               onStartListening={() => {
+                setIsBlinking(true);
                 setIsAudioWaveVisible(true);
               }}
               onStopListening={() => {
+                setIsBlinking(false);
                 setIsAudioWaveVisible(false);
               }}
-              disabled={isRecording || isTranscribing || disableInputs}
+              // disabled={isRecording || isTranscribing || disableInputs}
               onAudioCapture={(file: File) => {
                 // trigger a call to the backend to transcribe the audio
                 handleAudioChunk(file);
               }}
-            /> */}
-            </motion.div>
-            <motion.div
-              initial={{ x: 50, opacity: 0 }}
-              animate={{ x: 0, opacity: 1, transition: { duration: 0.5 } }}
-              exit={{ x: 50, opacity: 0, transition: { duration: 0.5 } }}
-            >
-              <Button
-                size="icon"
-                variant="secondary"
-                disabled={
-                  props.isChatCompleted ||
-                  isRecording ||
-                  isTranscribing ||
-                  disableInputs
-                }
-                type="submit"
-                className="disabled:text-muted"
-              >
-                <PaperPlaneTilt className="h-4 w-4 fill-current" />
-              </Button>
-            </motion.div>
+            />
           </motion.div>
-        )}
+          <motion.div
+            initial={{ x: 50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1, transition: { duration: 0.5 } }}
+            exit={{ x: 50, opacity: 0, transition: { duration: 0.5 } }}
+          >
+            <Button
+              size="icon"
+              variant="secondary"
+              disabled={
+                props.isChatCompleted ||
+                isRecording ||
+                isTranscribing ||
+                disableInputs
+              }
+              type="submit"
+              className="disabled:text-muted"
+            >
+              <PaperPlaneTilt className="h-4 w-4 fill-current" />
+            </Button>
+          </motion.div>
+        </motion.div>
+        {/* )} */}
         {/* </AnimatePresence> */}
       </motion.div>
     </form>
