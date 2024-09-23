@@ -330,11 +330,17 @@ const InputBar = (props: InputBarProps) => {
     }
   };
 
+  const [audioId, setAudioId] = useState(0);
+  const [transcriptHashTable, setTranscriptHashTable] = useState<{
+    [key: number]: string;
+  }>({});
+
   const handleAudioChunk = async (audioChunk: File) => {
+    const newAudioId = audioId + 1;
+    setAudioId(newAudioId);
     setIsTranscribing(true);
     const f = new FormData();
     f.append("file", audioChunk);
-    console.log(audioChunk);
     try {
       const res = await fetch("/api/transcript", {
         method: "POST",
@@ -342,13 +348,20 @@ const InputBar = (props: InputBarProps) => {
       });
 
       const data = await res.json();
-      props?.setInput?.((prev) => prev + data.text);
+      setTranscriptHashTable((prev) => ({
+        ...prev,
+        [newAudioId]: data.text,
+      }));
       setIsTranscribing(false);
     } catch (err) {
       console.error("got in error", err);
       setIsTranscribing(false);
     }
   };
+
+  useEffect(() => {
+    props?.setInput?.(Object.values(transcriptHashTable).join(" "));
+  }, [transcriptHashTable]);
 
   //TODO:
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {

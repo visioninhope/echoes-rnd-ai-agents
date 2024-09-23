@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useMicVAD, utils } from "@ricky0123/vad-react";
 import { Microphone, StopCircle } from "@phosphor-icons/react";
 import { Button } from "@/components/button";
@@ -17,7 +17,10 @@ export default function VadAudio({
   onStopListening,
 }: VadAudioProps) {
   const [isListening, setIsListening] = useState(false);
+  const [duration, setDuration] = useState("00:00");
   const audioChunks = useRef<Blob[]>([]);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const startTimeRef = useRef<number | null>(null);
 
   const vad = useMicVAD({
     onSpeechEnd: (audio: Float32Array) => {
@@ -30,27 +33,70 @@ export default function VadAudio({
 
       onAudioCapture(audioFile);
     },
+    onSpeechStart: () => {
+      console.log("onSpeechStart");
+    },
     workletURL: "/vad/vad.worklet.bundle.min.js",
     modelURL: "/vad/silero_vad.onnx",
     ortConfig: (ort) => {
       ort.env.wasm.wasmPaths = "/vad/";
     },
     startOnLoad: false,
+    submitUserSpeechOnPause: true,
   });
 
   const handleStartListening = useCallback(() => {
     vad.start();
+    startTimer();
     onStartListening();
     setIsListening(true);
     audioChunks.current = [];
   }, [vad]);
-  // console.log("vad.start()", vad.errored, vad.loading, vad.userSpeaking, vad.listening);
 
   const handleStopListening = useCallback(() => {
     setIsListening(false);
     onStopListening();
     vad.pause();
+    resetDuration();
+    clearTimer();
   }, [vad]);
+
+  const startTimer = () => {
+    startTimeRef.current = Date.now();
+    timerRef.current = setInterval(() => {
+      if (startTimeRef.current) {
+        const elapsed = Date.now() - startTimeRef.current;
+        console.log("elapsed", elapsed);
+        const minutes = Math.floor(elapsed / 60000);
+        const seconds = Math.floor((elapsed % 60000) / 1000);
+        setDuration(
+          `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
+            2,
+            "0",
+          )}`,
+        );
+      }
+    }, 1000);
+  };
+
+  const resetDuration = () => {
+    setDuration("00:00");
+    clearTimer();
+  };
+
+  const clearTimer = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    startTimeRef.current = null;
+  };
+
+  useEffect(() => {
+    return () => {
+      clearTimer();
+    };
+  }, []);
 
   return (
     <div className="flex items-center gap-2">
@@ -75,6 +121,7 @@ export default function VadAudio({
           />
         )}
       </Button>
+      <span>{duration}</span>
     </div>
   );
 }
