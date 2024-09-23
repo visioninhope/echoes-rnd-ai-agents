@@ -360,7 +360,9 @@ const InputBar = (props: InputBarProps) => {
   };
 
   useEffect(() => {
-    props?.setInput?.(Object.values(transcriptHashTable).join(" "));
+    if (Object.keys(transcriptHashTable).length > 0) {
+      props?.setInput?.(Object.values(transcriptHashTable).join(" "));
+    }
   }, [transcriptHashTable]);
 
   //TODO:
@@ -457,9 +459,17 @@ const InputBar = (props: InputBarProps) => {
                 onStartListening={() => {
                   setIsBlinking(true);
                   setIsAudioWaveVisible(true);
+                  const newAudioId = audioId + 1;
+                  setAudioId(newAudioId);
+                  setTranscriptHashTable((prev) => ({
+                    ...prev,
+                    [newAudioId]: props?.value || "",
+                  }));
+                  setIsAudioWaveVisible(true);
                 }}
                 onStopListening={() => {
                   setIsBlinking(false);
+                  setTranscriptHashTable({});
                   setIsAudioWaveVisible(false);
                 }}
                 // disabled={isRecording || isTranscribing || disableInputs}
