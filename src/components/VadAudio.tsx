@@ -4,17 +4,20 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { useMicVAD, utils } from "@ricky0123/vad-react";
 import { Microphone, StopCircle } from "@phosphor-icons/react";
 import { Button } from "@/components/button";
+import { cn } from "@/lib/utils";
 
 interface VadAudioProps {
   onAudioCapture: (audioFile: File) => void;
   onStartListening: () => void;
   onStopListening: () => void;
+  isHome?: boolean;
 }
 
 export default function VadAudio({
   onAudioCapture,
   onStartListening,
   onStopListening,
+  isHome = false,
 }: VadAudioProps) {
   const [isListening, setIsListening] = useState(false);
   const [duration, setDuration] = useState("00:00");
@@ -99,11 +102,16 @@ export default function VadAudio({
   }, []);
 
   return (
-    <div className="flex items-center gap-2">
+    <div
+      className={cn(
+        "flex items-center gap-2",
+        !isHome ? "flex-col-reverse sm:flex-row" : "",
+      )}
+    >
       <Button
         onClick={vad.listening ? handleStopListening : handleStartListening}
         size="icon"
-        variant="secondary"
+        variant={vad.listening ? "destructive" : "secondary"}
         type="button"
         className="disabled:text-muted"
       >
@@ -121,7 +129,13 @@ export default function VadAudio({
           />
         )}
       </Button>
-      <span>{duration}</span>
+      {!isHome ? (
+        isListening ? (
+          <span>{duration}</span>
+        ) : null
+      ) : (
+        <span>{duration}</span>
+      )}
     </div>
   );
 }

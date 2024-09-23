@@ -467,6 +467,7 @@ const InputBar = (props: InputBarProps) => {
                   // trigger a call to the backend to transcribe the audio
                   handleAudioChunk(file);
                 }}
+                isHome={props.isHome}
               />
               <Button
                 size="icon"

@@ -487,7 +487,7 @@ const InputBar = (props: InputBarProps) => {
         layout
         className="flex flex-grow bg-linear-900 p-2 pt-2 rounded-sm gap-2 "
       >
-        <motion.div layout className="flex flex-grow w-full gap-2">
+        <motion.div layout className="flex flex-grow items-center w-full gap-2">
           <motion.div
             initial={{ x: -50, opacity: 0 }}
             animate={{ x: 0, opacity: 1, transition: { duration: 0.5 } }}
@@ -610,6 +610,7 @@ const InputBar = (props: InputBarProps) => {
                 // trigger a call to the backend to transcribe the audio
                 handleAudioChunk(file);
               }}
+              isHome={props.isHome}
             />
           </motion.div>
           <motion.div
