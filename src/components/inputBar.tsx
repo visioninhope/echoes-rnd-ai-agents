@@ -610,7 +610,7 @@ const InputBar = (props: InputBarProps) => {
                 // trigger a call to the backend to transcribe the audio
                 handleAudioChunk(file);
               }}
-              isHome={props.isHome}
+              isHome={false}
             />
           </motion.div>
           <motion.div

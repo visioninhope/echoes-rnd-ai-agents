@@ -129,13 +129,7 @@ export default function VadAudio({
           />
         )}
       </Button>
-      {!isHome ? (
-        isListening ? (
-          <span>{duration}</span>
-        ) : null
-      ) : (
-        <span>{duration}</span>
-      )}
+      {isListening ? <span>{duration}</span> : null}
     </div>
   );
 }
