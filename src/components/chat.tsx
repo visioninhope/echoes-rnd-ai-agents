@@ -166,6 +166,7 @@ export default function Chat(props: ChatProps) {
   });
   console.log("messages", messages);
 
+  //TODO: handle user incoming from dashboard when invoked a chat
   useEffect(() => {
     if (isNewChat === "true" && incomingInput) {
       //TODO: use types for useQueryState
@@ -323,6 +324,9 @@ export default function Chat(props: ChatProps) {
             </div>
           )}
           <InputBar
+            onDrop={onDrop}
+            getInputProps={getInputProps}
+            getRootProps={getRootProps}
             onClickOpenChatSheet={props.onClickOpenChatSheet}
             onClickOpen={open}
             dropZoneImage={image}

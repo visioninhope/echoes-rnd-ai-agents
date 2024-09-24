@@ -10,6 +10,7 @@ import { NextApiResponse } from "next";
 import { StreamingTextResponse, LangChainStream } from "ai";
 import { systemPrompt, ellaPrompt } from "@/utils/prompts";
 import { chattype } from "@/lib/types";
+// import { ChatAnthropic } from "langchain/chat_models/anthropic";
 
 export const maxDuration = 60; // This function can run for a maximum of 5 seconds
 export const dynamic = "force-dynamic";
@@ -153,6 +154,13 @@ export async function POST(request: Request, response: NextApiResponse) {
         },
       ],
     });
+    // const anthropic = new ChatAnthropic({
+    //   anthropicApiKey: env.ANTHROPIC_API_KEY,
+    //   streaming: true,
+    //   modelName: "claude-3-sonnet-20240229",
+    //   callbacks: [handlers]
+    // });
+    // const str = anthropic.call([...msg, message], {}, [handlers])
     const str = chat
       .call([...msg, message], {}, [handlers])
       .catch(console.error);

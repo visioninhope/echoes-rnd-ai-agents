@@ -10,7 +10,7 @@ import {
   useState,
 } from "react";
 import { ChatRequestOptions, CreateMessage, Message, nanoid } from "ai";
-import { PaperPlaneTilt } from "@phosphor-icons/react";
+import { PaperPlaneTilt, UploadSimple } from "@phosphor-icons/react";
 import { Button } from "@/components/button";
 import { ChatType, chattype } from "@/lib/types";
 import { motion } from "framer-motion";
@@ -81,6 +81,9 @@ interface InputBarProps {
   dropZoneActive: boolean;
   onClickOpen: any;
   onClickOpenChatSheet: boolean | any;
+  getInputProps: any;
+  onDrop: (acceptedFiles: any) => void;
+  getRootProps: any;
 }
 
 const InputBar = (props: InputBarProps) => {
@@ -478,24 +481,41 @@ const InputBar = (props: InputBarProps) => {
 
     return () => clearInterval(interval);
   }, [isBlinking]);
+
+  useEffect(() => {
+    if (!isBlinking) {
+      const resetTimer = setTimeout(() => {
+        setTranscriptHashTable({});
+      }, 5000); // Reset after 5 seconds
+
+      return () => clearTimeout(resetTimer);
+    }
+  }, [isBlinking]);
+
   return (
     <form
       onSubmit={handleSubmit}
       className={`flex flex-grow sm:min-w-[${
         onClickOpenChatSheet ? "395px" : "700px"
       }]`}
+      onDrop={(acceptedFiles: any) => {
+        console.log("being dropped", acceptedFiles);
+        props.onDrop(acceptedFiles);
+      }}
     >
       <motion.div
+        {...props.getRootProps()}
         layout
         className="flex flex-grow bg-linear-900 p-2 pt-2 rounded-sm gap-2 "
       >
+        <input {...props.getInputProps()} />
         <motion.div layout className="flex flex-grow items-center w-full gap-2">
           <motion.div
             initial={{ x: -50, opacity: 0 }}
             animate={{ x: 0, opacity: 1, transition: { duration: 0.5 } }}
             exit={{ x: -50, opacity: 0, transition: { duration: 0.5 } }}
           >
-            <ModelSwitcher
+            {/* <ModelSwitcher
               disabled={
                 props.isChatCompleted ||
                 isRecording ||
@@ -504,22 +524,22 @@ const InputBar = (props: InputBarProps) => {
               }
               chattype={props.chattype}
               setChatType={props.setChattype}
-            />
-            {/* <Button
-                // disabled={isRecording || isTranscribing || disableInputs}
-                disabled={true}
-                onClick={props.onClickOpen}
-                size="icon"
-                variant="secondary"
-                type="button"
-                className="disabled:text-muted"
-              >
-                <UploadSimple
-                  className="h-4 w-4 fill-current"
-                  color="#618a9e"
-                  weight="bold"
-                />
-              </Button> */}
+            /> */}
+            <Button
+              disabled={isRecording || isTranscribing || disableInputs}
+              // disabled={true}
+              onClick={props.onClickOpen}
+              size="icon"
+              variant="secondary"
+              type="button"
+              className="disabled:text-muted"
+            >
+              <UploadSimple
+                className="h-4 w-4 fill-current"
+                color="#618a9e"
+                weight="bold"
+              />
+            </Button>
           </motion.div>
           <motion.div
             initial={{ y: 20, opacity: 0 }}
@@ -558,7 +578,9 @@ const InputBar = (props: InputBarProps) => {
               value={
                 props.value + (isBlinking ? ".".repeat(displayNumber) : "")
               }
-              onChange={handleInputChange}
+              onChange={(e) => {
+                handleInputChange(e);
+              }}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
@@ -605,13 +627,12 @@ const InputBar = (props: InputBarProps) => {
                 const newAudioId = audioId + 1;
                 setAudioId(newAudioId);
                 setTranscriptHashTable((prev) => ({
-                  ...prev,
                   [newAudioId]: props.value,
                 }));
               }}
               onStopListening={() => {
                 setIsBlinking(false);
-                setTranscriptHashTable({});
+                // setTranscriptHashTable({});
                 setIsAudioWaveVisible(false);
               }}
               // disabled={isRecording || isTranscribing || disableInputs}

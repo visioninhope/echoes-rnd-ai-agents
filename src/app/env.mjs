@@ -3,6 +3,8 @@ import { z } from "zod";
 
 export const env = createEnv({
   server: {
+    // Anthropic
+    ANTHROPIC_API_KEY: z.string().min(10),
     // OpenAI
     OPEN_AI_API_KEY: z.string().min(10),
     // LLaMA-2-7B-32K-Instruct (7B) from https://api.together.xyz
@@ -62,6 +64,8 @@ export const env = createEnv({
   },
 
   runtimeEnv: {
+    // Anthropic
+    ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
     // Clerk (Auth)
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
