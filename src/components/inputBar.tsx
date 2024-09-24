@@ -21,7 +21,7 @@ import z from "zod";
 import { toast } from "./ui/use-toast";
 import usePreferences from "@/store/userPreferences";
 import { useImageState } from "@/store/tlDrawImage";
-import ModelSwitcher from "./modelswitcher";
+// import ModelSwitcher from "./modelswitcher";
 // import VadAudio from "./vadAudio";
 import VadAudio from "./VadAudio";
 const isValidImageType = (value: string) =>
