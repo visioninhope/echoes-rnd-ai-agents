@@ -47,9 +47,7 @@ const RoomWrapper = (props: Props) => {
       username: props.username,
       isTyping: false,
     },
-    (presenseUpdate) => {
-      console.log("presenseUpdate", presenseUpdate);
-    },
+    (presenseUpdate) => {},
   );
   const dbIds = getUserIdList(
     props.type === "tldraw" ? props.snapShot : props.chat,

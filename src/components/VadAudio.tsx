@@ -5,6 +5,7 @@ import { useMicVAD, utils } from "@ricky0123/vad-react";
 import { Microphone, StopCircle } from "@phosphor-icons/react";
 import { Button } from "@/components/button";
 import { cn } from "@/lib/utils";
+import useStayAwake from "use-stay-awake";
 
 interface VadAudioProps {
   onAudioCapture: (audioFile: File) => void;
@@ -24,6 +25,7 @@ export default function VadAudio({
   const audioChunks = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number | null>(null);
+  const device = useStayAwake();
 
   const vad = useMicVAD({
     onSpeechEnd: (audio: Float32Array) => {
@@ -51,6 +53,7 @@ export default function VadAudio({
   const handleStartListening = useCallback(() => {
     vad.start();
     startTimer();
+    device.preventSleeping();
     onStartListening();
     setIsListening(true);
     audioChunks.current = [];
@@ -62,6 +65,7 @@ export default function VadAudio({
     vad.pause();
     resetDuration();
     clearTimer();
+    device.allowSleeping();
   }, [vad]);
 
   const startTimer = () => {

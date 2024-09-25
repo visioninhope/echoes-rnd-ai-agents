@@ -27,7 +27,7 @@ import VadAudio from "./VadAudio";
 const isValidImageType = (value: string) =>
   /^image\/(jpeg|png|jpg|webp)$/.test(value);
 
-const Schema = z.object({
+export const Schema = z.object({
   imageName: z.any(),
   imageType: z.string().refine(isValidImageType, {
     message: "File type must be JPEG, PNG, or WEBP image",

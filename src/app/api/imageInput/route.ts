@@ -78,6 +78,7 @@ export async function POST(request: Request, response: NextApiResponse) {
       { status: 400 },
     );
   }
+  console.log("imageFile", imageFile);
   const parts = imageFile.name.split(".");
   const extension = parts[parts.length - 1];
   let awsImageUrl = "";
