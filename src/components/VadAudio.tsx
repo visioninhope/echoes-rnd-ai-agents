@@ -6,6 +6,7 @@ import { Microphone, StopCircle } from "@phosphor-icons/react";
 import { Button } from "@/components/button";
 import { cn } from "@/lib/utils";
 
+import useWakeLock from "react-use-wake-lock";
 interface VadAudioProps {
   onAudioCapture: (audioFile: File) => void;
   onStartListening: () => void;
@@ -24,6 +25,12 @@ export default function VadAudio({
   const audioChunks = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number | null>(null);
+  const { isSupported, isLocked, request, release } = useWakeLock({
+    onError: () => {
+      console.error("Error requesting wake lock");
+    },
+    onRelease: () => {},
+  });
 
   const vad = useMicVAD({
     onSpeechEnd: (audio: Float32Array) => {
@@ -51,6 +58,9 @@ export default function VadAudio({
   const handleStartListening = useCallback(() => {
     vad.start();
     startTimer();
+    if (isSupported) {
+      request();
+    }
     onStartListening();
     setIsListening(true);
     audioChunks.current = [];
@@ -62,6 +72,9 @@ export default function VadAudio({
     vad.pause();
     resetDuration();
     clearTimer();
+    if (isSupported) {
+      release();
+    }
   }, [vad]);
 
   const startTimer = () => {

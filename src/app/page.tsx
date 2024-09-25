@@ -59,6 +59,27 @@ export default function Home() {
     "model",
     parseAsString.withDefault("chat"),
   );
+  const [imageUrl, setImageUrl] = useQueryState(
+    "imageUrl",
+    parseAsString.withDefault(""),
+  );
+  const [imageName, setImageName] = useQueryState(
+    "imageName",
+    parseAsString.withDefault(""),
+  );
+  const [imageType, setImageType] = useQueryState(
+    "imageType",
+    parseAsString.withDefault(""),
+  );
+  const [imageSize, setImageSize] = useQueryState(
+    "imageSize",
+    parseAsString.withDefault(""),
+  );
+  const [imageExtension, setImageExtension] = useQueryState(
+    "imageExtension",
+    parseAsString.withDefault(""),
+  );
+  const [dropzoneActive, setDropzoneActive] = useState<boolean>(false);
 
   const { isSignedIn, orgId, orgSlug, userId } = useAuth();
   // if (isSignedIn) {
@@ -76,13 +97,31 @@ export default function Home() {
     try {
       const res = await fetch(`/api/generateNewChatId/${orgId}`, {
         method: "POST",
-        body: JSON.stringify({ type: "chat" }),
+        body: JSON.stringify({ type: chatType || "chat" }),
       });
       const data = await res.json();
 
-      router.push(
-        `/dashboard/chat/${data.newChatId}?new=true&clipboard=true&model=${chatType}&input=${input}`,
-      );
+      if (dropzoneActive) {
+        const queryParams = new URLSearchParams(window.location.search);
+        const params: { [key: string]: string } = {};
+        queryParams.forEach((value, key) => {
+          params[key] = value;
+        });
+        const params2 = {
+          ...params,
+          new: "true",
+          clipboard: "true",
+          model: chatType,
+          input: input,
+        };
+        const queryParamsString = new URLSearchParams(params2).toString();
+
+        router.push(`/dashboard/chat/${data.newChatId}?${queryParamsString}`);
+      } else {
+        router.push(
+          `/dashboard/chat/${data.newChatId}?new=true&clipboard=true&model=${chatType}&input=${input}`,
+        );
+      }
     } catch (error) {
       console.error("Error creating new chat:", error);
     }
@@ -120,6 +159,18 @@ export default function Home() {
                 {isSignedIn && orgId && orgSlug ? (
                   <div className="w-full md:min-w-[400px] lg:min-w-[600px] xl:min-w-[800px] ">
                     <InputBar
+                      imageExtension={imageExtension}
+                      setImageExtension={setImageExtension}
+                      dropzoneActive={dropzoneActive}
+                      setDropzoneActive={setDropzoneActive}
+                      imageUrl={imageUrl}
+                      setImageUrl={setImageUrl}
+                      imageName={imageName}
+                      setImageName={setImageName}
+                      imageType={imageType}
+                      setImageType={setImageType}
+                      imageSize={imageSize}
+                      setImageSize={setImageSize}
                       isHome={true}
                       value={input}
                       onChange={handleInputChange}
@@ -133,7 +184,7 @@ export default function Home() {
                     />
                     <div className="flex flex-col gap-y-4">
                       <OrgChatToggler orgId={orgId} orgSlug={orgSlug} />
-                      <div className="w-full md:w-[400px] lg:w-[600px] xl:w-[800px] h-[500px] overflow-y-scroll scrollbar-hide">
+                      <div className="w-full md:w-[400px] lg:w-[600px] xl:w-[800px] h-[500px] overflow-y-scroll scrollbar-hide self-center">
                         <ChatCardWrapper
                           isHome={true}
                           org_id={orgId}

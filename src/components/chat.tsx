@@ -15,7 +15,6 @@ import { useDropzone } from "react-dropzone";
 import { X } from "lucide-react";
 import { useImageState } from "@/store/tlDrawImage";
 import { useQueryState } from "next-usequerystate";
-import { nanoid } from "ai";
 
 interface ChatProps {
   orgId: string;
@@ -49,10 +48,7 @@ export default function Chat(props: ChatProps) {
   const [imageUrl, setImageUrl] = useState<string>("");
   const [imageName, setImageName] = useState<string>("");
   const queryClient = useQueryClient();
-  const [isNewChat, setIsNewChat] = useQueryState("new");
-  const [isFromClipboard, setIsFromClipboard] = useQueryState("clipboard");
   const [incomingModel] = useQueryState("model");
-  const [incomingInput] = useQueryState("input");
   const [chattype, setChattype] = useState<ChatType>(
     props?.type || incomingModel || "chat",
   );
@@ -164,25 +160,6 @@ export default function Chat(props: ChatProps) {
     },
     sendExtraMessageFields: true,
   });
-  console.log("messages", messages);
-
-  useEffect(() => {
-    if (isNewChat === "true" && incomingInput) {
-      //TODO: use types for useQueryState
-      if (incomingInput && chattype !== "tldraw") {
-        const newMessage = {
-          id: nanoid(),
-          role: "user",
-          content: incomingInput,
-          name: `${props.username},${props.uid}`,
-          audio: "",
-        } as Message;
-        append(newMessage);
-      }
-      setIsFromClipboard("false");
-      setIsNewChat("false");
-    }
-  }, [isFromClipboard, isNewChat]);
 
   useEffect(() => {
     let mainArray: Message[][] = [];
@@ -323,6 +300,9 @@ export default function Chat(props: ChatProps) {
             </div>
           )}
           <InputBar
+            onDrop={onDrop}
+            getInputProps={getInputProps}
+            getRootProps={getRootProps}
             onClickOpenChatSheet={props.onClickOpenChatSheet}
             onClickOpen={open}
             dropZoneImage={image}

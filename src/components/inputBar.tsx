@@ -6,11 +6,12 @@ import {
   Dispatch,
   FormEvent,
   SetStateAction,
+  useCallback,
   useEffect,
   useState,
 } from "react";
 import { ChatRequestOptions, CreateMessage, Message, nanoid } from "ai";
-import { PaperPlaneTilt } from "@phosphor-icons/react";
+import { PaperPlaneTilt, UploadSimple } from "@phosphor-icons/react";
 import { Button } from "@/components/button";
 import { ChatType, chattype } from "@/lib/types";
 import { motion } from "framer-motion";
@@ -21,13 +22,14 @@ import z from "zod";
 import { toast } from "./ui/use-toast";
 import usePreferences from "@/store/userPreferences";
 import { useImageState } from "@/store/tlDrawImage";
-import ModelSwitcher from "./modelswitcher";
+// import ModelSwitcher from "./modelswitcher";
 // import VadAudio from "./vadAudio";
 import VadAudio from "./VadAudio";
+import { useQueryState } from "next-usequerystate";
 const isValidImageType = (value: string) =>
   /^image\/(jpeg|png|jpg|webp)$/.test(value);
 
-const Schema = z.object({
+export const Schema = z.object({
   imageName: z.any(),
   imageType: z.string().refine(isValidImageType, {
     message: "File type must be JPEG, PNG, or WEBP image",
@@ -81,6 +83,9 @@ interface InputBarProps {
   dropZoneActive: boolean;
   onClickOpen: any;
   onClickOpenChatSheet: boolean | any;
+  getInputProps: any;
+  onDrop: (acceptedFiles: any) => void;
+  getRootProps: any;
 }
 
 const InputBar = (props: InputBarProps) => {
@@ -97,7 +102,163 @@ const InputBar = (props: InputBarProps) => {
   const [disableInputs, setDisableInputs] = useState<boolean>(false);
   const [isRagLoading, setIsRagLoading] = useState<boolean>(false);
   const queryClient = useQueryClient();
+  const [isNewChat, setIsNewChat] = useQueryState("new");
+  const [isFromClipboard, setIsFromClipboard] = useQueryState("clipboard");
+  const [incomingModel] = useQueryState("model");
+  const [incomingInput] = useQueryState("input");
+  const [chattype, setChattype] = useState<ChatType>(
+    props?.chattype || incomingModel || "chat",
+  );
 
+  const handleFirstImageMessage = useCallback(async () => {
+    const params = new URLSearchParams(window.location.search);
+    if (
+      params.get("imageUrl") &&
+      params.get("imageName") &&
+      params.get("imageType") &&
+      params.get("imageSize")
+    ) {
+      const queryParams: { [key: string]: string } = {};
+      params.forEach((value, key) => {
+        queryParams[key] = value;
+      });
+      const ID = nanoid();
+      const message: Message = {
+        id: ID,
+        role: "user",
+        content: incomingInput || "",
+        name: `${props.username},${props.userId}`,
+      };
+      const createFileFromBlobUrl = async (
+        blobUrl: string,
+        fileName: string,
+      ) => {
+        const response = await fetch(blobUrl);
+        const blob = await response.blob();
+        return new File([blob], fileName, { type: blob.type });
+      };
+
+      const imageUrl = params.get("imageUrl")!;
+      const imageExtension = params.get("imageExtension")!;
+
+      const file = await createFileFromBlobUrl(
+        imageUrl,
+        `image.${imageExtension}`,
+      );
+      console.log("Created file from blob URL:", file);
+      const zodMessage: any = Schema.safeParse({
+        imageName: params.get("imageName"),
+        imageType: params.get("imageType"),
+        imageSize: Number(params.get("imageSize")),
+        file: file,
+        value: incomingInput || "",
+        userId: props.userId,
+        orgId: props.orgId,
+        chatId: props.chatId,
+        message: [message],
+        id: ID,
+        chattype: chattype,
+      });
+      console.log("zodMessageImage Extension:", imageExtension);
+      // console.log("zodmessage", zodMessage);
+      // console.log("dropzone", props.dropZoneActive);
+      console.log("zodMessage", zodMessage, imageExtension);
+      if (zodMessage.success) {
+        const zodMSG = JSON.stringify(zodMessage);
+        const formData = new FormData();
+        formData.append("zodMessage", zodMSG);
+        formData.append("file", file);
+        setIsRagLoading(true);
+        const response = await fetch("/api/imageInput", {
+          method: "POST",
+          body: formData,
+        });
+        if (response && response.status.toString().startsWith("2")) {
+          console.log("responce", response);
+          let assistantMsg = "";
+          const reader = response.body?.getReader();
+          console.log("reader", reader);
+          const decoder = new TextDecoder();
+          let charsReceived = 0;
+          let content = "";
+          reader
+            ?.read()
+            .then(async function processText({ done, value }) {
+              if (done) {
+                setIsRagLoading(false);
+                console.log("Stream complete");
+                return;
+              }
+              charsReceived += value.length;
+              const chunk = decoder.decode(value, { stream: true });
+              assistantMsg += chunk === "" ? `${chunk} \n` : chunk;
+              content += chunk === "" ? `${chunk} \n` : chunk;
+              // console.log("assistMsg", assistantMsg);
+              props.setMessages([
+                ...props.messages,
+                awsImageMessage,
+                message,
+                {
+                  ...assistantMessage,
+                  content: assistantMsg,
+                },
+              ]);
+              reader.read().then(processText);
+            })
+            .then((e) => {
+              setIsRagLoading(false);
+              console.error("error", e);
+            });
+          const awsImageMessage = {
+            role: "user",
+            subRole: "input-image",
+            content: `${process.env.NEXT_PUBLIC_IMAGE_PREFIX_URL}imagefolder/${props.chatId}/${ID}.${imageExtension}`,
+            id: ID,
+          } as Message;
+          const assistantMessage: Message = {
+            id: ID,
+            role: "assistant",
+            content: content,
+          };
+
+          console.log("image chat", queryParams);
+          // image chat
+        } else {
+          //TODO: api thrown some error
+          setIsRagLoading(false);
+        }
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isNewChat === "true" && incomingInput) {
+      //TODO: use types for useQueryState
+      if (incomingInput && chattype !== "tldraw") {
+        const params = new URLSearchParams(window.location.search);
+        if (
+          params.get("imageUrl") &&
+          params.get("imageName") &&
+          params.get("imageType") &&
+          params.get("imageSize")
+        ) {
+          console.log("zodMessage", "we made to here", params);
+          handleFirstImageMessage();
+        } else {
+          const newMessage = {
+            id: nanoid(),
+            role: "user",
+            content: incomingInput,
+            name: `${props.username},${props.userId}`,
+            audio: "",
+          } as Message;
+          props.append(newMessage);
+        }
+      }
+    }
+    setIsFromClipboard("false");
+    setIsNewChat("false");
+  }, [isFromClipboard, isNewChat]);
   // const ably = useAbly();
 
   // console.log(
@@ -316,30 +477,6 @@ const InputBar = (props: InputBarProps) => {
     props.setInput("");
   };
 
-  const handleAudio = async (audioFile: File) => {
-    setIsAudioWaveVisible(false);
-    setIsTranscribing(true);
-    const f = new FormData();
-    f.append("file", audioFile);
-    // Buffer.from(audioFile)
-    console.log(audioFile);
-    try {
-      const res = await fetch("/api/transcript", {
-        method: "POST",
-        body: f,
-      });
-
-      // console.log('data', await data.json());
-      const data = await res.json();
-      console.log("got the data", data);
-      props.setInput(data.text);
-      setIsTranscribing(false);
-    } catch (err) {
-      console.error("got in error", err);
-      setIsTranscribing(false);
-    }
-  };
-
   const [audioId, setAudioId] = useState(0);
   const [transcriptHashTable, setTranscriptHashTable] = useState<{
     [key: number]: string;
@@ -414,7 +551,9 @@ const InputBar = (props: InputBarProps) => {
         if (countdown > 0) {
           updateStatus({
             isTyping: true,
-            username: `Echoes is thinking (${countdown--} secs)`,
+            username: props?.isLoading
+              ? `Echoes is thinking (${countdown--} secs)`
+              : `Echoes is typing (${countdown--} secs)`,
             id: props.userId,
           });
         } else {
@@ -478,24 +617,41 @@ const InputBar = (props: InputBarProps) => {
 
     return () => clearInterval(interval);
   }, [isBlinking]);
+
+  useEffect(() => {
+    if (!isBlinking) {
+      const resetTimer = setTimeout(() => {
+        setTranscriptHashTable({});
+      }, 5000); // Reset after 5 seconds
+
+      return () => clearTimeout(resetTimer);
+    }
+  }, [isBlinking]);
+
   return (
     <form
       onSubmit={handleSubmit}
       className={`flex flex-grow sm:min-w-[${
         onClickOpenChatSheet ? "395px" : "700px"
       }]`}
+      onDrop={(acceptedFiles: any) => {
+        console.log("being dropped", acceptedFiles);
+        props.onDrop(acceptedFiles);
+      }}
     >
       <motion.div
+        {...props.getRootProps()}
         layout
         className="flex flex-grow bg-linear-900 p-2 pt-2 rounded-sm gap-2 "
       >
+        <input {...props.getInputProps()} />
         <motion.div layout className="flex flex-grow items-center w-full gap-2">
           <motion.div
             initial={{ x: -50, opacity: 0 }}
             animate={{ x: 0, opacity: 1, transition: { duration: 0.5 } }}
             exit={{ x: -50, opacity: 0, transition: { duration: 0.5 } }}
           >
-            <ModelSwitcher
+            {/* <ModelSwitcher
               disabled={
                 props.isChatCompleted ||
                 isRecording ||
@@ -504,22 +660,22 @@ const InputBar = (props: InputBarProps) => {
               }
               chattype={props.chattype}
               setChatType={props.setChattype}
-            />
-            {/* <Button
-                // disabled={isRecording || isTranscribing || disableInputs}
-                disabled={true}
-                onClick={props.onClickOpen}
-                size="icon"
-                variant="secondary"
-                type="button"
-                className="disabled:text-muted"
-              >
-                <UploadSimple
-                  className="h-4 w-4 fill-current"
-                  color="#618a9e"
-                  weight="bold"
-                />
-              </Button> */}
+            /> */}
+            <Button
+              disabled={isRecording || isTranscribing || disableInputs}
+              // disabled={true}
+              onClick={props.onClickOpen}
+              size="icon"
+              variant="secondary"
+              type="button"
+              className="disabled:text-muted"
+            >
+              <UploadSimple
+                className="h-4 w-4 fill-current"
+                color="#618a9e"
+                weight="bold"
+              />
+            </Button>
           </motion.div>
           <motion.div
             initial={{ y: 20, opacity: 0 }}
@@ -558,7 +714,9 @@ const InputBar = (props: InputBarProps) => {
               value={
                 props.value + (isBlinking ? ".".repeat(displayNumber) : "")
               }
-              onChange={handleInputChange}
+              onChange={(e) => {
+                handleInputChange(e);
+              }}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
@@ -605,13 +763,12 @@ const InputBar = (props: InputBarProps) => {
                 const newAudioId = audioId + 1;
                 setAudioId(newAudioId);
                 setTranscriptHashTable((prev) => ({
-                  ...prev,
                   [newAudioId]: props.value,
                 }));
               }}
               onStopListening={() => {
                 setIsBlinking(false);
-                setTranscriptHashTable({});
+                // setTranscriptHashTable({});
                 setIsAudioWaveVisible(false);
               }}
               // disabled={isRecording || isTranscribing || disableInputs}
