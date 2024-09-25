@@ -184,7 +184,6 @@ export default function Chat(props: ChatProps) {
         role: "user",
         content: incomingInput || "",
         name: `${props.username},${props.uid}`,
-        audio: "",
       };
       const createFileFromBlobUrl = async (
         blobUrl: string,
