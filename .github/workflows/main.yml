@@ -19,6 +19,12 @@ jobs:
       - name: Lint and fix
         run: npm run lint:fix
         env:
+          STORM_ENDPOINT: ${{secrets.STORM_ENDPOINT}}
+          QSTASH_TOKEN: ${{secrets.QSTASH_TOKEN}}
+          KEYCLOAK_CLIENT_ID: ${{secrets.KEYCLOAK_CLIENT_ID}}
+          KEYCLOAK_CLIENT_SECRET: ${{secrets.KEYCLOAK_CLIENT_SECRET}}
+          KEYCLOAK_BASE_URL: ${{secrets.KEYCLOAK_BASE_URL}}
+          KEYCLOAK_REALM: ${{secrets.KEYCLOAK_REALM}}
           ANTHROPIC_API_KEY: ${{secrets.ANTHROPIC_API_KEY}}
           TURSO_DB_URL: ${{secrets.TURSO_DB_URL}}
           TURSO_DB_AUTH_TOKEN: ${{secrets.TURSO_DB_AUTH_TOKEN}}

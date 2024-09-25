@@ -15,6 +15,7 @@ import { useDropzone } from "react-dropzone";
 import { X } from "lucide-react";
 import { useImageState } from "@/store/tlDrawImage";
 import { useQueryState } from "next-usequerystate";
+import { toast as soonerToast } from "sonner";
 
 interface ChatProps {
   orgId: string;
@@ -52,6 +53,58 @@ export default function Chat(props: ChatProps) {
   const [chattype, setChattype] = useState<ChatType>(
     props?.type || incomingModel || "chat",
   );
+  const [isNewChat, setIsNewChat] = useQueryState("new");
+  const [incomingInput] = useQueryState("input");
+  const { mutate: InitArticleGeneration } = useMutation({
+    mutationFn: async ({
+      topic,
+      chatId,
+      orgId,
+      userId,
+    }: {
+      topic: string;
+      chatId: string;
+      orgId: string;
+      userId: string;
+    }) => {
+      const resp = await axios.post("/api/storm", {
+        topic: topic,
+        chatId: chatId,
+        orgId: orgId,
+        userId: userId,
+      });
+      return resp.data;
+    },
+    onSuccess: (data, vars, context) => {
+      soonerToast("Generating your article", {
+        description: "Please wait for 2 mins",
+        duration: 300 * 1000,
+      });
+
+      //TODO: set workflow id in state and make query to start invalidating
+      console.log("workflow id", data.workflowRunId);
+    },
+    onError: (error: any, vars, context) => {
+      console.error(error?.message);
+      soonerToast("Something went wrong ", {
+        description: "Sunday, December 03, 2023 at 9:00 AM",
+        duration: 5 * 1000,
+      });
+    },
+  });
+
+  useEffect(() => {
+    if (isNewChat === "true" && incomingInput && incomingModel === "storm") {
+      // make a call to storm endpoint
+      InitArticleGeneration({
+        chatId: props.chatId,
+        topic: incomingInput,
+        orgId: props.orgId,
+        userId: props.uid,
+      });
+      setIsNewChat("false");
+    }
+  }, [isNewChat]);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles && acceptedFiles[0]?.type.startsWith("image/")) {
@@ -99,6 +152,7 @@ export default function Chat(props: ChatProps) {
   } = useQuery({
     queryKey: ["chats", props.chatId],
     queryFn: chatFetcher,
+    refetchInterval: chattype === "storm" ? 50 * 1000 : false,
     initialData: props.dbChat,
     refetchOnWindowFocus: false,
   });
@@ -299,30 +353,32 @@ export default function Chat(props: ChatProps) {
               />
             </div>
           )}
-          <InputBar
-            onDrop={onDrop}
-            getInputProps={getInputProps}
-            getRootProps={getRootProps}
-            onClickOpenChatSheet={props.onClickOpenChatSheet}
-            onClickOpen={open}
-            dropZoneImage={image}
-            dropZoneActive={dropZoneActive}
-            setDropzoneActive={setDropzoneActive}
-            chatId={props.chatId}
-            orgId={props.orgId}
-            messages={messages}
-            setMessages={setMessages}
-            username={props.username}
-            userId={props.uid}
-            chattype={chattype}
-            setChattype={setChattype}
-            value={input}
-            onChange={handleInputChange}
-            setInput={setInput}
-            append={append}
-            isChatCompleted={isChatCompleted}
-            isLoading={isLoading}
-          />
+          {chattype !== "storm" ? (
+            <InputBar
+              onDrop={onDrop}
+              getInputProps={getInputProps}
+              getRootProps={getRootProps}
+              onClickOpenChatSheet={props.onClickOpenChatSheet}
+              onClickOpen={open}
+              dropZoneImage={image}
+              dropZoneActive={dropZoneActive}
+              setDropzoneActive={setDropzoneActive}
+              chatId={props.chatId}
+              orgId={props.orgId}
+              messages={messages}
+              setMessages={setMessages}
+              username={props.username}
+              userId={props.uid}
+              chattype={chattype}
+              setChattype={setChattype}
+              value={input}
+              onChange={handleInputChange}
+              setInput={setInput}
+              append={append}
+              isChatCompleted={isChatCompleted}
+              isLoading={isLoading}
+            />
+          ) : null}
         </>
       )}
     </div>

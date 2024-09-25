@@ -20,7 +20,14 @@ export type SnapShot = {
   tldraw_snapshot: Array<ChatEntry>;
 };
 
-export const chattype = z.enum(["chat", "tldraw", "rag", "ella", "advanced"]);
+export const chattype = z.enum([
+  "chat",
+  "tldraw",
+  "rag",
+  "ella",
+  "advanced",
+  "storm",
+]);
 export type ChatType = z.infer<typeof chattype>;
 export interface PostBody {
   user_id: string;

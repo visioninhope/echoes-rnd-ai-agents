@@ -6,6 +6,7 @@ import { dark } from "@clerk/themes";
 import { Inter } from "next/font/google";
 import QueryProviders from "@/app/queryProvider";
 import { Toaster } from "@/components/ui/toaster";
+import { Toaster as SoonerToaster } from "@/components/ui/sooner";
 import { Providers } from "@/app/providers";
 const inter = Inter({ subsets: ["latin"] });
 
@@ -260,6 +261,7 @@ export default function RootLayout({
               >
                 {children}
                 <Toaster />
+                <SoonerToaster />
               </div>
             </QueryProviders>
           </Providers>
