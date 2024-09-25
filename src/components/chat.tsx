@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import { ChatType } from "@/lib/types";
-import InputBar, { Schema } from "@/components/inputBar";
+import InputBar from "@/components/inputBar";
 import { Message, useChat } from "ai/react";
 import Startnewchatbutton from "@/components/startnewchatbutton";
 import ChatMessageCombinator from "@/components/chatmessagecombinator";
@@ -15,7 +15,6 @@ import { useDropzone } from "react-dropzone";
 import { X } from "lucide-react";
 import { useImageState } from "@/store/tlDrawImage";
 import { useQueryState } from "next-usequerystate";
-import { nanoid } from "ai";
 
 interface ChatProps {
   orgId: string;
@@ -49,10 +48,7 @@ export default function Chat(props: ChatProps) {
   const [imageUrl, setImageUrl] = useState<string>("");
   const [imageName, setImageName] = useState<string>("");
   const queryClient = useQueryClient();
-  const [isNewChat, setIsNewChat] = useQueryState("new");
-  const [isFromClipboard, setIsFromClipboard] = useQueryState("clipboard");
   const [incomingModel] = useQueryState("model");
-  const [incomingInput] = useQueryState("input");
   const [chattype, setChattype] = useState<ChatType>(
     props?.type || incomingModel || "chat",
   );
@@ -164,153 +160,6 @@ export default function Chat(props: ChatProps) {
     },
     sendExtraMessageFields: true,
   });
-
-  const handleFirstImageMessage = useCallback(async () => {
-    const params = new URLSearchParams(window.location.search);
-    if (
-      params.get("imageUrl") &&
-      params.get("imageName") &&
-      params.get("imageType") &&
-      params.get("imageSize")
-    ) {
-      const queryParams: { [key: string]: string } = {};
-      params.forEach((value, key) => {
-        queryParams[key] = value;
-      });
-      const ID = nanoid();
-      const imageMessasgeId = nanoid();
-      const message: Message = {
-        id: ID,
-        role: "user",
-        content: incomingInput || "",
-        name: `${props.username},${props.uid}`,
-      };
-      const createFileFromBlobUrl = async (
-        blobUrl: string,
-        fileName: string,
-      ) => {
-        const response = await fetch(blobUrl);
-        const blob = await response.blob();
-        return new File([blob], fileName, { type: blob.type });
-      };
-
-      const imageUrl = params.get("imageUrl")!;
-      const imageName = params.get("imageName")!;
-      const imageExtension = params.get("imageExtension")!;
-
-      const file = await createFileFromBlobUrl(
-        imageUrl,
-        `image.${imageExtension}`,
-      );
-      console.log("Created file from blob URL:", file);
-      const zodMessage: any = Schema.safeParse({
-        imageName: params.get("imageName"),
-        imageType: params.get("imageType"),
-        imageSize: Number(params.get("imageSize")),
-        file: file,
-        value: input,
-        userId: props.uid,
-        orgId: props.orgId,
-        chatId: props.chatId,
-        message: [message],
-        id: ID,
-        chattype: chattype,
-      });
-      console.log("zodMessageImage Extension:", imageExtension);
-      // console.log("zodmessage", zodMessage);
-      // console.log("dropzone", props.dropZoneActive);
-      console.log("zodMessage", zodMessage, imageExtension);
-      if (zodMessage.success) {
-        const zodMSG = JSON.stringify(zodMessage);
-        const formData = new FormData();
-        formData.append("zodMessage", zodMSG);
-        formData.append("file", file);
-        const response = await fetch("/api/imageInput", {
-          method: "POST",
-          body: formData,
-        });
-        if (response) {
-          console.log("responce", response);
-          let assistantMsg = "";
-          const reader = response.body?.getReader();
-          console.log("reader", reader);
-          const decoder = new TextDecoder();
-          let charsReceived = 0;
-          let content = "";
-          reader
-            ?.read()
-            .then(async function processText({ done, value }) {
-              if (done) {
-                console.log("Stream complete");
-                return;
-              }
-              charsReceived += value.length;
-              const chunk = decoder.decode(value, { stream: true });
-              assistantMsg += chunk === "" ? `${chunk} \n` : chunk;
-              content += chunk === "" ? `${chunk} \n` : chunk;
-              // console.log("assistMsg", assistantMsg);
-              setMessages([
-                ...messages,
-                awsImageMessage,
-                message,
-                {
-                  ...assistantMessage,
-                  content: assistantMsg,
-                },
-              ]);
-              reader.read().then(processText);
-            })
-            .then((e) => {
-              console.error("error", e);
-            });
-          const awsImageMessage = {
-            role: "user",
-            subRole: "input-image",
-            content: `${process.env.NEXT_PUBLIC_IMAGE_PREFIX_URL}imagefolder/${props.chatId}/${ID}.${imageExtension}`,
-            id: ID,
-          } as Message;
-          const assistantMessage: Message = {
-            id: ID,
-            role: "assistant",
-            content: content,
-          };
-
-          console.log("image chat", queryParams);
-          // image chat
-        }
-      }
-    }
-  }, []);
-
-  //TODO: handle user incoming from dashboard when invoked a chat
-  useEffect(() => {
-    if (isNewChat === "true" && incomingInput) {
-      //TODO: use types for useQueryState
-      if (incomingInput && chattype !== "tldraw") {
-        const params = new URLSearchParams(window.location.search);
-        if (
-          params.get("imageUrl") &&
-          params.get("imageName") &&
-          params.get("imageType") &&
-          params.get("imageSize")
-        ) {
-          console.log("zodMessage", "we made to here", params);
-          handleFirstImageMessage();
-        } else {
-          const newMessage = {
-            id: nanoid(),
-            role: "user",
-            content: incomingInput,
-            name: `${props.username},${props.uid}`,
-            audio: "",
-          } as Message;
-          append(newMessage);
-        }
-      }
-    }
-    setIsFromClipboard("false");
-    setIsNewChat("false");
-  }, [isFromClipboard, isNewChat]);
 
   useEffect(() => {
     let mainArray: Message[][] = [];

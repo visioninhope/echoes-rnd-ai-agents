@@ -97,7 +97,7 @@ export default function Home() {
     try {
       const res = await fetch(`/api/generateNewChatId/${orgId}`, {
         method: "POST",
-        body: JSON.stringify({ type: "chat" }),
+        body: JSON.stringify({ type: chatType || "chat" }),
       });
       const data = await res.json();
 
