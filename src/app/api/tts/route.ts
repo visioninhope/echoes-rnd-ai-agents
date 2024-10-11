@@ -8,6 +8,7 @@ import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import * as z from "zod";
+
 export const maxDuration = 180;
 
 const bodyobj = z.object({
@@ -18,6 +19,67 @@ const bodyobj = z.object({
   index: z.coerce.number().min(0).optional(),
   messages: z.any().optional(),
 });
+
+const MAX_CHUNK_LENGTH = 4000; // Slightly less than 4095 to be safe
+
+function chunkText(text: string): string[] {
+  const paragraphs = text.split("\n\n");
+  const chunks: string[] = [];
+  let currentChunk = "";
+
+  for (const paragraph of paragraphs) {
+    if (currentChunk.length + paragraph.length > MAX_CHUNK_LENGTH) {
+      if (currentChunk) {
+        chunks.push(currentChunk.trim());
+        currentChunk = "";
+      }
+      if (paragraph.length > MAX_CHUNK_LENGTH) {
+        // If a single paragraph is too long, split it into sentences
+        const sentences = paragraph.match(/[^.!?]+[.!?]+/g) || [paragraph];
+        for (const sentence of sentences) {
+          if (currentChunk.length + sentence.length > MAX_CHUNK_LENGTH) {
+            chunks.push(currentChunk.trim());
+            currentChunk = sentence;
+          } else {
+            currentChunk += " " + sentence;
+          }
+        }
+      } else {
+        currentChunk = paragraph;
+      }
+    } else {
+      currentChunk += (currentChunk ? "\n\n" : "") + paragraph;
+    }
+  }
+
+  if (currentChunk) {
+    chunks.push(currentChunk.trim());
+  }
+
+  return chunks;
+}
+
+async function generateAudioForChunk(
+  openai: OpenAI,
+  chunk: string,
+): Promise<Buffer> {
+  const mp3 = await openai.audio.speech.create({
+    model: "tts-1",
+    voice: "alloy",
+    input: chunk,
+    response_format: "mp3",
+  });
+
+  return Buffer.from(await mp3.arrayBuffer());
+}
+
+async function concatenateAudioBuffers(
+  audioBuffers: Buffer[],
+): Promise<Buffer> {
+  // Simple concatenation of MP3 buffers
+  // Note: This may not work perfectly for all MP3 files and may require a more sophisticated approach
+  return Buffer.concat(audioBuffers as unknown as Uint8Array[]);
+}
 
 export async function POST(request: NextRequest) {
   const b = await request.json();
@@ -32,21 +94,20 @@ export async function POST(request: NextRequest) {
   const chatId = body.chatId;
   const messages: ChatEntry[] = body.messages;
 
-  const Openai = new OpenAI({
+  const openai = new OpenAI({
     apiKey: env.OPEN_AI_API_KEY,
   });
 
   if (text && messageId && body.index) {
     console.log("got into if");
     // handling audio for a single message
-    const mp3 = await Openai.audio.speech.create({
-      model: "tts-1",
-      voice: "alloy",
-      input: text,
-      response_format: "aac",
-    });
+    const chunks = chunkText(text);
+    const audioBuffers = await Promise.all(
+      chunks.map((chunk) => generateAudioForChunk(openai, chunk)),
+    );
 
-    const buffer = Buffer.from(await mp3.arrayBuffer());
+    const finalBuffer = await concatenateAudioBuffers(audioBuffers);
+
     // fetching the chat
     let chatlog: ChatLog = { log: [] };
     let fetchedChat: ChatSchema[] = [];
@@ -81,8 +142,11 @@ export async function POST(request: NextRequest) {
 
     messageId = messageId ? messageId : chatlog.log[body.index].id;
 
-    // adding the audio to the message
-    const audioUrl = await saveAudioMessage({ buffer, chatId, messageId });
+    const audioUrl = await saveAudioMessage({
+      buffer: finalBuffer,
+      chatId,
+      messageId,
+    });
     message.audio = audioUrl;
 
     await db
@@ -98,20 +162,22 @@ export async function POST(request: NextRequest) {
     );
   } else {
     // summarize and generate audio for all messages
-
     const summary: string = await summarizeChat(messages);
-    const mp3 = await Openai.audio.speech.create({
-      model: "tts-1",
-      voice: "alloy",
-      input: summary,
-      response_format: "aac",
+    const chunks = chunkText(summary);
+    const audioBuffers = await Promise.all(
+      chunks.map((chunk) => generateAudioForChunk(openai, chunk)),
+    );
+
+    const finalBuffer = await concatenateAudioBuffers(audioBuffers);
+
+    const messageId = "summary"; // as it is the summary of the whole chat
+    const audioUrl = await saveAudioMessage({
+      buffer: finalBuffer,
+      chatId,
+      messageId,
     });
 
-    const buffer = Buffer.from(await mp3.arrayBuffer());
-    const messageId = "summary"; // as it is the summary of the whole chat
-    const audioUrl = await saveAudioMessage({ buffer, chatId, messageId });
-
-    // update the db to save audio url for correspointing chat
+    // update the db to save audio url for corresponding chat
     await db
       .update(chats)
       .set({
@@ -120,7 +186,6 @@ export async function POST(request: NextRequest) {
       })
       .where(eq(chats.id, Number(chatId)))
       .run();
-    // fetching the chat
 
     return new NextResponse(JSON.stringify({ audioUrl: audioUrl }));
   }
