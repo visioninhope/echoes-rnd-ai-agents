@@ -3,6 +3,9 @@ import { z } from "zod";
 
 export const env = createEnv({
   server: {
+    // LITELLM 
+    LITELLM_BASE_URL: z.string().min(1),
+    LITELLM_API_KEY: z.string().min(10),
     // Anthropic
     ANTHROPIC_API_KEY: z.string().min(10),
     // OpenAI
@@ -64,6 +67,9 @@ export const env = createEnv({
   },
 
   runtimeEnv: {
+    // LITELLM
+    LITELLM_BASE_URL: process.env.LITELLM_BASE_URL,
+    LITELLM_API_KEY: process.env.LITELLM_API_KEY,
     // Anthropic
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
     // Clerk (Auth)

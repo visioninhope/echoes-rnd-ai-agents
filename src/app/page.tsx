@@ -16,6 +16,10 @@ import { ChatType } from "@/lib/types";
 import { parseAsString, useQueryState } from "next-usequerystate";
 import ChatCardWrapper from "@/components/chatcardwrapper";
 import { OrgChatToggler } from "@/components/chatSidebar";
+import AudioPlayer from "@/components/audioplayer";
+import Search from "@/components/search";
+import { SearchButton } from "./dashboard/layout";
+import useSearchDialogState from "@/store/searchDialogStore";
 
 const handleSmoothScroll = (): void => {
   if (typeof window !== "undefined") {
@@ -126,6 +130,7 @@ export default function Home() {
       console.error("Error creating new chat:", error);
     }
   };
+  const { showSearchDialog, toggleSearchDialog } = useSearchDialogState();
 
   return (
     <div>
@@ -137,6 +142,15 @@ export default function Home() {
               variant="secondary"
               asChild
             ></Button>
+            {isSignedIn ? (
+              <>
+                <AudioPlayer />
+                <SearchButton onClick={toggleSearchDialog}>
+                  <span className="hidden sm:inline">Search</span>
+                </SearchButton>
+                <Search orgSlug={orgSlug as string} />
+              </>
+            ) : null}
           </Header>
           <div className="absolute top-0 w-full y-0 flex flex-col flex-grow h-screen justify-center items-center gap-2 text-center">
             <div className="absolute inset-0 -z-5">

@@ -100,7 +100,7 @@ export default function LoggedInLayout({
   );
 }
 
-const SearchButton = (props: React.ComponentProps<typeof Button>) => {
+export const SearchButton = (props: React.ComponentProps<typeof Button>) => {
   return (
     <Button {...props} variant="ghost" className="max-h-[32px]">
       <SearchIcon className="w-4 h-4 mr-2" />
