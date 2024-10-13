@@ -19,6 +19,8 @@ jobs:
       - name: Lint and fix
         run: npm run lint:fix
         env:
+          LITELLM_BASE_URL: ${{secrets.LITELLM_BASE_URL}}
+          LITELLM_API_KEY: ${{secrets.LITELLM_API_KEY}}
           ANTHROPIC_API_KEY: ${{secrets.ANTHROPIC_API_KEY}}
           TURSO_DB_URL: ${{secrets.TURSO_DB_URL}}
           TURSO_DB_AUTH_TOKEN: ${{secrets.TURSO_DB_AUTH_TOKEN}}
