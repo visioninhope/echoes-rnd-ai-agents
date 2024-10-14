@@ -19,6 +19,7 @@ const nextConfig = {
     // appDir: true,
     // serverActions: true,
   },
+  output: "standalone",
   images: {
     domains: [
       "oaidalleapiprodscus.blob.core.windows.net",
