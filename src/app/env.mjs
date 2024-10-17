@@ -9,6 +9,9 @@ export const env = createEnv({
     KEYCLOAK_CLIENT_SECRET: z.string().min(1),
     KEYCLOAK_BASE_URL: z.string().min(1),
     KEYCLOAK_REALM: z.string().min(1),
+    // LITELLM 
+    LITELLM_BASE_URL: z.string().min(1),
+    LITELLM_API_KEY: z.string().min(10),
     // Anthropic
     ANTHROPIC_API_KEY: z.string().min(10),
     // OpenAI
@@ -76,7 +79,9 @@ export const env = createEnv({
     KEYCLOAK_CLIENT_SECRET: process.env.KEYCLOAK_CLIENT_SECRET,
     KEYCLOAK_BASE_URL: process.env.KEYCLOAK_BASE_URL,
     KEYCLOAK_REALM: process.env.KEYCLOAK_REALM,
-    // Anthropic
+    // LITELLM
+    LITELLM_BASE_URL: process.env.LITELLM_BASE_URL,
+    LITELLM_API_KEY: process.env.LITELLM_API_KEY,    // Anthropic
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
     // Clerk (Auth)
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:

@@ -11,7 +11,7 @@ import { eq } from "drizzle-orm";
 
 export const revalidate = 0; // disable cache
 
-export const maxDuration = 60;
+export const maxDuration = 180;
 
 export async function POST(
   request: Request,

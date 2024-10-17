@@ -413,7 +413,7 @@ export const summarizeChat = async (chat: ChatEntry[]): Promise<string> => {
     name: "SummarizeChat",
     run_type: "llm",
     inputs: {
-      model: "HuggingFaceH4/zephyr-7b-beta",
+      model: "llama3.1-8b",
       messages: msgs as ChatCompletionMessageParam[],
       top_p: 0.7,
       max_tokens: 512,
@@ -423,12 +423,12 @@ export const summarizeChat = async (chat: ChatEntry[]): Promise<string> => {
   const parentRun = new RunTree(parentRunConfig);
 
   const openai = new OpenAI({
-    baseURL: env.ANYSCALE_API_BASE,
-    apiKey: env.ANYSCALE_API_KEY,
+    baseURL: env.LITELLM_BASE_URL,
+    apiKey: env.LITELLM_API_KEY,
   });
   const stream: OpenAI.Chat.ChatCompletion =
     await openai.chat.completions.create({
-      model: "HuggingFaceH4/zephyr-7b-beta",
+      model: "llama3.1-8b",
       messages: [
         { role: "user", content: msg },
       ] as ChatCompletionMessageParam[],
