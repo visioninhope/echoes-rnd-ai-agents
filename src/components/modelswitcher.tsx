@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/button";
 import { Cpu, Layers, PenTool, Settings } from "lucide-react";
 import { ChatType } from "@/lib/types";
+import { BookOpenText } from "@phosphor-icons/react";
 
 export interface InputBarActionProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -34,6 +35,8 @@ const ModelSwitcher = React.forwardRef<HTMLButtonElement, InputBarActionProps>(
         <Cpu className="h-4 w-4" />
       ) : chattype === "tldraw" ? (
         <PenTool className="h-4 w-4" />
+      ) : chattype === "storm" ? (
+        <BookOpenText className="h-4 w-4" />
       ) : (
         <Settings className="h-4 w-4" />
       );
@@ -62,6 +65,11 @@ const ModelSwitcher = React.forwardRef<HTMLButtonElement, InputBarActionProps>(
               </DropdownMenuRadioItem>
               <DropdownMenuRadioItem value="chat">Simple</DropdownMenuRadioItem>
               <DropdownMenuRadioItem value="ella">Ella</DropdownMenuRadioItem>
+              {isHome ? (
+                <DropdownMenuRadioItem value="storm">
+                  Article
+                </DropdownMenuRadioItem>
+              ) : null}
               <DropdownMenuSeparator />
               <DropdownMenuLabel inset>AIModels</DropdownMenuLabel>
             </DropdownMenuRadioGroup>

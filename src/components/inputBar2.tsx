@@ -23,6 +23,7 @@ import ModelSwitcher from "./modelswitcher";
 import VadAudio from "./VadAudio";
 import { useDropzone } from "react-dropzone";
 import { X } from "lucide-react";
+import { parseAsString, useQueryState } from "next-usequerystate";
 const isValidImageType = (value: string) =>
   /^image\/(jpeg|png|jpg|webp)$/.test(value);
 
@@ -102,6 +103,7 @@ const InputBar = (props: InputBarProps) => {
   const [disableInputs, setDisableInputs] = useState<boolean>(false);
   const [isRagLoading, setIsRagLoading] = useState<boolean>(false);
   const queryClient = useQueryClient();
+  const [chatType] = useQueryState("model", parseAsString.withDefault("chat"));
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -449,6 +451,8 @@ const InputBar = (props: InputBarProps) => {
                   ? ""
                   : props.dropZoneActive
                   ? "Ask question about image"
+                  : chatType === "storm"
+                  ? "Enter the topic"
                   : "Type your message here..."
               }
               autoFocus

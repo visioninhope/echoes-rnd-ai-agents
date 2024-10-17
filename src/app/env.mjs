@@ -3,6 +3,12 @@ import { z } from "zod";
 
 export const env = createEnv({
   server: {
+    STORM_ENDPOINT: z.string().min(1),
+    QSTASH_TOKEN: z.string().min(1),
+    KEYCLOAK_CLIENT_ID: z.string().min(1),
+    KEYCLOAK_CLIENT_SECRET: z.string().min(1),
+    KEYCLOAK_BASE_URL: z.string().min(1),
+    KEYCLOAK_REALM: z.string().min(1),
     // LITELLM 
     LITELLM_BASE_URL: z.string().min(1),
     LITELLM_API_KEY: z.string().min(10),
@@ -67,10 +73,15 @@ export const env = createEnv({
   },
 
   runtimeEnv: {
+    STORM_ENDPOINT: process.env.STORM_ENDPOINT,
+    QSTASH_TOKEN: process.env.QSTASH_TOKEN,
+    KEYCLOAK_CLIENT_ID: process.env.KEYCLOAK_CLIENT_ID,
+    KEYCLOAK_CLIENT_SECRET: process.env.KEYCLOAK_CLIENT_SECRET,
+    KEYCLOAK_BASE_URL: process.env.KEYCLOAK_BASE_URL,
+    KEYCLOAK_REALM: process.env.KEYCLOAK_REALM,
     // LITELLM
     LITELLM_BASE_URL: process.env.LITELLM_BASE_URL,
-    LITELLM_API_KEY: process.env.LITELLM_API_KEY,
-    // Anthropic
+    LITELLM_API_KEY: process.env.LITELLM_API_KEY,    // Anthropic
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
     // Clerk (Auth)
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:

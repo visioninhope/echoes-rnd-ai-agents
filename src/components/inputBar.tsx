@@ -234,7 +234,7 @@ const InputBar = (props: InputBarProps) => {
   useEffect(() => {
     if (isNewChat === "true" && incomingInput) {
       //TODO: use types for useQueryState
-      if (incomingInput && chattype !== "tldraw") {
+      if (incomingInput && chattype !== "tldraw" && chattype !== "storm") {
         const params = new URLSearchParams(window.location.search);
         if (
           params.get("imageUrl") &&
@@ -259,16 +259,7 @@ const InputBar = (props: InputBarProps) => {
     setIsFromClipboard("false");
     setIsNewChat("false");
   }, [isFromClipboard, isNewChat]);
-  // const ably = useAbly();
 
-  // console.log(
-  //   "ably",
-  //   ably.channels
-  //     .get(`channel_${props.chatId}`)
-  //     .presence.get({ clientId: `room_${props.chatId}` }),
-  // );
-
-  // const { presenceData, updateStatus } = usePresence(`channel_${props.chatId}`);
   const preferences = usePreferences();
   const { presenceData, updateStatus } = usePresence(
     `channel_${props.chatId}`,
