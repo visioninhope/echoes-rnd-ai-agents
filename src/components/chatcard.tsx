@@ -13,7 +13,7 @@ import {
 } from "@/components/card";
 import Chatusers, { getUserIdList } from "@/components/chatusersavatars";
 import { CircleNotch } from "@phosphor-icons/react";
-import { ChatEntry, ChatLog } from "@/lib/types";
+import { ChatEntry, ChatLog, ChatType } from "@/lib/types";
 import Image from "next/image";
 import AudioButton from "@/components//audioButton";
 import { useRouter } from "next/navigation";
@@ -28,6 +28,22 @@ type Props = {
   priority: boolean;
   type: string;
   isHome?: boolean;
+};
+
+const getChatType = (type: ChatType) => {
+  if (type === "tldraw") {
+    return "Tldraw";
+  } else if (type === "advanced") {
+    return "Advanced";
+  } else if (type === "ella") {
+    return "Ella";
+  } else if (type === "rag") {
+    return "Rag";
+  } else if (type === "storm") {
+    return "Article";
+  } else {
+    return "Simple Chat";
+  }
 };
 
 const Chatcard = ({

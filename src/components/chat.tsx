@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { ChatType } from "@/lib/types";
 import InputBar from "@/components/inputBar";
 import { Message, useChat } from "ai/react";
@@ -55,6 +55,7 @@ export default function Chat(props: ChatProps) {
   );
   const [isNewChat, setIsNewChat] = useQueryState("new");
   const [incomingInput] = useQueryState("input");
+  const soonToastRef = useRef<number | string | undefined>();
   const { mutate: InitArticleGeneration } = useMutation({
     mutationFn: async ({
       topic,
@@ -67,6 +68,11 @@ export default function Chat(props: ChatProps) {
       orgId: string;
       userId: string;
     }) => {
+      soonToastRef.current = soonerToast("Generating your article", {
+        description: "Please wait for 2 mins",
+        duration: 300 * 1000,
+      });
+      console.log("storm");
       const resp = await axios.post("/api/storm", {
         topic: topic,
         chatId: chatId,
@@ -76,16 +82,11 @@ export default function Chat(props: ChatProps) {
       return resp.data;
     },
     onSuccess: (data, vars, context) => {
-      soonerToast("Generating your article", {
-        description: "Please wait for 2 mins",
-        duration: 300 * 1000,
-      });
-
       //TODO: set workflow id in state and make query to start invalidating
-      console.log("workflow id", data.workflowRunId);
+      soonerToast.dismiss(soonToastRef.current);
     },
     onError: (error: any, vars, context) => {
-      console.error(error?.message);
+      soonerToast.dismiss(soonToastRef.current);
       soonerToast("Something went wrong ", {
         description: "Sunday, December 03, 2023 at 9:00 AM",
         duration: 5 * 1000,
